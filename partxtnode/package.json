@@ -1,0 +1,9 @@
+{
+  "name": "partxtnode",
+  "version": "0.0.0",
+  "description": "aiparstxt text sanitizer - Node.js implementation",
+  "main": "partxt.js",
+  "scripts": {
+    "start": "node partxt.js"
+  }
+}
