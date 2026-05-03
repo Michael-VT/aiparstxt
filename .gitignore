@@ -1,0 +1,24 @@
+# Compiled / binary outputs
+*.o
+*.exe
+*.out
+*.obj
+
+# Rust
+partxtrs/target/
+
+# Go
+partxtgo/partxtgo
+
+# C++
+partxtcpp/partxt
+
+# Node.js
+partxtnode/node_modules/
+
+# Generated output files
+*.ed.txt
+report_*.txt
+
+# OS
+.DS_Store

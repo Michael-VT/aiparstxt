@@ -1,0 +1,55 @@
+This is a test file for aiparstxt — a text sanitization tool.
+
+It contains various characters that should be replaced with '?'.
+
+Accented characters: café, naïve, résumé, über, España, São Paulo, Zürich, Ångström.
+German umlauts: ä ö ü ß Ä Ö Ü
+French: é è ê ë à â ù û î ô ï ç
+Spanish: ñ ¿ ¡
+Portuguese: ã Ã õ Õ ç Ç
+Nordic: å Å æ Æ ø Ø
+
+Typographic quotes: "smart quotes" and 'single quotes'
+Long dash: —
+Ellipsis: …
+Bullet: •
+Copyright: ©
+Registered: ®
+Trademark: ™
+Euro: €
+Pound: £
+Yen: ¥
+Cent: ¢
+
+Math: ± × ÷ ≤ ≥ ≠ ∞ ∑ ∏ √ ∫
+Fractions: ½ ¼ ¾
+
+Emoji: 😀 🎉 🚀 ❤️ 👍
+Chinese: 你好世界
+Japanese: こんにちは
+Arabic: مرحبا
+Hebrew: שלום
+Thai: สวัสดี
+
+Latin Extended: đ Đ ł Ł ń Ń ś Ś ź ź ż Ż
+Czech: ř č ň ě
+Polish: ą ę ś ć ź ż ó
+
+Various symbols: § ¶ ° µ ¬ ¦ ¨ © ª « ¬ ® ¯ ° ± ² ³ ´ µ ¶ · ¸ ¹ º » ¼ ½ ¾ ¿
+
+Some normal text with allowed characters:
+Numbers: 0123456789
+Latin: ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz
+Russian: АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ абвгдеёжзийклмнопрстуфхцчшщъыьэюя
+Punctuation: []{}()-=_+!@#$%&*;'/.,<>'"`
+
+Words for frequency testing:
+hello hello hello
+world world
+test test test test
+aiparstxt aiparstxt
+frequency
+sanitization
+café café café café café
+über über über
+naïve naïve
