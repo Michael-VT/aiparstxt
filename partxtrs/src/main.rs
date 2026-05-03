@@ -1,0 +1,223 @@
+use std::collections::HashMap;
+use std::env;
+use std::fs;
+use std::path::Path;
+use std::time::Instant;
+
+const ALLOWED: &str = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz\
+АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдеёжзийклмнопрстуфхцчшщъыьэюя\
+[]{}()-=_+!@#$%&*;'/.,<>'\"`~ \t\n\r";
+
+fn is_allowed(ch: char) -> bool {
+    ALLOWED.contains(ch)
+}
+
+fn process(text: &str) -> (String, HashMap<char, usize>) {
+    let mut replaced: HashMap<char, usize> = HashMap::new();
+    let mut out = String::with_capacity(text.len());
+    for ch in text.chars() {
+        if is_allowed(ch) {
+            out.push(ch);
+        } else {
+            *replaced.entry(ch).or_insert(0) += 1;
+            out.push('?');
+        }
+    }
+    (out, replaced)
+}
+
+fn word_frequency(text: &str) -> HashMap<String, usize> {
+    let mut freq: HashMap<String, usize> = HashMap::new();
+    let mut cur = String::new();
+    for ch in text.chars() {
+        if ch.is_alphanumeric() || ch == '\'' || ch == '-' {
+            cur.push(ch);
+        } else {
+            if !cur.is_empty() {
+                *freq.entry(cur.clone()).or_insert(0) += 1;
+                cur.clear();
+            }
+        }
+    }
+    if !cur.is_empty() {
+        *freq.entry(cur).or_insert(0) += 1;
+    }
+    freq
+}
+
+fn build_report(
+    input_file: &str,
+    output_file: &str,
+    replaced: &HashMap<char, usize>,
+    word_freq: &Option<HashMap<String, usize>>,
+    elapsed: std::time::Duration,
+) -> String {
+    let mut lines: Vec<String> = Vec::new();
+    let now = chrono_local_now();
+    lines.push(format!("=== aiparstxt Report (Rust) ==="));
+    lines.push(format!("Date: {}", now));
+    lines.push(format!("Input file: {}", input_file));
+    lines.push(format!("Output file: {}", output_file));
+    lines.push(format!("Execution time: {:.6} s", elapsed.as_secs_f64()));
+    lines.push(String::new());
+    lines.push("--- Replaced Characters ---".to_string());
+    if replaced.is_empty() {
+        lines.push("None".to_string());
+    } else {
+        let mut sorted: Vec<_> = replaced.iter().collect();
+        sorted.sort_by(|a, b| b.1.cmp(a.1));
+        let mut total = 0usize;
+        for (&ch, &cnt) in &sorted {
+            let display = if ch == '\n' {
+                "\\n".to_string()
+            } else if ch == '\t' {
+                "\\t".to_string()
+            } else {
+                ch.to_string()
+            };
+            lines.push(format!("{} → ? : {}", display, cnt));
+            total += cnt;
+        }
+        lines.push(format!("Total replacements: {}", total));
+    }
+    lines.push(String::new());
+    lines.push("--- Word Frequency (ascending) ---".to_string());
+    if let Some(wf) = word_freq {
+        if wf.is_empty() {
+            lines.push("None".to_string());
+        } else {
+            let mut sorted: Vec<_> = wf.iter().collect();
+            sorted.sort_by_key(|&(_, cnt)| cnt);
+            let mut total_words = 0usize;
+            for (word, &cnt) in &sorted {
+                lines.push(format!("{}: {}", word, cnt));
+                total_words += cnt;
+            }
+            lines.push(format!("Total unique words: {}", wf.len()));
+            lines.push(format!("Total words: {}", total_words));
+        }
+    } else {
+        lines.push("(skipped)".to_string());
+    }
+    lines.join("\n") + "\n"
+}
+
+fn chrono_local_now() -> String {
+    let output = std::process::Command::new("date")
+        .arg("+%Y-%m-%d %H:%M:%S")
+        .output();
+    match output {
+        Ok(o) => String::from_utf8_lossy(&o.stdout).trim().to_string(),
+        Err(_) => "unknown".to_string(),
+    }
+}
+
+struct Args {
+    input: String,
+    output: Option<String>,
+    report: Option<String>,
+    no_edit: bool,
+    no_report: bool,
+    no_words: bool,
+}
+
+fn parse_args() -> Result<Args, String> {
+    let args: Vec<String> = env::args().collect();
+    if args.len() < 2 {
+        return Err("Usage: partxt <input_file> [options]".to_string());
+    }
+    let mut a = Args {
+        input: args[1].clone(),
+        output: None,
+        report: None,
+        no_edit: false,
+        no_report: false,
+        no_words: false,
+    };
+    let mut i = 2;
+    while i < args.len() {
+        match args[i].as_str() {
+            "-o" | "--output" => {
+                i += 1;
+                if i >= args.len() {
+                    return Err("Missing value for --output".to_string());
+                }
+                a.output = Some(args[i].clone());
+            }
+            "-r" | "--report" => {
+                i += 1;
+                if i >= args.len() {
+                    return Err("Missing value for --report".to_string());
+                }
+                a.report = Some(args[i].clone());
+            }
+            "--no-edit" => a.no_edit = true,
+            "--no-report" => a.no_report = true,
+            "-w" | "--no-words" => a.no_words = true,
+            "-h" | "--help" => {
+                println!("Usage: partxt <input_file> [options]");
+                println!("  -o, --output <file>   Output file");
+                println!("  -r, --report <file>   Report file");
+                println!("  --no-edit             Do not create .ed.txt");
+                println!("  --no-report           Do not create report");
+                println!("  -w, --no-words        Exclude word frequency");
+                std::process::exit(0);
+            }
+            other => return Err(format!("Unknown option: {}", other)),
+        }
+        i += 1;
+    }
+    Ok(a)
+}
+
+fn main() {
+    let args = match parse_args() {
+        Ok(a) => a,
+        Err(e) => {
+            eprintln!("{}", e);
+            std::process::exit(1);
+        }
+    };
+
+    let input_path = Path::new(&args.input);
+    if !input_path.exists() {
+        eprintln!("Error: file not found: {}", args.input);
+        std::process::exit(1);
+    }
+
+    let output_file = match &args.output {
+        Some(o) => o.clone(),
+        None => {
+            let stem = input_path.file_stem().unwrap().to_str().unwrap();
+            let parent = input_path.parent().unwrap_or(Path::new("."));
+            parent.join(format!("{}.ed.txt", stem)).to_str().unwrap().to_string()
+        }
+    };
+
+    let report_file = match &args.report {
+        Some(r) => r.clone(),
+        None => "report_rs.txt".to_string(),
+    };
+
+    let start = Instant::now();
+    let text = fs::read_to_string(input_path).expect("Failed to read input file");
+    let (cleaned, replaced) = process(&text);
+    let word_freq = if args.no_words {
+        None
+    } else {
+        Some(word_frequency(&cleaned))
+    };
+    let elapsed = start.elapsed();
+
+    if !args.no_edit {
+        fs::write(&output_file, &cleaned).expect("Failed to write output file");
+    }
+
+    if !args.no_report {
+        let report = build_report(&args.input, &output_file, &replaced, &word_freq, elapsed);
+        fs::write(&report_file, &report).expect("Failed to write report file");
+    }
+
+    let total: usize = replaced.values().sum();
+    println!("Done in {:.6}s. Replacements: {}", elapsed.as_secs_f64(), total);
+}
