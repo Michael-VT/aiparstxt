@@ -1,0 +1,86 @@
+# AI Watermarking and Text Marking Characters Reference
+# =====================================================
+# Список символов и паттернов, которые ИИ-системы используют для маркирования текстов
+# Reference list of characters and patterns AI systems use for text marking
+
+## Zero-Width Characters (Самые распространённые / Most common)
+# ----------------------------------------------------------------------
+# Unicode Zero Width Space - невидимый разделитель
+U+200B  # Zero Width Space (ZWSP) - самый частый маркер
+U+200C  # Zero Width Non-Joiner (ZWNJ) 
+U+200D  # Zero Width Joiner (ZWJ)
+U+FEFF  # Zero Width No-Break Space (ZWNBSP, BOM)
+
+## Invisible Formatting (Невидимое форматирование)
+# ----------------------------------------------------------------------
+U+00AD  # Soft Hyphen (SHY) - отображается как дефис при переносе
+U+2060  # Word Joiner
+U+2061  # Function Application
+U+2062  # Invisible Times
+U+2063  # Invisible Separator
+U+2064  # Invisible Plus
+
+## Variation Selectors (Селекторы вариантов начертания)
+# ----------------------------------------------------------------------
+# Используются для модификации отображения предыдущего символа
+U+FE00-U+FE0F  # Variation Selectors 1-16 (VS1-VS16)
+U+E0100-U+E01EF # Variation Selectors Supplement (VS17-VS256)
+
+## Tag Characters (Тегирующие символы)
+# ----------------------------------------------------------------------
+U+E0001  # Language Tag
+U+E0020-U+E007F # Tag Characters (space, digits, letters)
+
+## Private Use Area (Приватная область - зарезервирована)
+# ----------------------------------------------------------------------
+# Может использоваться для скрытых меток, но может нарушать отображение
+U+E000-U+F8FF   # Private Use Area (BMP)
+U+F0000-U+FFFFD # Supplementary Private Use Area-A
+U+100000-U+10FFFD # Supplementary Private Use Area-B
+
+## Control Characters (Управляющие символы - опасные)
+# ----------------------------------------------------------------------
+# Обычно удаляются из текста, могут нарушать форматирование
+U+0000-U+001F   # C0 Controls (кроме Tab, LF, CR)
+U+007F-U+009F   # C1 Controls
+U+2028          # Line Separator
+U+2029          # Paragraph Separator
+
+## Bidirectional Override (Подмена направления текста)
+# ----------------------------------------------------------------------
+U+202A          # Left-to-Right Embedding
+U+202B          # Right-to-Left Embedding
+U+202C          # Pop Directional Formatting
+U+202D          # Left-to-Right Override
+U+202E          # Right-to-Left Override
+
+## Other Invisible/Suspicious Characters
+# ----------------------------------------------------------------------
+U+00A0          # No-Break Space (NBSP) - неразрывный пробел
+U+2002-U+200A   # En Space, Em Space, Thin Space, Hair Space...
+U+202F          # Narrow No-Break Space
+U+205F          # Medium Mathematical Space
+U+3000          # Ideographic Space (CJK)
+
+## Pattern-Based Watermarks (Паттерны-маркеры)
+# ----------------------------------------------------------------------
+# Некоторые системы вставляют специфические последовательности:
+# - Бинарные данные, закодированные в zero-width characters
+# - Повторяющиеся паттерны через N символов
+# - Скрытые URL в комментариях или metadata
+# - Специфические слова-маркеры (редко в современных системах)
+
+## Common Detection Patterns
+# ----------------------------------------------------------------------
+# Признаки watermarking:
+# 1. Наличие U+200B в обычном тексте
+# 2. Последовательности из U+FE00-U+E01EF
+# 3. Паттерны через регулярные интервалы
+# 4. Аномалии в Unicode нормализации
+
+## Removal Priority (Приоритет удаления)
+# ----------------------------------------------------------------------
+# HIGH (Высокий): U+200B, U+200C, U+200D, U+FEFF, U+2060-U+2064
+# MEDIUM (Средний): U+00AD, U+FE00-U+FE0F, U+E0001, U+E0020-U+E007F
+# LOW (Низкий): U+E000+, U+00A0, U+2028, U+2029, U+202A-E
+# AVOID (Избегать удалять): U+00A0 в тексте на языках с require (French, Catalan)

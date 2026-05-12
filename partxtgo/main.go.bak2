@@ -80,6 +80,7 @@ func process(text string, removeWatermark bool) (string, map[rune]int, map[rune]
 	watermarkRemoved := make(map[rune]int)
 	var out strings.Builder
 	out.Grow(len(text))
+	fmt.Fprintf(os.Stderr, "DEBUG: removeWatermark = %v\n", removeWatermark)
 	for _, ch := range text {
 
 
@@ -229,6 +230,7 @@ func main() {
 	removeWatermark := flag.Bool("remove-watermark", false, "Remove AI watermark characters (zero-width, invisible formatting)")
 	flag.Bool("w", false, "Exclude word frequency from report (shorthand)")
 	flag.Parse()
+	fmt.Fprintf(os.Stderr, "DEBUG: removeWatermark flag value = %v\n", *removeWatermark)
 
 
 
@@ -293,6 +295,7 @@ func main() {
 	}
 
 	// Debug: print watermarkChars size
+	fmt.Fprintf(os.Stderr, "DEBUG: watermarkChars size = %d\n", len(watermarkChars))
 
 
 	total := 0

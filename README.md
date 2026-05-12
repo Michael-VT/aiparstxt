@@ -1,8 +1,17 @@
-# aiparstxt — Multi-language Text Sanitizer
+# aiparstxt — Multi-language Text Sanitizer & AI Forensic Analyzer
 
-A set of command-line utilities that sanitize text files by replacing disallowed characters with '?'. Implemented in 6 languages for performance comparison.
+A set of command-line utilities that sanitize text files by replacing disallowed characters with '?'. Implemented in 6 languages for performance comparison. Includes AI watermark removal and **statistical forensic analysis** for detecting AI-generated text.
+
+## Features
+
+- **Text sanitization** — replace disallowed characters with '?' across 6 language implementations
+- **AI watermark removal** — strip invisible Unicode watermarks inserted by AI systems
+- **AI forensic analytics** — heuristic statistical analysis to estimate AI authorship probability (Python)
+
+---
 
 ## Allowed Characters
+
 - Digits: 0-9
 - Latin letters: A-Z, a-z
 - Russian letters: А-Я, а-я (including Ё/ё)
@@ -11,23 +20,151 @@ A set of command-line utilities that sanitize text files by replacing disallowed
 
 All other characters are replaced with '?'.
 
-## CLI Usage (same for all languages)
+## AI Watermark Removal
 
+The sanitizer supports removal of invisible AI watermark characters used by various AI systems to mark generated text:
+- Zero-width characters (ZWSP, ZWNJ, ZWJ, ZWNBSP)
+- Invisible formatting characters (Word Joiner, Invisible Times, etc.)
+- Variation selectors
+- Tag characters
+- Bidirectional override characters
+
+See `ai-chart.txt` for complete reference.
+
+---
+
+## CLI Usage — Text Sanitizer (all 6 languages)
+
+```
 partxt <input_file> [options]
+```
 
 Options:
-  -o, --output <file>   Output file (default: <input>.ed.txt)
-  -r, --report <file>   Report file (default: report_<lang>.txt)
-  --no-edit             Do not create .ed.txt file
-  --no-report           Do not create report file
-  -w, --no-words        Exclude word frequency from report
-  -h, --help            Show help
+  -o, --output <file>       Output file (default: <input>.ed.txt)
+  -r, --report <file>       Report file (default: report_<lang>.txt)
+  --no-edit                 Do not create .ed.txt file
+  --no-report               Do not create report file
+  -w, --no-words            Exclude word frequency from report
+  --remove-watermark        Remove AI watermark characters (hidden/invisible)
+  -h, --help                Show help
 
-## Report Format
-Each report includes:
-- Execution time
-- Table of replaced characters with counts
-- Word frequency dictionary (sorted ascending by count)
+### Individual
+
+```bash
+python3 partxtpy/partxt.py testdata/sample.txt
+python3 partxtpy/partxt.py testdata/sample.txt --remove-watermark
+
+cargo run --release --manifest-path partxtrs/Cargo.toml -- testdata/sample.txt
+cargo run --release --manifest-path partxtrs/Cargo.toml -- testdata/sample.txt -- --remove-watermark
+
+cd partxtgo && go run . testdata/sample.txt
+cd partxtgo && go run . --remove-watermark testdata/sample.txt
+
+cd partxtcpp && make && ./partxt testdata/sample.txt
+cd partxtcpp && make && ./partxt testdata/sample.txt --remove-watermark
+
+node partxtnode/partxt.js testdata/sample.txt
+node partxtnode/partxt.js testdata/sample.txt --remove-watermark
+
+bun run partxtjs/partxt.js testdata/sample.txt
+bun run partxtjs/partxt.js testdata/sample.txt --remove-watermark
+```
+
+### All at once
+
+```bash
+./run_all.sh testdata/sample.txt
+```
+
+---
+
+## CLI Usage — AI Forensic Analytics (Python only)
+
+```bash
+python3 parscgptv2.py <textfile>
+```
+
+Three analytical script variants are available in the project root:
+
+| Script | Description |
+|--------|-------------|
+| `parscgpt.py` | Initial version — basic heuristic metrics and AI score |
+| `parscgptv1.py` | Extended — adds stopword filtering, confidence level, interpretation, suspicious pattern detection |
+| `parscgptv2.py` | Full version — refined scoring, clean output, recommended for use |
+
+### Metrics Computed
+
+| Metric | Description |
+|--------|-------------|
+| `lexical_diversity` | Unique words / total words (after stopword removal) |
+| `repetition_score` | Fraction of words appearing more than once |
+| `entropy` | Shannon entropy of word frequency distribution |
+| `burstiness` | Coefficient of variation of sentence lengths |
+| `pattern_repetition_score` | Fraction of repeated sentence-length patterns (S/M/L encoding) |
+| `punctuation_density` | Punctuation count / total characters |
+| `ai_phrase_hits` | Matches against 21 curated AI-typical phrases |
+| `unicode_symbols` | Count of suspicious Unicode characters (em-dash, smart quotes, etc.) |
+| `top_bigrams` | Top 10 bigrams from filtered text |
+| `top_trigrams` | Top 10 trigrams from filtered text |
+
+### AI Probability Scoring
+
+| Condition | Points |
+|-----------|--------|
+| Lexical diversity < 0.45 | +20 |
+| Entropy < 5.0 | +20 |
+| Burstiness < 0.35 | +15 |
+| Pattern repetition > 0.35 | +15 |
+| Repetition score > 0.5 | +10 |
+| AI phrase hits ≥ 3 | +15 |
+| Punctuation density > 0.04 | +5 |
+| Unicode suspicious chars present | +5 |
+
+**Total** capped at 100%. Confidence: low (<300 words), medium (300-999), high (≥1000).
+
+### Output includes
+
+- All raw metrics with rounded values
+- `estimated_ai_probability` — heuristic score
+- `confidence` — based on text length
+- `interpretation` — human-readable verdict for each metric
+- `overall_profile` — verdict and positive signals
+- `suspicious_patterns` — detected AI-like phrases and trigrams
+
+### Example output
+
+```
+=== AI TEXT FORENSIC ANALYSIS ===
+
+word_count: 198
+sentence_count: 11
+lexical_diversity: 0.832
+entropy: 6.655
+burstiness: 0.52
+estimated_ai_probability: 0%
+confidence: low
+interpretation:
+  lexical_diversity: High lexical diversity → richer and more human-like vocabulary.
+  entropy: Moderate entropy.
+  burstiness: Moderate burstiness.
+overall_profile:
+  verdict: Text statistically appears more human-like.
+  signals: ['high lexical diversity']
+
+=== END OF REPORT ===
+```
+
+---
+
+## Porting Analytics to Other Languages
+
+The analytics engine is currently Python-only. See **`ANALYTICS_RECOMMENDATIONS.md`** for a complete porting guide with:
+- Metric computation formulas
+- Scoring model weights and thresholds
+- Interpretation rules
+- Language-specific guidance for Rust, Go, C++, Node.js, Bun
+
+---
 
 ## Implementations
 
@@ -40,18 +177,18 @@ Each report includes:
 | Node.js    | partxtnode/ | (no build needed)                | report_node.txt  |
 | Bun        | partxtjs/   | (no build needed)                | report_bun.txt   |
 
-## Running
+---
 
-### Individual
-python3 partxtpy/partxt.py testdata/sample.txt
-cargo run --release --manifest-path partxtrs/Cargo.toml -- testdata/sample.txt
-cd partxtgo && go run . testdata/sample.txt
-cd partxtcpp && make && ./partxt testdata/sample.txt
-node partxtnode/partxt.js testdata/sample.txt
-bun run partxtjs/partxt.js testdata/sample.txt
+## Report Format (Sanitizer)
 
-### All at once
-./run_all.sh testdata/sample.txt
+Each report includes:
+- Execution time
+- Mode (replace/remove + watermark removal status)
+- Watermark characters removed (with Unicode code points)
+- Replaced characters (with counts)
+- Word frequency (ascending)
+
+---
 
 ## Sample Results (testdata/sample.txt, 197 replacements)
 
@@ -65,11 +202,13 @@ bun run partxtjs/partxt.js testdata/sample.txt
 | Bun      | ~0.0022 s     |
 
 ## Versioning
+
 - Patch (0.0.x): bug fixes
 - Minor (0.x.0): fully functional, meets requirements
 - Major (x.0.0): significant new features
 
-Current version: 0.0.0
+Current version: 0.1.0
 
 ## License
+
 MIT

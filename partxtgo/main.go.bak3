@@ -293,6 +293,7 @@ func main() {
 	}
 
 	// Debug: print watermarkChars size
+	fmt.Fprintf(os.Stderr, "DEBUG: watermarkChars size = %d\n", len(watermarkChars))
 
 
 	total := 0

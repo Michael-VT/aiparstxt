@@ -46,7 +46,20 @@ for (let cp = 0xE000; cp <= 0xE07F; cp++) {
 }
 
 
+for (let cp = 0xFE00; cp <= 0xFE0F; cp++) {
+  WATERMARK_CHARS.add(String.fromCharCode(cp));
+}
+// Tag characters (E0020-E007F)
+for (let cp = 0xE0020; cp <= 0xE007F; cp++) {
+  WATERMARK_CHARS.add(String.fromCharCode(cp));
+}
+// Private Use Area - commonly abused for watermarking (E000-E07F, 128 chars)
+for (let cp = 0xE000; cp <= 0xE07F; cp++) {
+  WATERMARK_CHARS.add(String.fromCharCode(cp));
+}
+
 function processText(text, removeWatermark = false) {
+  console.error('DEBUG: WATERMARK_CHARS size:', WATERMARK_CHARS.size);
   const replaced = new Map();
   const watermarkRemoved = new Map();
   const out = [];

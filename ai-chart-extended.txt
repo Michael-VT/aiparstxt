@@ -1,0 +1,355 @@
+# AI WATERMARKING AND TEXT MARKING METHODS — COMPLETE REFERENCE
+# =================================================================
+# Полный справочник методов watermarking и маркирования текстов ИИ-системами
+# Complete reference of watermarking and text marking methods by AI systems
+
+## ═══════════════════════════════════════════════════════════════════════
+## SECTION 1: ZERO-WIDTH AND INVISIBLE CHARACTERS (УЖЕ РЕАЛИЗОВАНО)
+## ═══════════════════════════════════════════════════════════════════════
+# Эти символы уже обрабатываются в программе --remove-watermark
+
+### 1.1 Zero-Width Characters (Наиболее частые)
+├─ U+200B  │ Zero Width Space (ZWSP)              │ Самый частый маркер
+├─ U+200C  │ Zero Width Non-Joiner (ZWNJ)         │ Разрыв соединений
+├─ U+200D  │ Zero Width Joiner (ZWJ)              │ Соединение символов
+├─ U+FEFF  │ Zero Width No-Break Space (ZWNBSP)   │ BOM, используется как маркер
+└─ U+2060  │ Word Joiner                          │ Предотвращает разрыв строки
+
+### 1.2 Invisible Mathematical/Formatting Operators
+├─ U+2061  │ Function Application                 │ Невидимый оператор
+├─ U+2062  │ Invisible Times                      │ Умножение
+├─ U+2063  │ Invisible Separator                  │ Разделитель
+├─ U+2064  │ Invisible Plus                       │ Сложение
+├─ U+00AD  │ Soft Hyphen (SHY)                    │ Условный дефис
+└─ U+180E  │ Mongolian Separator                  │ Разделитель (используется как маркер)
+
+### 1.3 Bidirectional Override Characters (Опасные — меняют направление текста)
+├─ U+202A  │ Left-to-Right Embedding              │ LRE
+├─ U+202B  │ Right-to-Left Embedding              │ RLE
+├─ U+202C  │ Pop Directional Formatting           │ PDF
+├─ U+202D  │ Left-to-Right Override               │ LRO
+└─ U+202E  │ Right-to-Left Override               │ RLO
+
+### 1.4 Line/Paragraph Separators
+├─ U+2028  │ Line Separator                       │ Разделитель строк
+└─ U+2029  │ Paragraph Separator                  │ Разделитель параграфов
+
+### 1.5 Variation Selectors (Модуfy начертание предыдущего символа)
+├─ U+FE00-U+FE0F │ Variation Selectors 1-16      │ VS1-VS16 (BMP)
+└─ U+E0100-U+E01EF │ Variation Selectors Supplement │ VS17-VS256
+
+### 1.6 Tag Characters (Используются для языка и метаданных)
+├─ U+E0001  │ Language Tag                        │ Метка языка
+└─ U+E0020-U+E007F │ Tag Characters              │ Пробел, цифры, буквы тегов
+
+### 1.7 Private Use Area (Может использоваться для скрытых меток)
+⚠️  Осторожно: может нарушать отображение текста
+├─ U+E000-U+F8FF     │ Private Use Area (BMP)
+├─ U+F0000-U+FFFFD   │ Supplementary PUA-A
+└─ U+100000-U+10FFFD │ Supplementary PUA-B
+
+## ═══════════════════════════════════════════════════════════════════════
+## SECTION 2: PATTERN-BASED WATERMARKING (НЕ РЕАЛИЗОВАНО — ТРЕБУЕТСЯ ДОБАВИТЬ)
+## ═══════════════════════════════════════════════════════════════════════
+# Эти паттерны требуют более сложного обнаружения
+
+### 2.1 Binary Encoding in Zero-Width Characters
+Метод: Двоичные данные закодированы в последовательностях ZWSP/ZWJ
+Пример: "word​‍‌‍‍word" (ZWSP=0, ZWJ=1)
+Обнаружение: Регулярные интервалы, паттерны через N символов
+Признаки:
+  • Повторяющиеся последовательности invisible символов
+  • Длина последовательности кратна степеням 2 (8, 16, 32, 64, 128...)
+  • Шаблоны следуют за каждым словом или предложением
+
+### 2.2 Inter-Character Watermarking
+Метод: Невидимые символы вставляются между Каждым N-м символом
+Обнаружение: Проверка Unicode normalization формы NFC/NFD
+Признаки:
+  • Несоответствие при NFC/NFD нормализации
+  • Лишние code points при decompose
+
+### 2.3 Syntactic Pattern Watermarking
+Метод: Специфические синтаксические паттерны в тексте
+
+#### 2.3.1 Lexical Patterns (Лексические паттерны)
+├─ Rare word combinations                    │ Редкие комбинации слов
+├─ Unusual punctuation patterns              │ Необычная пунктуация
+├─ Specific sentence structures              │ Специфические структуры предложений
+└─ Idiosyncratic word choices                │ Характерные选择了词
+
+Примеры:
+  • "In conclusion, furthermore" (избыточные переходы)
+  • Многословные конструкции вместо простых
+  • Британское vs американское английское (consistently)
+
+#### 2.3.2 Perplexity-Based Patterns
+Метод: ИИ генерирует текст с специфическим distribution perplexity
+Обнаружение: Статистический анализ
+Признаки:
+  • Аномально uniform perplexity distribution
+  • Отсутствие естественных "всплесков" и "провалов"
+  • Слишком стабильная сложность предложений
+
+### 2.4 Hash-Based Watermarking (Глубокие watermarking методы)
+Метод: Cryptographic hash следующих токенов влияет на выбор текущего
+Обнаружение: Требует доступа к модели
+Примеры:
+  • Aaronson's method: GREEN/RED list на основе hash следующего токена
+  • Microsoft水印: Скрытые маркеры в распределении вероятностей
+
+## ═══════════════════════════════════════════════════════════════════════
+## SECTION 3: KNOWN AI SERVICE WATERMARKS (СПЕЦИФИЧЕСКИЕ МАРКЕРЫ)
+## ═══════════════════════════════════════════════════════════════════════
+
+### 3.1 OpenAI GPT Models
+⚠️  OpenAI заявляет watermarking, но метод неизвестен
+Возможные методы:
+  • Незначительные изменения в распределении токенов
+  • Syntactic fingerprinting
+  • Metadata в API responses (не в самом тексте)
+
+### 3.2 Google Gemini
+⚠️  Google экспериментирует с SynthID
+Метод: Невидимый watermark в аудио/текст/видео
+Обнаружение: Proprietary detector
+
+### 3.3 Microsoft Copilot
+Метод: Интегрированный watermarking в продуктах
+Признаки:
+  • Specific metadata в документах
+  • Consistent formatting patterns
+
+### 3.4 Anthropic Claude
+⚠️  Claude не использует явное watermarking (по заявлениям)
+Возможно: fingerprinting через стилистические паттерны
+
+### 3.5 Chinese AI Services (Baidu, Alibaba, Tencent)
+Особенности: Могут использовать специфические для CJK watermark методы
+  • Variation selectors для иероглифов
+  • Specific invisible characters в Pinyin
+
+## ═══════════════════════════════════════════════════════════════════════
+## SECTION 4: METADATA AND EXTERNAL MARKERS (НЕ В ТЕКСТЕ)
+## ═══════════════════════════════════════════════════════════════════════
+# Эти маркеры находятся вне текстового содержимого
+
+### 4.1 File Metadata
+├─ EXIF data в images                │ Метаданные изображений
+├─ PDF metadata                       │ Свойства PDF (Author, Creator, Producer)
+├─ DOCX properties                    │ Свойства Word документов
+├─ File timestamps                    │ Время создания/модификации
+└─ Hidden streams                     │ Скрытые потоки данных (OLE, NTFS ADS)
+
+### 4.2 HTTP/API Metadata
+├─ API response headers               │ Заголовки ответов API
+├─ X-Request-ID                       │ ID запроса
+├─ Rate-limit headers                 │ Заголовки rate limiting
+└─ Custom AI-service headers          │ Специфические заголовки ИИ-сервисов
+
+### 4.3 Blockchain/Cryptographic Proofs
+├─ Content-addressed storage          │ IPFS, Arweave hashes
+├─ Timestamping services              │ Протоколы timestamping
+└─ Digital signatures                 │ Криптографические подписи
+
+## ═══════════════════════════════════════════════════════════════════════
+## SECTION 5: STYLISTIC FINGERPRINTING (МАСКИРОВКА ПОД ИИ)
+## ═══════════════════════════════════════════════════════════════════════
+# Это не watermarking, но методы обнаружения ИИ-текста
+
+### 5.1 Statistical Patterns (Статистические паттерны)
+├─ Burstiness                          │ Всплески и провалы perplexity (у ИИ более равномерно)
+├─ Token frequency distribution        │ Распределение частоты токенов
+├─ Sentence length variance            │ Вариация длины предложений
+└─ Vocabulary richness (TTR)           │ Лексическое разнообразие
+
+### 5.2 Syntactic Patterns (Синтаксические паттерны)
+├─ Transition words overuse            │ Избыточность слов-переходов
+├─ Parallelism structures              │ Параллельные структуры
+├─ Subordinate clause patterns         │ Паттерны придаточных предложений
+└─ Passive voice frequency             │ Частота пассивного залога
+
+### 5.3 Semantic Patterns (Семантические паттерны)
+├─ Hallucination indicators            │ Маркеры галлюцинаций
+├─ Generic vs specific statements      │ Общие vs конкретные утверждения
+├─ Factual accuracy patterns           │ Паттерны фактической точности
+└─ Reasoning chains                    │ Цепочки рассуждений
+
+## ═══════════════════════════════════════════════════════════════════════
+## SECTION 6: ADVANCED WATERMARKING TECHNIQUES (ЭКЗОТИЧЕСКИЕ МЕТОДЫ)
+## ═══════════════════════════════════════════════════════════════════════
+
+### 6.1 Generative Watermarking
+Метод: Watermark встроен в сам процесс генерации
+Обнаружение: Требует white-box доступа к модели
+
+### 6.2 Transformer Attention Distortion
+Метод: Модификация attention maps для кодирования данных
+Обнаружение: Нужен доступ к модели/attention weights
+
+### 6.3 Adversarial Watermarking
+Метод: Watermark устойчивый к попыткам удаления
+Признаки:
+  • Multiple redundant encoding layers
+  • Robust к paraphrasing
+
+### 6.4 Frequency-Domain Watermarking
+Метод: Кодирование в frequency domain символов/слов
+Обнаружение: Спектральный анализ текста
+
+## ═══════════════════════════════════════════════════════════════════════
+## SECTION 7: DETECTION PRIORITIES AND RECOMMENDATIONS
+## ═══════════════════════════════════════════════════════════════════════
+
+### 7.1 Priority Levels (Приоритеты обнаружения)
+
+🔴 HIGH PRIORITY (Высокий) — Уже реализовано:
+├─ U+200B, U+200C, U+200D, U+FEFF (zero-width)
+├─ U+2060-U+2064 (invisible operators)
+├─ U+202A-U+202E (bidirectional override)
+├─ U+FE00-U+FE0F (variation selectors)
+└─ U+E0020-U+E007F (tag characters)
+
+🟡 MEDIUM PRIORITY (Средний) — Рекомендуется добавить:
+├─ U+00AD (soft hyphen) — уже добавлен
+├─ U+2028, U+2029 (line/paragraph separators) — уже добавлены
+├─ U+180E (Mongolian separator)
+├─ U+E0001 (language tag) — уже добавлен
+├─ Pattern detection: regular intervals
+└─ Binary encoding detection
+
+🟢 LOW PRIORITY (Низкий) — Опционально:
+├─ Private Use Area characters (E000+, F0000+, 100000+)
+├─ Control characters (0000-001F, 007F-009F) — кроме Tab, LF, CR
+└─ Non-breaking spaces (00A0, 202F)
+
+⚠️  AVOID REMOVING (Не удалять):
+├─ U+00A0 в French/Catalan (required)
+├─ Legitimate variation selectors для CJK
+└─ Нормальные formatting symbols
+
+### 7.2 Additional Detection Strategies
+
+1. **Unicode Normalization Check**
+   ```python
+   import unicodedata
+   if unicodedata.normalize('NFC', text) != unicodedata.normalize('NFD', text):
+       # Possible watermarking
+   ```
+
+2. **Interval Analysis**
+   - Проверять паттерны каждые N символов/слов
+   - Детектировать периодические invisible sequences
+
+3. **Entropy Analysis**
+   - Высокая entropy в распределении invisible chars
+   - Non-random паттерны
+
+4. **Known Service Fingerprints**
+   - OpenAI: специфические perplexity паттерны
+   - Google: SynthID signatures
+   - Microsoft: metadata в документах
+
+## ═══════════════════════════════════════════════════════════════════════
+## SECTION 8: IMPLEMENTATION NOTES
+## ═══════════════════════════════════════════════════════════════════════
+
+### 8.1 Current Implementation Coverage
+✅ IMPLEMENTED:
+  • All HIGH priority invisible characters
+  • Basic Unicode range checks
+  • Per-character filtering
+
+❌ NOT IMPLEMENTED:
+  • Pattern-based detection (binary encoding, intervals)
+  • Unicode normalization checks
+  • Metadata extraction (file properties, headers)
+  • Statistical/stylistic analysis
+  • Cryptographic watermark detection
+
+### 8.2 Recommended Enhancements
+
+1. **Add Pattern Detection Mode**
+   ```bash
+   partxt input.txt --detect-patterns --analyze-intervals
+   ```
+
+2. **Add Metadata Extraction**
+   ```bash
+   partxt input.txt --extract-metadata --output metadata.json
+   ```
+
+3. **Add Unicode Normalization Check**
+   ```bash
+   partxt input.txt --check-normalization --report normalization.txt
+   ```
+
+4. **Add Statistical Analysis**
+   ```bash
+   partxt input.txt --analyze-style --detect-ai
+   ```
+
+5. **Add PUA (Private Use Area) Scan**
+   ```bash
+   partxt input.txt --scan-pua --report-pua
+   ```
+
+## ═══════════════════════════════════════════════════════════════════════
+## SECTION 9: REFERENCE TABLES
+## ═══════════════════════════════════════════════════════════════════════
+
+### 9.1 Unicode Ranges for Watermarking
+┌─────────────────┬──────────────┬────────────────────────────────┐
+│ Range           │ Count        │ Usage                          │
+├─────────────────┼──────────────┼────────────────────────────────┤
+│ U+200B-U+200F   │ 5 chars      │ Zero-width, spaces            │
+│ U+202A-U+202E   │ 5 chars      │ Bidirectional override        │
+│ U+2060-U+2064   │ 5 chars      │ Invisible operators           │
+│ U+FE00-U+FE0F   │ 16 chars     │ Variation selectors           │
+│ U+E0020-U+E007F │ 96 chars     │ Tag characters                │
+│ U+E000-U+F8FF   │ 6,400 chars  │ Private Use Area             │
+│ U+F0000-U+FFFFD │ 65,534 chars │ Supplementary PUA-A          │
+│ U+100000-U+10FFFD│ 65,534 chars│ Supplementary PUA-B          │
+└─────────────────┴──────────────┴────────────────────────────────┘
+
+### 9.2 Detection Effectiveness by Method
+┌───────────────────────────┬─────────────┬────────────────────┐
+│ Method                    │ Detectable? │ Removal Difficulty │
+├───────────────────────────┼─────────────┼────────────────────┤
+│ Zero-width chars          │ ✅ Easy     │ ✅ Easy             │
+│ Variation selectors       │ ✅ Easy     │ ✅ Easy             │
+│ Tag characters            │ ✅ Easy     │ ✅ Easy             │
+│ Binary encoding           │ ⚠️  Medium  │ ⚠️  Medium          │
+│ Syntactic patterns        │ ⚠️  Medium  │ ❌ Hard            │
+│ Hash-based watermark      │ ❌ Hard     │ ❌ Very Hard        │
+│ Generative watermark      │ ❌ Very Hard│ ❌ Impossible       │
+│ Stylistic fingerprinting  │ ⚠️  Medium  │ ❌ Impossible       │
+└───────────────────────────┴─────────────┴────────────────────┘
+
+### 9.3 AI Service Watermarking Status (2024)
+┌──────────────────┬──────────────────┬─────────────────────────┐
+│ Service          │ Status           │ Method                  │
+├──────────────────┼──────────────────┼─────────────────────────┤
+│ OpenAI GPT-4     │ ⚠️  Experimental │ Unconfirmed             │
+│ Google Gemini    │ ✅ SynthID       │ Proprietary invisible WM│
+│ Microsoft Copilot│ ✅ Integrated    │ Document metadata       │
+│ Anthropic Claude │ ❌ None claimed  │ —                       │
+│ Meta LLaMA       │ ❌ None          │ —                       │
+│ Baidu Ernie      │ ⚠️  Unknown      │ Likely syntactic        │
+│ Alibaba Qwen     │ ⚠️  Unknown      │ Likely syntactic        │
+│ Midjourney       │ ✅ Yes           │ Visual patterns         │
+│ Stable Diffusion │ ✅ Optional      │ Invisible metadata      │
+└──────────────────┴──────────────────┴─────────────────────────┘
+
+## ═══════════════════════════════════════════════════════════════════════
+## END OF REFERENCE
+## ═══════════════════════════════════════════════════════════════════════
+
+Дополнительные ресурсы:
+• https://arxiv.org/abs/2306.04514 — "Watermarking Text for AI Detection"
+• https://arxiv.org/abs/2301.10226 — "On the Reliability of Watermarking Large Language Models"
+• https://www.deepmind.com/google-deepmind-approaches — SynthID documentation
+• Unicode Standard: https://unicode.org/versions/Unicode15.0.0/
+
+Обновление: 2025-05-06
+Версия: 2.0 Extended

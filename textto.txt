@@ -1,0 +1,29 @@
+LLM models don't actually understand BGP—they only attempt to describe it.
+
+This is precisely what is currently slowing down the adoption of AI in network security and acceleration, and leading to confusion in human understanding after AI implementation.
+If you ask a general-purpose model to diagnose a BGP problem, you'll get a confident, well-structured answer that's often incorrect. The model correctly explains the concepts, but fails when those concepts interact in a real network.
+
+The problem isn't intelligence, but context. BGP is unique in that it's complex because:
+• State over time—past events directly influence current behavior
+• Topology dependence—the same route appears different from different perspectives
+• Policy management—every network behaves differently
+• Failure ambiguity—problems are often partial, not binary
+
+LLM models don't see your routing tables, topology, or policies. They match patterns in documentation, not reason about your network.
+
+That's why their answers seem correct, but lead nowhere—or, worse, suggest changes that could disrupt the system.
+
+For AI to be truly useful in networks, you need more than just hints:
+• Current network state
+• Topology awareness
+• Temporal memory
+• Policy context
+• Safe, consequence-aware actions
+
+The real gap isn't knowledge, but operational understanding.
+
+AI won't replace network engineers until it can think in context, not just talk in theory.
+However, current events suggest that in the near future, all of this will become quite simple and transparent.
+
+https://dcxv.com/blog
+

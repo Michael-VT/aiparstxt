@@ -1,0 +1,9 @@
+This is normal text.
+This text has zero-width spaces: before​After
+This text has ZWNJ: before‍After
+This text has ZWJ: before‍After
+This text has ZWNBSP: before﻿After
+This text has soft hyphen: be­fore
+This text has word joiner: before⁠After
+Normal text continues here.
+Russian: Текст с невидимыми​символами

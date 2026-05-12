@@ -1,0 +1,16 @@
+China Opens Global Access to a State-of-the-Art 180-Qubit Quantum Computer
+On May 9, 2026, Origin Quantum launched Origin Wukong-180, its fourth-generation superconducting quantum computer. The system is equipped with a 180-qubit chip developed entirely in China, as well as independent control systems and an operating system.
+This marks a significant step forward compared to the third-generation 72-qubit Origin Wukong, launched in January 2024, which processed over 900,000 tasks from users in more than 160 countries.
+Wukong-180 is now available worldwide via cloud access, offering high-precision qubits (99.9% single-qubit) to researchers and developers tackling complex problems in drug discovery, optimization, cryptography, and other fields.
+Quantum advantages of Wukong-180:
+180 computational qubits (compared to 72 in the previous version) + 251 gate.
+
+Single-qubit gate accuracy: 99.9%.
+Two-qubit gate accuracy: 99.0%.
+Readout accuracy: 99.0%.
+T1 coherence: ~40 μs. T2 echo: ~20 μs.
+Enables the creation of larger and more reliable NISQ circuits for practical applications.
+China continues to make rapid progress toward practical, scalable quantum computing.
+(Source: Origin Quantum, Global Times, China Daily, May 2026)
+https://dcxv.com/blog
+

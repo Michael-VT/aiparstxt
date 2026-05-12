@@ -1,0 +1,389 @@
+╭─ 26-05-11 - 10:03:17
+╰─⠠⠵ py parscgpt.py parsaitext.txt                            
+
+=== AI Text Heuristic Analysis ===
+
+word_count: 601
+sentence_count: 43
+avg_sentence_length: 13.98
+sentence_length_stddev: 13.37
+lexical_diversity: 0.631
+repetition_score: 0.546
+entropy: 8.222
+punctuation_density: 0.0352
+ai_phrase_hits: {'however': 2, 'moreover': 1, 'overall': 1, 'in conclusion': 1, 'it is important to note': 1, 'additionally': 1, 'that said': 1}
+unicode_symbols: {'–': 1, '“': 2, '”': 2}
+burstiness: 0.957
+pattern_repetition_score: 0.186
+top_bigrams: [('ии часто', 4), ('ai text', 3), ('text heuristic', 3), ('5 ai_score', 3), ('ai_score 15', 3), ('15 if', 3), ('heuristic analyzer', 2), ('analyzer python', 2), ('не может', 2), ('признаки часто', 2)]
+top_trigrams: [('ai text heuristic', 3), ('ai_score 15 if', 3), ('text heuristic analyzer', 2), ('heuristic analyzer python', 2), ('it is important', 2), ('is important to', 2), ('important to note', 2), ('python скрипт для', 2), ('скрипт для эвристического', 2), ('для эвристического анализа', 2)]
+estimated_ai_probability: 35%
+
+╭─ 26-05-11 - 10:03:25
+╰─⠠⠵ py parscgptv2.py parsaitext.txt
+
+=== AI TEXT FORENSIC ANALYSIS ===
+
+word_count: 601
+sentence_count: 43
+avg_sentence_length: 13.98
+sentence_length_stddev: 13.37
+lexical_diversity: 0.695
+repetition_score: 0.47
+entropy: 8.09
+burstiness: 0.957
+pattern_repetition_score: 0.186
+punctuation_density: 0.0352
+ai_phrase_hits:
+  however: 2
+  moreover: 1
+  overall: 1
+  in conclusion: 1
+  it is important to note: 1
+  additionally: 1
+  that said: 1
+unicode_symbols:
+  –: 1
+  “: 2
+  ”: 2
+top_bigrams:
+  ('text heuristic', 3)
+  ('heuristic analyzer', 2)
+  ('analyzer python', 2)
+  ('признаки часто', 2)
+  ('important note', 2)
+  ('почти нет', 2)
+  ('unicode символы', 2)
+  ('python скрипт', 2)
+  ('скрипт для', 2)
+  ('для эвристического', 2)
+top_trigrams:
+  ('text heuristic analyzer', 2)
+  ('heuristic analyzer python', 2)
+  ('python скрипт для', 2)
+  ('скрипт для эвристического', 2)
+  ('для эвристического анализа', 2)
+  ('эвристического анализа текста', 2)
+  ('analyzer python text', 1)
+  ('python text heuristic', 1)
+  ('analyzer python важное', 1)
+  ('python важное замечание', 1)
+estimated_ai_probability: 20%
+confidence: medium
+interpretation:
+  lexical_diversity: High lexical diversity → richer and more human-like vocabulary.
+  entropy: High entropy → varied and less predictable writing.
+  burstiness: High burstiness → natural variation in sentence structure.
+  syntax_patterns: Low syntax repetition.
+overall_profile:
+  verdict: Text statistically appears more human-like.
+  signals: ['high lexical diversity', 'high entropy', 'natural sentence variability']
+suspicious_patterns:
+  AI-like transition phrase detected: 'however'
+  AI-like transition phrase detected: 'moreover'
+  AI-like transition phrase detected: 'overall'
+  AI-like transition phrase detected: 'in conclusion'
+  AI-like transition phrase detected: 'it is important to note'
+  AI-like transition phrase detected: 'additionally'
+  AI-like transition phrase detected: 'that said'
+
+=== END OF REPORT ===
+
+╭─ 26-05-12 - 13:40:25
+╰─⠠⠵ py parscgptv2.py parsaitext_LinkedIn_xAI.txt
+Traceback (most recent call last):
+  File "/Users/mich/work/Antigravity/github/aiparstxt/parscgptv2.py", line 462, in <module>
+    with open(filename, "r", encoding="utf-8") as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: 'parsaitext_LinkedIn_xAI.txt'
+╭─mich at Michs-MacBook-Pro in ~/work/Antigravity/github/aiparstxt on master✘✘✘ 26-05-12 - 13:41:03
+╰─⠠⠵ vim parsaitext_LinkedIn_xAI.txt
+╭─mich at Michs-MacBook-Pro in ~/work/Antigravity/github/aiparstxt on master✘✘✘ 26-05-12 - 13:41:30
+╰─⠠⠵ py parscgptv2.py parsaitext_LinkedIn_xAI.txt
+
+=== AI TEXT FORENSIC ANALYSIS ===
+
+word_count: 160
+sentence_count: 9
+avg_sentence_length: 17.78
+sentence_length_stddev: 8.34
+lexical_diversity: 0.845
+repetition_score: 0.259
+entropy: 6.504
+burstiness: 0.469
+pattern_repetition_score: 0.0
+punctuation_density: 0.0145
+ai_phrase_hits:
+unicode_symbols:
+  –: 1
+top_bigrams:
+  ('data center', 3)
+  ('digital infrastructure', 2)
+  ('europe data', 1)
+  ('center resilience', 1)
+  ('resilience tested', 1)
+  ('tested amid', 1)
+  ('amid boom', 1)
+  ('boom recent', 1)
+  ('recent incidents', 1)
+  ('incidents highlight', 1)
+top_trigrams:
+  ('europe data center', 1)
+  ('data center resilience', 1)
+  ('center resilience tested', 1)
+  ('resilience tested amid', 1)
+  ('tested amid boom', 1)
+  ('amid boom recent', 1)
+  ('boom recent incidents', 1)
+  ('recent incidents highlight', 1)
+  ('incidents highlight ongoing', 1)
+  ('highlight ongoing infrastructure', 1)
+estimated_ai_probability: 5%
+confidence: low
+interpretation:
+  lexical_diversity: High lexical diversity → richer and more human-like vocabulary.
+  entropy: Moderate entropy.
+  burstiness: Moderate burstiness.
+  syntax_patterns: Low syntax repetition.
+overall_profile:
+  verdict: Text statistically appears more human-like.
+  signals: ['high lexical diversity']
+suspicious_patterns:
+
+=== END OF REPORT ===
+
+╭─ 26-05-12 - 14:14:21
+╰─⠠⠵ py parscgptv2.py parsaitext_LinkedIn_xAI.txt
+
+=== AI TEXT FORENSIC ANALYSIS ===
+
+word_count: 114
+sentence_count: 8
+avg_sentence_length: 14.25
+sentence_length_stddev: 4.74
+lexical_diversity: 0.857
+repetition_score: 0.238
+entropy: 6.065
+burstiness: 0.332
+pattern_repetition_score: 0.0
+punctuation_density: 0.0159
+ai_phrase_hits:
+unicode_symbols:
+  –: 1
+top_bigrams:
+  ('data center', 3)
+  ('europe data', 1)
+  ('center resilience', 1)
+  ('resilience tested', 1)
+  ('tested amid', 1)
+  ('amid boom', 1)
+  ('boom recent', 1)
+  ('recent incidents', 1)
+  ('incidents highlight', 1)
+  ('highlight ongoing', 1)
+top_trigrams:
+  ('europe data center', 1)
+  ('data center resilience', 1)
+  ('center resilience tested', 1)
+  ('resilience tested amid', 1)
+  ('tested amid boom', 1)
+  ('amid boom recent', 1)
+  ('boom recent incidents', 1)
+  ('recent incidents highlight', 1)
+  ('incidents highlight ongoing', 1)
+  ('highlight ongoing infrastructure', 1)
+estimated_ai_probability: 20%
+confidence: low
+interpretation:
+  lexical_diversity: High lexical diversity → richer and more human-like vocabulary.
+  entropy: Moderate entropy.
+  burstiness: Low burstiness → sentence lengths are unnaturally uniform.
+  syntax_patterns: Low syntax repetition.
+overall_profile:
+  verdict: Text statistically appears more human-like.
+  signals: ['high lexical diversity']
+suspicious_patterns:
+
+=== END OF REPORT ===
+
+╭─ 26-05-12 - 14:15:38
+╰─⠠⠵ py parscgptv2.py parsaitext_LinkedIn_xAI.txt
+
+=== AI TEXT FORENSIC ANALYSIS ===
+
+word_count: 198
+sentence_count: 11
+avg_sentence_length: 18
+sentence_length_stddev: 9.36
+lexical_diversity: 0.832
+repetition_score: 0.29
+entropy: 6.655
+burstiness: 0.52
+pattern_repetition_score: 0.0
+punctuation_density: 0.0129
+ai_phrase_hits:
+unicode_symbols:
+top_bigrams:
+  ('data centers', 2)
+  ('data center', 2)
+  ('power supply', 2)
+  ('digital infrastructure', 2)
+  ('reliability resilience', 1)
+  ('resilience european', 1)
+  ('european data', 1)
+  ('centers being', 1)
+  ('being tested', 1)
+  ('tested amid', 1)
+top_trigrams:
+  ('reliability resilience european', 1)
+  ('resilience european data', 1)
+  ('european data centers', 1)
+  ('data centers being', 1)
+  ('centers being tested', 1)
+  ('being tested amid', 1)
+  ('tested amid boom', 1)
+  ('amid boom recent', 1)
+  ('boom recent incidents', 1)
+  ('recent incidents highlight', 1)
+estimated_ai_probability: 0%
+confidence: low
+interpretation:
+  lexical_diversity: High lexical diversity → richer and more human-like vocabulary.
+  entropy: Moderate entropy.
+  burstiness: Moderate burstiness.
+  syntax_patterns: Low syntax repetition.
+overall_profile:
+  verdict: Text statistically appears more human-like.
+  signals: ['high lexical diversity']
+suspicious_patterns:
+
+=== END OF REPORT ===
+
+╭─ 26-05-12 - 14:58:56
+╰─⠠⠵ py parscgptv2.py parsaitext_LinkedIn_xAI.txt   
+
+=== AI TEXT FORENSIC ANALYSIS ===
+
+word_count: 198
+sentence_count: 11
+avg_sentence_length: 18
+sentence_length_stddev: 9.36
+lexical_diversity: 0.832
+repetition_score: 0.29
+entropy: 6.655
+burstiness: 0.52
+pattern_repetition_score: 0.0
+punctuation_density: 0.0129
+ai_phrase_hits:
+unicode_symbols:
+top_bigrams:
+  ('data centers', 2)
+  ('data center', 2)
+  ('power supply', 2)
+  ('digital infrastructure', 2)
+  ('reliability resilience', 1)
+  ('resilience european', 1)
+  ('european data', 1)
+  ('centers being', 1)
+  ('being tested', 1)
+  ('tested amid', 1)
+top_trigrams:
+  ('reliability resilience european', 1)
+  ('resilience european data', 1)
+  ('european data centers', 1)
+  ('data centers being', 1)
+  ('centers being tested', 1)
+  ('being tested amid', 1)
+  ('tested amid boom', 1)
+  ('amid boom recent', 1)
+  ('boom recent incidents', 1)
+  ('recent incidents highlight', 1)
+estimated_ai_probability: 0%
+confidence: low
+interpretation:
+  lexical_diversity: High lexical diversity → richer and more human-like vocabulary.
+  entropy: Moderate entropy.
+  burstiness: Moderate burstiness.
+  syntax_patterns: Low syntax repetition.
+overall_profile:
+  verdict: Text statistically appears more human-like.
+  signals: ['high lexical diversity']
+suspicious_patterns:
+
+=== END OF REPORT ===
+
+╭─ 26-05-12 - 14:59:04
+╰─⠠⠵ py parscgptv1.py parsaitext_LinkedIn_xAI.txt
+
+=== AI TEXT FORENSIC ANALYSIS ===
+
+word_count: 198
+sentence_count: 11
+avg_sentence_length: 18
+sentence_length_stddev: 9.36
+lexical_diversity: 0.832
+repetition_score: 0.29
+entropy: 6.655
+burstiness: 0.52
+pattern_repetition_score: 0.0
+punctuation_density: 0.0129
+ai_phrase_hits:
+unicode_symbols:
+top_bigrams:
+  ('data centers', 2)
+  ('data center', 2)
+  ('power supply', 2)
+  ('digital infrastructure', 2)
+  ('reliability resilience', 1)
+  ('resilience european', 1)
+  ('european data', 1)
+  ('centers being', 1)
+  ('being tested', 1)
+  ('tested amid', 1)
+top_trigrams:
+  ('reliability resilience european', 1)
+  ('resilience european data', 1)
+  ('european data centers', 1)
+  ('data centers being', 1)
+  ('centers being tested', 1)
+  ('being tested amid', 1)
+  ('tested amid boom', 1)
+  ('amid boom recent', 1)
+  ('boom recent incidents', 1)
+  ('recent incidents highlight', 1)
+estimated_ai_probability: 0%
+confidence: low
+interpretation:
+  lexical_diversity: High lexical diversity → richer and more human-like vocabulary.
+  entropy: Moderate entropy.
+  burstiness: Moderate burstiness.
+  syntax_patterns: Low syntax repetition.
+overall_profile:
+  verdict: Text statistically appears more human-like.
+  signals: ['high lexical diversity']
+suspicious_patterns:
+
+=== END OF REPORT ===
+
+╭─ 26-05-12 - 14:59:25
+╰─⠠⠵ py parscgpt.py parsaitext_LinkedIn_xAI.txt 
+
+=== AI Text Heuristic Analysis ===
+
+word_count: 601
+sentence_count: 43
+avg_sentence_length: 13.98
+sentence_length_stddev: 13.37
+lexical_diversity: 0.631
+repetition_score: 0.546
+entropy: 8.222
+punctuation_density: 0.0352
+ai_phrase_hits: {'however': 2, 'moreover': 1, 'overall': 1, 'in conclusion': 1, 'it is important to note': 1, 'additionally': 1, 'that said': 1}
+unicode_symbols: {'–': 1, '“': 2, '”': 2}
+burstiness: 0.957
+pattern_repetition_score: 0.186
+top_bigrams: [('ии часто', 4), ('ai text', 3), ('text heuristic', 3), ('5 ai_score', 3), ('ai_score 15', 3), ('15 if', 3), ('heuristic analyzer', 2), ('analyzer python', 2), ('не может', 2), ('признаки часто', 2)]
+top_trigrams: [('ai text heuristic', 3), ('ai_score 15 if', 3), ('text heuristic analyzer', 2), ('heuristic analyzer python', 2), ('it is important', 2), ('is important to', 2), ('important to note', 2), ('python скрипт для', 2), ('скрипт для эвристического', 2), ('для эвристического анализа', 2)]
+estimated_ai_probability: 35%
+
+

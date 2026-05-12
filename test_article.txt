@@ -1,0 +1,7 @@
+Europe's Data Center Power Crunch: A Wake-Up Call for AI Infrastructure
+Denmark has introduced a three-month moratorium on new grid connections, announced around May 6-7, 2026. The reason: a staggering 60 GW queue of applications — against the country's ~7 GW peak load — with a large share driven by AI data centers.
+This is not an isolated move. It continues a broader European trend: the Netherlands and Frankfurt have effectively blocked new connections until ~2030, while Dublin faces restrictions until 2028. Average wait times across FLAP-D markets (Frankfurt, London, Amsterdam, Paris, Dublin) now stretch 7–10 years, reaching up to 13 years in the hottest spots.
+Europe desperately needs more data center capacity to power its AI ambitions, yet aging grids and regulatory hurdles are creating a major competitive disadvantage versus the US and China. Many facilities already operate at just 50% capacity. The EU aims to triple data center capacity in 5–7 years, but energy and regulatory constraints remain the biggest barriers.
+Key takeaway for investors, operators, and IPv4 brokers: Power availability is now the primary constraint for AI growth in Europe. This drives sustained demand for efficient infrastructure, edge solutions, and secondary IPv4 resources to support existing and delayed projects.
+The race for compute is real — and Europe’s energy bottlenecks are reshaping timelines and strategies.
+

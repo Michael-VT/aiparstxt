@@ -80,6 +80,7 @@ func process(text string, removeWatermark bool) (string, map[rune]int, map[rune]
 	watermarkRemoved := make(map[rune]int)
 	var out strings.Builder
 	out.Grow(len(text))
+	fmt.Fprintf(os.Stderr, "DEBUG: removeWatermark = %v\n", removeWatermark)
 	for _, ch := range text {
 
 
@@ -90,6 +91,7 @@ func process(text string, removeWatermark bool) (string, map[rune]int, map[rune]
 		}
 
 
+		}
 		if allowed[ch] {
 			out.WriteRune(ch)
 		} else {
@@ -230,8 +232,6 @@ func main() {
 	flag.Bool("w", false, "Exclude word frequency from report (shorthand)")
 	flag.Parse()
 
-
-
 	outFile := *output
 	if outFile == "" {
 		outFile = *outputLong
@@ -293,6 +293,7 @@ func main() {
 	}
 
 	// Debug: print watermarkChars size
+	fmt.Fprintf(os.Stderr, "DEBUG: watermarkChars size = %d\n", len(watermarkChars))
 
 
 	total := 0

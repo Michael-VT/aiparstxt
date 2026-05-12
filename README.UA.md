@@ -1,8 +1,17 @@
-# aiparstxt — Багатомовний санітайзер тексту
+# aiparstxt — Багатомовний санітайзер тексту та аналітик AI-криміналістики
 
-Набір утиліт командного рядка для очищення текстових файлів шляхом заміни неприпустимих символів на '?'. Реалізовано на 6 мовах для порівняння продуктивності.
+Набір утиліт командного рядка для очищення текстових файлів шляхом заміни неприпустимих символів на '?'. Реалізовано на 6 мовах для порівняння продуктивності. Включає видалення AI-водяних знаків та **статистичний криміналістичний аналіз** для визначення ймовірності генерації тексту ШІ.
+
+## Можливості
+
+- **Санітизація тексту** — заміна неприпустимих символів на '?' у 6 мовних реалізаціях
+- **Видалення AI-водяних знаків** — видалення невидимих Unicode-символів, що вставляються AI-системами
+- **Аналітика AI-криміналістики** — евристичний статистичний аналіз для оцінки ймовірності авторства ШІ (Python)
+
+---
 
 ## Припустимі символи
+
 - Цифри: 0-9
 - Латинські літери: A-Z, a-z
 - Російські літери: А-Я, а-я (включаючи Ё/ё)
@@ -11,27 +20,151 @@
 
 Усі інші символи замінюються на '?'.
 
-## Використання CLI (однаково для всіх мов)
+## Видалення AI-водяних знаків
 
-```
+Санітайзер підтримує видалення невидимих символів-водяних знаків, що використовуються різними AI-системами для маркування згенерованого тексту:
+- Символи нульової ширини (ZWSP, ZWNJ, ZWJ, ZWNBSP)
+- Невидимі символи форматування (Word Joiner, Invisible Times тощо)
+- Селектори варіацій
+- Тегові символи
+- Символи двонаправленого перевизначення
+
+Див. `ai-chart.txt` для повного довідника.
+
+---
+
+## CLI — Санітайзер (усі 6 мов)
+
+```bash
 partxt <вхідний_файл> [опції]
 ```
 
 Опції:
-```
-  -o, --output <файл>   Вихідний файл (за замовчуванням: <вхідний>.ed.txt)
-  -r, --report <файл>   Файл звіту (за замовчуванням: report_<мова>.txt)
-  --no-edit             Не створювати файл .ed.txt
-  --no-report           Не створювати файл звіту
-  -w, --no-words        Не включати частотний словник у звіт
-  -h, --help            Показати довідку
+  -o, --output <файл>       Вихідний файл (за замовчуванням: <вхідний>.ed.txt)
+  -r, --report <файл>       Файл звіту (за замовчуванням: report_<мова>.txt)
+  --no-edit                Не створювати файл .ed.txt
+  --no-report              Не створювати файл звіту
+  -w, --no-words           Не включати частотний словник у звіт
+  --remove-watermark       Видалити AI-водяні знаки (приховані/невидимі символи)
+  -h, --help               Показати довідку
+
+### Окремо
+
+```bash
+python3 partxtpy/partxt.py testdata/sample.txt
+python3 partxtpy/partxt.py testdata/sample.txt --remove-watermark
+
+cargo run --release --manifest-path partxtrs/Cargo.toml -- testdata/sample.txt
+cargo run --release --manifest-path partxtrs/Cargo.toml -- testdata/sample.txt -- --remove-watermark
+
+cd partxtgo && go run . testdata/sample.txt
+cd partxtgo && go run . --remove-watermark testdata/sample.txt
+
+cd partxtcpp && make && ./partxt testdata/sample.txt
+cd partxtcpp && make && ./partxt testdata/sample.txt --remove-watermark
+
+node partxtnode/partxt.js testdata/sample.txt
+node partxtnode/partxt.js testdata/sample.txt --remove-watermark
+
+bun run partxtjs/partxt.js testdata/sample.txt
+bun run partxtjs/partxt.js testdata/sample.txt --remove-watermark
 ```
 
-## Формат звіту
-Кожен звіт містить:
-- Час виконання
-- Таблицю замінених символів з кількістю входжень
-- Частотний словник слів (відсортований за зростанням частоти)
+### Усі разом
+
+```bash
+./run_all.sh testdata/sample.txt
+```
+
+---
+
+## CLI — Криміналістична аналітика AI (тільки Python)
+
+```bash
+python3 parscgptv2.py <текстовий_файл>
+```
+
+У корені проєкту доступні три варіанти аналітичних скриптів:
+
+| Скрипт | Опис |
+|--------|------|
+| `parscgpt.py` | Початкова версія — базові евристичні метрики та AI-оцінка |
+| `parscgptv1.py` | Розширена — фільтрація стоп-слів, рівень достовірності, інтерпретація, виявлення підозрілих патернів |
+| `parscgptv2.py` | Повна версія — покращене скорингове моделювання, чистий вивід, рекомендується для використання |
+
+### Обчислювані метрики
+
+| Метрика | Опис |
+|---------|------|
+| `lexical_diversity` | Унікальні слова / загальна кількість слів (після видалення стоп-слів) |
+| `repetition_score` | Частка слів, що зустрічаються більше одного разу |
+| `entropy` | Ентропія Шеннона розподілу частот слів |
+| `burstiness` | Коефіцієнт варіації довжин речень |
+| `pattern_repetition_score` | Частка повторюваних патернів довжин речень (S/M/L кодування) |
+| `punctuation_density` | Кількість знаків пунктуації / загальна кількість символів |
+| `ai_phrase_hits` | Збіги з 21 типовою AI-фразою |
+| `unicode_symbols` | Кількість підозрілих Unicode-символів (дефіс, лапки тощо) |
+| `top_bigrams` | Топ-10 біграм з відфільтрованого тексту |
+| `top_trigrams` | Топ-10 тріграм з відфільтрованого тексту |
+
+### Оцінка ймовірності AI
+
+| Умова | Бали |
+|-------|------|
+| Лексичне різноманіття < 0.45 | +20 |
+| Ентропія < 5.0 | +20 |
+| Вибухоподібність < 0.35 | +15 |
+| Повторюваність патернів > 0.35 | +15 |
+| Оцінка повторюваності > 0.5 | +10 |
+| AI-фрази ≥ 3 | +15 |
+| Щільність пунктуації > 0.04 | +5 |
+| Підозрілі Unicode-символи | +5 |
+
+**Разом** обмежено 100%. Достовірність: низька (<300 слів), середня (300–999), висока (≥1000).
+
+### Вивід включає
+
+- Усі сирі метрики з округленими значеннями
+- `estimated_ai_probability` — евристична оцінка
+- `confidence` — на основі довжини тексту
+- `interpretation` — зрозумілий висновок за кожною метрикою
+- `overall_profile` — вердикт та позитивні сигнали
+- `suspicious_patterns` — виявлені AI-подібні фрази та тріграми
+
+### Приклад виводу
+
+```
+=== AI TEXT FORENSIC ANALYSIS ===
+
+word_count: 198
+sentence_count: 11
+lexical_diversity: 0.832
+entropy: 6.655
+burstiness: 0.52
+estimated_ai_probability: 0%
+confidence: low
+interpretation:
+  lexical_diversity: High lexical diversity → richer and more human-like vocabulary.
+  entropy: Moderate entropy.
+  burstiness: Moderate burstiness.
+overall_profile:
+  verdict: Text statistically appears more human-like.
+  signals: ['high lexical diversity']
+
+=== END OF REPORT ===
+```
+
+---
+
+## Портування аналітики на інші мови
+
+Аналітичний рушій доступний тільки на Python. Повний посібник з портування див. у **`ANALYTICS_RECOMMENDATIONS.md`**:
+- Формули обчислення метрик
+- Ваги та порогові значення скорингової моделі
+- Правила інтерпретації
+- Рекомендації для Rust, Go, C++, Node.js, Bun
+
+---
 
 ## Реалізації
 
@@ -44,22 +177,18 @@ partxt <вхідний_файл> [опції]
 | Node.js   | partxtnode/ | (не потрібна)                    | report_node.txt  |
 | Bun       | partxtjs/   | (не потрібна)                    | report_bun.txt   |
 
-## Запуск
+---
 
-### Окремо
-```bash
-python3 partxtpy/partxt.py testdata/sample.txt
-cargo run --release --manifest-path partxtrs/Cargo.toml -- testdata/sample.txt
-cd partxtgo && go run . testdata/sample.txt
-cd partxtcpp && make && ./partxt testdata/sample.txt
-node partxtnode/partxt.js testdata/sample.txt
-bun run partxtjs/partxt.js testdata/sample.txt
-```
+## Формат звіту (Санітайзер)
 
-### Усі разом
-```bash
-./run_all.sh testdata/sample.txt
-```
+Кожен звіт містить:
+- Час виконання
+- Режим (заміна/видалення + статус видалення водяних знаків)
+- Видалені водяні знаки (з кодами Unicode)
+- Замінені символи (з кількістю входжень)
+- Частотний словник слів (відсортований за зростанням частоти)
+
+---
 
 ## Приклади результатів (testdata/sample.txt, 197 замін)
 
@@ -73,11 +202,13 @@ bun run partxtjs/partxt.js testdata/sample.txt
 | Bun      | ~0,0022 с    |
 
 ## Версіонування
+
 - Патч (0.0.x): виправлення помилок
 - Мінорна (0.x.0): повна працездатність, відповідає вимогам
 - Мажорна (x.0.0): суттєві нові функції
 
-Поточна версія: 0.0.0
+Поточна версія: 0.1.0
 
 ## Ліцензія
+
 MIT

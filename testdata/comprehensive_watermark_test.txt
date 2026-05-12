@@ -1,0 +1,48 @@
+Normal text without watermarks.
+
+Text with ZERO-WIDTH SPACE: before​after.
+
+Text with ZERO-WIDTH NON-JOINER: before‍after.
+
+Text with ZERO-WIDTH JOINER: before‍after.
+
+Text with ZERO WIDTH NO-BREAK SPACE: before﻿after.
+
+Text with SOFT HYPHEN: soft­hyphen.
+
+Text with WORD JOINER: before⁠after.
+
+Text with FUNCTION APPLICATION: test.
+
+Text with INVISIBLE TIMES: 2⁢3.
+
+Text with INVISIBLE SEPARATOR: a⁣b.
+
+Text with INVISIBLE PLUS: a⁤b.
+
+Text with LINE SEPARATOR: line1
+line2.
+
+Text with PARAGRAPH SEPARATOR: para1
+
+para2.
+
+Text with MONGOLIAN SEPARATOR: test᠎test.
+
+Text with Left-to-Right Embedding: ‪test.
+
+Text with Right-to-Left Embedding: ‫test.
+
+Text with Pop Directional Formatting: ‬test.
+
+Text with Left-to-Right Override: ‭test.
+
+Text with Right-to-Left Override: ‮test.
+
+Text with LANGUAGE TAG: tag.
+
+Text with Private Use Area: .
+
+Text with Variation Selector: 누ㄱ󠄀.
+
+Normal text at the end.
