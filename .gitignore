@@ -19,6 +19,7 @@ partxtnode/node_modules/
 # Generated output files
 *.ed.txt
 report_*.txt
+input_text*.txt
 
 # OS
 .DS_Store
