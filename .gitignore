@@ -21,6 +21,9 @@ partxtnode/node_modules/
 report_*.txt
 input_text*.txt
 
+articlIPv4seals.txt
+"deepseek - \320\220\320\275\320\260\320\273\320\270\320\267 \321\202\320\265\320\272\321\201\321\202\320\260 \320\275\320\260 \320\230\320\230.txt"
+
 # OS
 .DS_Store
 *.bak*
