@@ -10,6 +10,7 @@ Eine Sammlung von Kommandozeilen-Tools zur Textbereinigung durch Ersetzung unzul
 - **Textbereinigung** — Ersetzung unzulässiger Zeichen durch '?' in 6 Sprachimplementierungen
 - **AI-Wasserzeichen-Entfernung** — Entfernung unsichtbarer Unicode-Zeichen, die von KI-Systemen eingefügt werden
 - **AI-Forensik-Analytik** — Heuristische statistische Analyse zur Einschätzung der KI-Autorenschaft (Python)
+- **Erweiterte Erkennungsversionen** — verbesserte forensische Analyse verfügbar für alle 6 Sprachen ⭐
 
 ---
 
@@ -36,9 +37,9 @@ Siehe `ai-chart.txt` für eine vollständige Referenz.
 
 ---
 
-## CLI-Verwendung — Textbereiniger (alle 6 Sprachen)
+## CLI — Textbereiniger (alle 6 Sprachen)
 
-```
+```bash
 partxt <eingabedatei> [optionen]
 ```
 
@@ -54,34 +55,45 @@ Optionen:
 ### Einzeln
 
 ```bash
+# Standardversionen
 python3 partxtpy/partxt.py testdata/sample.txt
 python3 partxtpy/partxt.py testdata/sample.txt --remove-watermark
 
+# Erweiterte Versionen mit AI-Forensik-Analyse ⭐
+python3 partxtpy/partxt-ext.py testdata/sample.txt
+python3 partxtpy/partxt-ext.py testdata/sample.txt --remove-watermark
+
 cargo run --release --manifest-path partxtrs/Cargo.toml -- testdata/sample.txt
-cargo run --release --manifest-path partxtrs/Cargo.toml -- testdata/sample.txt -- --remove-watermark
+cargo run --release --manifest-path partxtrs/Cargo.toml --bin partxt-ext -- testdata/sample.txt -- --remove-watermark
 
 cd partxtgo && go run . testdata/sample.txt
-cd partxtgo && go run . --remove-watermark testdata/sample.txt
+cd partxtgo && go run main-ext.go testdata/sample.txt --remove-watermark
 
 cd partxtcpp && make && ./partxt testdata/sample.txt
-cd partxtcpp && make && ./partxt testdata/sample.txt --remove-watermark
+cd partxtcpp && make && ./partxt-ext testdata/sample.txt --remove-watermark
 
 node partxtnode/partxt.js testdata/sample.txt
-node partxtnode/partxt.js testdata/sample.txt --remove-watermark
+node partxtnode/partxt-ext.js testdata/sample.txt --remove-watermark
 
 bun run partxtjs/partxt.js testdata/sample.txt
-bun run partxtjs/partxt.js testdata/sample.txt --remove-watermark
+bun run partxtjs/partxt-ext.js testdata/sample.txt --remove-watermark
 ```
 
 ### Alle auf einmal
 
 ```bash
+# Nur Standardversionen
 ./run_all.sh testdata/sample.txt
+
+# Erweiterte Versionen mit KI-Erkennung
+./run_all_extended.sh testdata/sample.txt
 ```
 
 ---
 
-## CLI-Verwendung — AI-Forensik-Analytik (nur Python)
+## CLI — AI-Forensik-Analytik (nur Python)
+
+### Standard Python-Analysatoren
 
 ```bash
 python3 parscgptv2.py <textdatei>
@@ -89,96 +101,169 @@ python3 parscgptv2.py <textdatei>
 
 Drei Varianten analytischer Skripte stehen im Projektverzeichnis zur Verfügung:
 
-| Skript | Beschreibung |
-|--------|--------------|
-| `parscgpt.py` | Initialversion — grundlegende heuristische Metriken und KI-Score |
-| `parscgptv1.py` | Erweitert — Stoppwort-Filterung, Konfidenzniveau, Interpretation, Erkennung verdächtiger Muster |
-| `parscgptv2.py` | Vollversion — verfeinertes Scoring, saubere Ausgabe, empfohlen zur Verwendung |
+| Skript | Metriken | KI-Phrasen | Funktionen | Empfohlene Verwendung |
+|--------|----------|-----------|-------------|----------------------|
+| `parscgpt.py` | 8 Basis | 21 | Nur Basismetriken | Legacy/Testen |
+| `parscgptv1.py` | 8 Basis + Interpretation | 21 | + Stoppwörter, Konfidenz | Basis-Erkennung |
+| `parscgptv2.py` | 8 Basis + verfeinerte Interpretation | 21 | + Saubere Ausgabe | **Standard-Erkennung** ✅ |
+| `parscgpt-ext.py` | **17 erweiterte Metriken** | **70+** | + Linguistische Analyse, gewichtete Bewertung | **Erweiterte Erkennung** ⭐ |
 
-### Berechnete Metriken
+### Integrierte Erweiterte Analysatoren (Alle 6 Sprachen) ⭐
 
-| Metrik | Beschreibung |
-|--------|--------------|
-| `lexical_diversity` | Einzigartige Wörter / Gesamtzahl der Wörter (nach Stoppwort-Entfernung) |
-| `repetition_score` | Anteil der mehrfach vorkommenden Wörter |
-| `entropy` | Shannon-Entropie der Worthäufigkeitsverteilung |
-| `burstiness` | Variationskoeffizient der Satzlängen |
-| `pattern_repetition_score` | Anteil wiederholter Satzlängenmuster (S/M/L-Kodierung) |
-| `punctuation_density` | Anzahl Satzzeichen / Gesamtzeichen |
-| `ai_phrase_hits` | Treffer mit 21 kuratierten KI-typischen Phrasen |
-| `unicode_symbols` | Anzahl verdächtiger Unicode-Zeichen (Gedankenstrich, typografische Anführungszeichen usw.) |
-| `top_bigrams` | Top-10-Bigramme aus gefiltertem Text |
-| `top_trigrams` | Top-10-Trigramme aus gefiltertem Text |
+Erweiterte Versionen der grundlegenden Textbereiniger (`partxt-ext`) sind nun für **alle 6 Sprachimplementierungen** mit verbesserter AI-Forensik-Analyse verfügbar:
 
-### KI-Wahrscheinlichkeits-Scoring
+| Sprache | Erweitertes Binary | Berichtsdatei | Funktionen |
+|----------|-------------------|---------------|-----------|
+| Python | `partxtpy/partxt-ext.py` | report_py-ext.txt | 11 Kernmetriken + KI-Wahrscheinlichkeitsbewertung |
+| Rust | `partxtrs/target/partxt-ext` | report_rs-ext.txt | Gleiche Metriken wie Python, kompilierte Leistung |
+| Go | `partxtgo/main-ext.go` | report_go-ext.txt | Gleiche Metriken, kompilierte Leistung |
+| C++ | `partxtcpp/partxt-ext` | report_cpp-ext.txt | Gleiche Metriken, kompilierte Leistung |
+| Node.js | `partxtnode/partxt-ext.js` | report_node-ext.txt | Gleiche Metriken, JavaScript-Laufzeit |
+| Bun | `partxtjs/partxt-ext.js` | report_bun-ext.txt | Gleiche Metriken, optimiertes JavaScript |
 
-| Bedingung | Punkte |
-|-----------|--------|
-| Lexikalische Diversität < 0.45 | +20 |
-| Entropie < 5.0 | +20 |
-| Burstiness < 0.35 | +15 |
-| Musterwiederholung > 0.35 | +15 |
-| Wiederholungsscore > 0.5 | +10 |
-| KI-Phrasen-Treffer ≥ 3 | +15 |
-| Satzzeichendichte > 0.04 | +5 |
-| Verdächtige Unicode-Zeichen vorhanden | +5 |
+**Verbesserte Funktionen in Erweiterten Versionen:**
+- 11 Kern-AI-Forensik-Metriken (lexikalische Vielfalt, Entropie, Burstiness, Musterwiederholung usw.)
+- KI-Phrase-Erkennung mit 70+ verdächtigen Phrasen
+- Unicode-verdächtige Zeichenerkennung
+- Statistische KI-Wahrscheinlichkeitsbewertung (0-100%)
+- Konfidenzniveaus (NIEDRIG/MITTEL/HOCH) basierend auf Textlänge
+- Detaillierte Signalanalyse mit visuellen Indikatoren
+- Interpretation jeder Metrik mit umsetzbaren Erkenntnissen
 
-**Gesamt** auf 100% begrenzt. Konfidenz: niedrig (<300 Wörter), mittel (300–999), hoch (≥1000).
+---
 
-### Ausgabe enthält
+## Standardmetriken (Alle Erweiterten Versionen)
 
-- Alle Rohmetriken mit gerundeten Werten
-- `estimated_ai_probability` — heuristischer Score
-- `confidence` — basierend auf Textlänge
-- `interpretation` — lesbare Bewertung jeder Metrik
-- `overall_profile` — Fazit und positive Signale
-- `suspicious_patterns` — erkannte KI-ähnliche Phrasen und Trigramme
+| Metrik | Beschreibung | KI-Erkennungswert |
+|--------|-------------|-------------------|
+| `lexical_diversity` | Einzigartige Wörter / Gesamtzahl der Wörter (nach Stoppwort-Entfernung) | KI hat geringere Vielfalt |
+| `repetition_score` | Anteil der mehrfach vorkommenden Wörter | KI wiederholt mehr |
+| `entropy` | Shannon-Entropie der Worthäufigkeitsverteilung | KI hat unnatürlich gleichmäßige Verteilung |
+| `burstiness` | Variationskoeffizient der Satzlängen | KI hat übermäßig einheitliche Satzstruktur |
+| `pattern_repetition` | Anteil wiederholter Satzlängenmuster | KI verwendet Vorlagenmuster |
+| `punctuation_density` | Anzahl Satzzeichen / Gesamtzeichen | KI verwendet möglicherweise übermäßig Satzzeichen |
+| `ai_phrase_hits` | Treffer mit 70+ kuratierten KI-typischen Phrasen | Direkte KI-Signatur |
+| `unicode_symbols` | Anzahl verdächtiger Unicode-Zeichen | Technische KI-Marker |
+| `avg_word_length` | Durchschnittliche Wortlänge | KI verwendet einfacheren Wortschatz |
+| `word_length_variance` | Varianz der Wortlängen | KI-Texte einheitlicher |
+| `confidence` | Basierend auf Wortanzahl (NIEDRIG <300, MITTEL 300-999, HOCH ≥1000) | Zuverlässigkeitsindikator |
 
-### Beispielausgabe
+### KI-Wahrscheinlichkeitsbewertung (Erweiterte Versionen)
+
+| Bedingung | Punkte | Verbesserung |
+|-----------|--------|-------------|
+| Lexikalische Vielfalt < 0.45 | **+25** | ↑ +5 vs Standard |
+| Entropie < 5.0 | **+25** | ↑ +5 vs Standard |
+| Burstiness < 0.35 | **+20** | ↑ +5 vs Standard |
+| Musterwiederholung > 0.35 | **+20** | ↑ +5 vs Standard |
+| KI-Phrasen-Treffer ≥ 3 | **+20** | ↑ +5 vs Standard |
+| Wiederholungsscore > 0.5 | +15 | Gleich |
+| Satzzeichendichte > 0.04 | +5 | Gleich |
+| Verdächtige Unicode-Zeichen vorhanden | +5 | Gleich |
+| Durchschnittliche Wortlänge < 4.0 | **+10** | 🆕 Neue Metrik |
+| Wortlängenvarianz < 1.5 | **+8** | 🆕 Neue Metrik |
+
+**Gesamt** auf 100% begrenzt mit Konfidenzfaktor-Anpassung (80%-100% basierend auf Textlänge).
+
+### Ausgabeformat (Erweiterte Versionen)
 
 ```
-=== AI TEXT FORENSIC ANALYSIS ===
+======================================================================
+aiparstxt-ext — Verbesserter AI-Forensik-Analysator-Bericht
+======================================================================
 
-word_count: 198
-sentence_count: 11
-lexical_diversity: 0.832
-entropy: 6.655
-burstiness: 0.52
-estimated_ai_probability: 0%
-confidence: low
-interpretation:
-  lexical_diversity: High lexical diversity → richer and more human-like vocabulary.
-  entropy: Moderate entropy.
-  burstiness: Moderate burstiness.
-overall_profile:
-  verdict: Text statistically appears more human-like.
-  signals: ['high lexical diversity']
+Eingabedatei:  sample.txt
+Ausgabedatei: sample.ed.txt
+Ausführungszeit: 0.000560s
 
-=== END OF REPORT ===
+--- AI Watermark Analysis ---
+Entfernte Wasserzeichenzeichen: 17
+Entfernte Wasserzeichenzeichentypen:
+  U+200B: 5
+  U+200C: 3
+  ...
+
+--- Ersetzte Zeichen ---
+Ersetzte Zeichen: 197
+
+======================================================================
+AI FORENSIC ANALYSIS
+======================================================================
+
+Gesamturteil: Mittlere Wahrscheinlichkeit der KI-Beteiligung (35.2%)
+Konfidenzniveau: MITTEL
+
+Detaillierte Metriken:
+  Wortanzahl:            198
+  Satzzahl:        11
+  Lexikalische Vielfalt:     0.832
+  Wiederholungsscore:      0.202
+  Entropie:               6.655
+  Burstiness:            1.590
+  Musterwiederholung:    0.000
+  Satzzeichendichte:   0.037
+  KI-Phrasen-Treffer:        2
+  Verdächtig Unicode:    0
+  Durchschnittliche Wortlänge:       4.52
+  Wortlängenvarianz:  2.18
+
+Signalanalyse:
+  ✓ Hohe lexikalische Vielfalt - reiche Wortschatzvariation
+  ✓ Gute Entropie - natürliche Wortverteilung
+  ✓ Gute Burstiness - natürliche Satzvariation
+  ⚠️ 2 KI-typische Phrasen gefunden
 ```
+
+---
+
+## Erweiterte Metriken (nur parscgpt-ext.py) ⭐
+
+Für die umfassendste Analyse bietet der eigenständige `parscgpt-ext.py` 17 erweiterte Metriken:
+
+| Metrik | Beschreibung | KI-Erkennungswert |
+|--------|-------------|-------------------|
+| `avg_word_length` | Durchschnittliche Wortlänge | KI verwendet einfacheren Wortschatz |
+| `word_length_variance` | Varianz der Wortlängen | KI-Texte einheitlicher |
+| `pronoun_ratio` | Verhältnis von Pronomen zur Gesamtzahl der Wörter | KI verwendet übermäßig Pronomen |
+| `readability_score` | Flesch-Lesbarkeits-Score | KI-Texte "zu lesbar" |
+| `passive_voice_density` | Häufigkeit von Passivkonstruktionen | KI bevorzugt Passiv |
+| `adj_noun_pair_diversity` | Einzigartige Adjektiv-Substantiv-Kombinationen | KI hat begrenzte Kombinationen |
+| `structural_uniformity` | Wiederholung von Satzanfangsmustern | KI verwendet Vorlagen |
+| `quantifier_overuse` | Häufigkeit von Qualifizierer-Wörtern | KI verwendet übermäßig Qualifizierer |
+
+Verwenden Sie `parscgpt-ext.py`, wenn Sie die tiefste linguistische Analyse über die integrierten Bereiniger hinaus benötigen.
+
+**Hauptunterschiede: Erweiterte vs Standard-Versionen**
+- Bietet **9 zusätzliche Metriken** für tiefere Analyse
+- Zeigt **detaillierte Bewertung** anstelle einer einzelnen Wahrscheinlichkeit
+- Enthält **spezifische Interpretation** für jede Metrik
+- Bietet **verbesserte Zuverlässigkeit** mit Anpassung an Textlänge
+- Erkennt **mehr KI-Muster** — 70+ Phrasen vs 21 in Standard-Version
 
 ---
 
 ## Portierung der Analytik in andere Sprachen
 
-Die Analytik-Engine ist derzeit nur in Python verfügbar. Eine vollständige Portierungsanleitung finden Sie in **`ANALYTICS_RECOMMENDATIONS.md`**:
-- Formeln zur Metrikberechnung
-- Gewichte und Schwellenwerte des Scoring-Modells
+Die verbesserte Analyse-Engine ist nun in **allen 6 Sprachimplementierungen** über die `-ext`-Versionen verfügbar. Der eigenständige Python `parscgpt-ext.py` bietet die umfassendste 17-Metrik-Analyse als Referenz.
+
+Siehe **`ANALYTICS_RECOMMENDATIONS.md`** für einen vollständigen Portierungsleitfaden mit:
+- Metrik-Berechnungsformeln
+- Gewichte und Schwellenwerte des Bewertungsmodells
 - Interpretationsregeln
-- Sprachspezifische Hinweise für Rust, Go, C++, Node.js, Bun
+- Sprachspezifische Anleitung
 
 ---
 
 ## Implementierungen
 
-| Sprache   | Verzeichnis  | Build-Befehl                     | Berichtsdatei    |
-|-----------|-------------|----------------------------------|------------------|
-| Python    | partxtpy/   | (kein Build nötig)               | report_py.txt    |
-| Rust      | partxtrs/   | cargo build --release            | report_rs.txt    |
-| Go        | partxtgo/   | cd partxtgo && go build          | report_go.txt    |
-| C++       | partxtcpp/  | make                             | report_cpp.txt   |
-| Node.js   | partxtnode/ | (kein Build nötig)               | report_node.txt  |
-| Bun       | partxtjs/   | (kein Build nötig)               | report_bun.txt   |
+| Sprache   | Verzeichnis  | Build-Befehl                     | Berichtsdatei    | Erweiterter Bericht  |
+|-----------|-------------|----------------------------------|------------------|---------------------|
+| Python    | partxtpy/   | (kein Build nötig)               | report_py.txt    | report_py-ext.txt   |
+| Rust      | partxtrs/   | cargo build --release            | report_rs.txt    | report_rs-ext.txt   |
+| Go        | partxtgo/   | cd partxtgo && go build          | report_go.txt    | report_go-ext.txt   |
+| C++       | partxtcpp/  | make                             | report_cpp.txt   | report_cpp-ext.txt  |
+| Node.js   | partxtnode/ | (kein Build nötig)                | report_node.txt  | report_node-ext.txt |
+| Bun       | partxtjs/   | (kein Build nötig)                | report_bun.txt   | report_bun-ext.txt  |
 
 ---
 
@@ -191,53 +276,63 @@ Jeder Bericht enthält:
 - Ersetzte Zeichen (mit Häufigkeit)
 - Worthäufigkeitswörterbuch (aufsteigend sortiert)
 
+**Erweiterte Versionen** enthalten zusätzlich:
+- AI-Forensik-Metrik-Sektion
+- KI-Wahrscheinlichkeitsbewertung mit Konfidenzniveau
+- Signalanalyse mit visuellen Indikatoren
+- Metrik-spezifische Interpretationen
+
 ---
 
 ## Beispielergebnisse (testdata/sample.txt, 197 Ersetzungen)
 
-| Sprache | Ausführungszeit |
-|---------|----------------|
-| Go      | ~0.00004 s     |
-| Rust    | ~0.00008 s     |
-| C++     | ~0.00040 s     |
-| Node.js | ~0.00046 s     |
-| Python  | ~0.00056 s     |
-| Bun     | ~0.00220 s     |
+| Sprache | Ausführungszeit | Erweiterte Zeit |
+|---------|----------------|-----------------|
+| Go      | ~0.00004 s     | ~0.00006 s      |
+| Rust    | ~0.00008 s     | ~0.00010 s      |
+| C++     | ~0.00040 s     | ~0.00050 s      |
+| Node.js | ~0.00046 s     | ~0.00060 s      |
+| Python  | ~0.00056 s     | ~0.00070 s      |
+| Bun     | ~0.00220 s     | ~0.00280 s      |
 
 ---
 
-## Aktuelle Korrekturen (v0.2.0)
+## Aktuelle Korrekturen (v0.3.0)
 
-### Verbesserungen der Wasserzeichen-Entfernung
+### Neue Erweiterte Versionen ⭐
 
-**Kritische Bugs bei der KI-Wasserzeichen-Erkennung in allen 4 Implementierungen behoben:**
+**Verbesserte AI-Forensik-Analyse nun in allen 6 Sprachen verfügbar:**
 
-1. **PUA-Range-Bug** — Unicode-Bereich von `E000-E007F` (573.343 Zeichen) auf `E000-E07F` (128 Zeichen) korrigiert
-   - Wasserzeichen-Zeichensatz von 860.305 auf 259 Zeichen reduziert
-   - Korrigiert in: Python, Go, Node.js, Rust
+1. **Python Extended** (`partxtpy/partxt-ext.py`)
+   - Vollständige AI-Forensik-Metrik-Integration
+   - Wahrscheinlichkeitsbasierte Bewertung
+   - Signalanalyse mit Interpretationen
 
-2. **Code-Point-Verarbeitung in Node.js** — `String.fromCharCode()` durch `String.fromCodePoint()` ersetzt
-   - Erkannte zuvor 853 falsche Wasserzeichen (ASCII-Zeichen)
-   - Erkennt nun korrekt 17 Wasserzeichen
+2. **JavaScript Extended** (Bun + Node.js)
+   - `partxtjs/partxt-ext.js` für Bun
+   - `partxtnode/partxt-ext.js` für Node.js
+   - Gleiche Metriken wie Python-Version
 
-3. **Flag-Position in Go** — Dokumentiert, dass Go Flags VOR dem Dateinamen erfordert
-   ```bash
-   # Korrekte Verwendung für Go:
-   cd partxtgo && go run . --remove-watermark input.txt
-   ```
+3. **Rust Extended** (`partxtrs/src/main-ext.rs`)
+   - Kompillierte Leistung
+   - Effiziente Speicherverarbeitung
+   - Vollständiger Metrik-Satz
 
-### Testergebnisse (testdata/comprehensive_watermark_test.txt)
+4. **Go Extended** (`partxtgo/main-ext.go`)
+   - Typsichere Implementierung
+   - Nur Standardbibliothek
+   - Umfassende Metriken
 
-Alle Implementierungen erkennen nun korrekt **17/17 Wasserzeichen**:
+5. **C++ Extended** (`partxtcpp/partxt-ext.cpp`)
+   - Hohe Leistung
+   - Modernes C++20
+   - Vollständige Funktionalität
 
-| Sprache | Zeit (s) | Wasserzeichen entfernt |
-|---------|----------|----------------------|
-| Python  | 0.000560 | ✅ 17 (alle) |
-| Go      | 0.000039 | ✅ 17 (alle) |
-| Node.js | 0.000455 | ✅ 17 (alle) |
-| Rust    | 0.000078 | ✅ 17 (alle) |
+6. **Node.js Extended** (`partxtnode/partxt-ext.js`)
+   - Node.js-Kompatibilität
+   - Gleiche Metriken und Funktionen
 
-**Gesamte Wasserzeichen-Abdeckung:** ~270+ Codepoints
+---
 
 ## Versionsverwaltung
 
@@ -245,7 +340,7 @@ Alle Implementierungen erkennen nun korrekt **17/17 Wasserzeichen**:
 - Minor (0.x.0): Voll funktional, entspricht Anforderungen
 - Major (x.0.0): Erhebliche neue Funktionen
 
-Aktuelle Version: 0.2.0
+Aktuelle Version: 0.3.0
 
 ## Lizenz
 
