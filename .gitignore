@@ -27,3 +27,7 @@ articlIPv4seals.txt
 # OS
 .DS_Store
 *.bak*
+# Local version tracking & project management (not for GitHub)
+.VERSION_TRACKING.md
+.PROJECT_NOTES.md
+.LOCAL_DOCS/
