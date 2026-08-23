@@ -194,12 +194,47 @@ Each report includes:
 
 | Language | Execution Time |
 |----------|---------------|
-| Go       | ~0.0001 s     |
-| Rust     | ~0.0003 s     |
-| C++      | ~0.0004 s     |
-| Python   | ~0.0014 s     |
-| Node.js  | ~0.0013 s     |
-| Bun      | ~0.0022 s     |
+| Go       | ~0.00004 s    |
+| Rust     | ~0.00008 s    |
+| C++      | ~0.00040 s    |
+| Node.js  | ~0.00046 s    |
+| Python   | ~0.00056 s    |
+| Bun      | ~0.00220 s    |
+
+---
+
+## Recent Fixes (v0.2.0)
+
+### Watermark Removal Improvements
+
+**Fixed critical bugs in AI watermark detection across all 4 implementations:**
+
+1. **PUA Range Bug** — Corrected Unicode range from `E000-E007F` (573,343 chars) to `E000-E07F` (128 chars)
+   - Reduced watermark character set from 860,305 to 259 characters
+   - Fixed in: Python, Go, Node.js, Rust
+
+2. **Node.js Code Point Handling** — Changed `String.fromCharCode()` to `String.fromCodePoint()`
+   - Previously detected 853 false watermarks (ASCII characters)
+   - Now correctly detects 17 watermarks
+
+3. **Go Flag Position** — Documented that Go requires flags BEFORE filename
+   ```bash
+   # Correct usage for Go:
+   cd partxtgo && go run . --remove-watermark input.txt
+   ```
+
+### Test Results (testdata/comprehensive_watermark_test.txt)
+
+All implementations now correctly detect **17/17 watermark characters**:
+
+| Language | Time (s) | Watermarks Removed |
+|----------|----------|-------------------|
+| Python   | 0.000560 | ✅ 17 (all) |
+| Go       | 0.000039 | ✅ 17 (all) |
+| Node.js  | 0.000455 | ✅ 17 (all) |
+| Rust     | 0.000078 | ✅ 17 (all) |
+
+**Total watermark coverage:** ~270+ character codepoints
 
 ## Versioning
 
@@ -207,7 +242,13 @@ Each report includes:
 - Minor (0.x.0): fully functional, meets requirements
 - Major (x.0.0): significant new features
 
-Current version: 0.1.0
+Current version: 0.2.0
+
+## License
+
+
+
+MIT
 
 ## License
 

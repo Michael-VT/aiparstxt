@@ -194,12 +194,47 @@ Chaque rapport contient :
 
 | Langage  | Temps d'exécution |
 |----------|------------------|
-| Go       | ~0,0001 s        |
-| Rust     | ~0,0003 s        |
-| C++      | ~0,0004 s        |
-| Python   | ~0,0014 s        |
-| Node.js  | ~0,0013 s        |
-| Bun      | ~0,0022 s        |
+| Go       | ~0,00004 s       |
+| Rust     | ~0,00008 s       |
+| C++      | ~0,00040 s       |
+| Node.js  | ~0,00046 s       |
+| Python   | ~0,00056 s       |
+| Bun      | ~0,00220 s       |
+
+---
+
+## Corrections Récentes (v0.2.0)
+
+### Améliorations de la Suppression des Filigranes
+
+**Corrections critiques des bugs de détection des filigranes IA dans les 4 implémentations :**
+
+1. **Bug de plage PUA** — Correction de la plage Unicode de `E000-E007F` (573 343 caractères) à `E000-E07F` (128 caractères)
+   - Ensemble de caractères de filigrane réduit de 860 305 à 259 caractères
+   - Corrigé dans : Python, Go, Node.js, Rust
+
+2. **Gestion des points de code Node.js** — Remplacement de `String.fromCharCode()` par `String.fromCodePoint()`
+   - Détectait précédemment 853 filigranes faux (caractères ASCII)
+   - Détecte maintenant correctement 17 filigranes
+
+3. **Position des indicateurs Go** — Documenté que Go exige les indicateurs AVANT le nom de fichier
+   ```bash
+   # Utilisation correcte pour Go :
+   cd partxtgo && go run . --remove-watermark input.txt
+   ```
+
+### Résultats des tests (testdata/comprehensive_watermark_test.txt)
+
+Toutes les implémentations détectent maintenant correctement **17/17 filigranes** :
+
+| Langage  | Temps (s) | Filigranes supprimés |
+|----------|----------|---------------------|
+| Python   | 0.000560 | ✅ 17 (tous) |
+| Go       | 0.000039 | ✅ 17 (tous) |
+| Node.js  | 0.000455 | ✅ 17 (tous) |
+| Rust     | 0.000078 | ✅ 17 (tous) |
+
+**Couverture totale des filigranes :** ~270+ points de code de caractères
 
 ## Versionnage
 
@@ -207,7 +242,7 @@ Chaque rapport contient :
 - Mineur (0.x.0) : entièrement fonctionnel, répond aux exigences
 - Majeur (x.0.0) : nouvelles fonctionnalités importantes
 
-Version actuelle : 0.1.0
+Version actuelle : 0.2.0
 
 ## Licence
 

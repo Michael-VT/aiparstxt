@@ -194,12 +194,47 @@ Jeder Bericht enthält:
 
 | Sprache | Ausführungszeit |
 |---------|----------------|
-| Go      | ~0.0001 s      |
-| Rust    | ~0.0003 s      |
-| C++     | ~0.0004 s      |
-| Python  | ~0.0014 s      |
-| Node.js | ~0.0013 s      |
-| Bun     | ~0.0022 s      |
+| Go      | ~0.00004 s     |
+| Rust    | ~0.00008 s     |
+| C++     | ~0.00040 s     |
+| Node.js | ~0.00046 s     |
+| Python  | ~0.00056 s     |
+| Bun     | ~0.00220 s     |
+
+---
+
+## Aktuelle Korrekturen (v0.2.0)
+
+### Verbesserungen der Wasserzeichen-Entfernung
+
+**Kritische Bugs bei der KI-Wasserzeichen-Erkennung in allen 4 Implementierungen behoben:**
+
+1. **PUA-Range-Bug** — Unicode-Bereich von `E000-E007F` (573.343 Zeichen) auf `E000-E07F` (128 Zeichen) korrigiert
+   - Wasserzeichen-Zeichensatz von 860.305 auf 259 Zeichen reduziert
+   - Korrigiert in: Python, Go, Node.js, Rust
+
+2. **Code-Point-Verarbeitung in Node.js** — `String.fromCharCode()` durch `String.fromCodePoint()` ersetzt
+   - Erkannte zuvor 853 falsche Wasserzeichen (ASCII-Zeichen)
+   - Erkennt nun korrekt 17 Wasserzeichen
+
+3. **Flag-Position in Go** — Dokumentiert, dass Go Flags VOR dem Dateinamen erfordert
+   ```bash
+   # Korrekte Verwendung für Go:
+   cd partxtgo && go run . --remove-watermark input.txt
+   ```
+
+### Testergebnisse (testdata/comprehensive_watermark_test.txt)
+
+Alle Implementierungen erkennen nun korrekt **17/17 Wasserzeichen**:
+
+| Sprache | Zeit (s) | Wasserzeichen entfernt |
+|---------|----------|----------------------|
+| Python  | 0.000560 | ✅ 17 (alle) |
+| Go      | 0.000039 | ✅ 17 (alle) |
+| Node.js | 0.000455 | ✅ 17 (alle) |
+| Rust    | 0.000078 | ✅ 17 (alle) |
+
+**Gesamte Wasserzeichen-Abdeckung:** ~270+ Codepoints
 
 ## Versionsverwaltung
 
@@ -207,7 +242,7 @@ Jeder Bericht enthält:
 - Minor (0.x.0): Voll funktional, entspricht Anforderungen
 - Major (x.0.0): Erhebliche neue Funktionen
 
-Aktuelle Version: 0.1.0
+Aktuelle Version: 0.2.0
 
 ## Lizenz
 

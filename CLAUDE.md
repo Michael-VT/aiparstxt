@@ -103,7 +103,7 @@ Report filenames include language prefix: `report_py.txt`, `report_rs.txt`, `rep
 
 ## Versioning
 
-Semantic: patch (0.0.x) = bug fixes, minor (0.x.0) = meets requirements, major (x.0.0) = significant new features. Current: 0.1.0.
+Semantic: patch (0.0.x) = bug fixes, minor (0.x.0) = meets requirements, major (x.0.0) = significant new features. Current: 0.2.0.
 
 ## Key Files
 
@@ -116,3 +116,25 @@ Semantic: patch (0.0.x) = bug fixes, minor (0.x.0) = meets requirements, major (
 - `partxtrs/Cargo.toml` — Rust project (no external deps)
 - `partxtgo/go.mod` — Go module
 - `ai-chart.txt` — AI watermark character reference
+- `ai-chart-extended.txt` — Comprehensive watermarking reference
+- `WATERMARK_FIXES_SUMMARY.md` — v0.2.0 watermark detection bug fixes
+- `WATERMARKING_UPDATE_SUMMARY.md` — Original watermark implementation details
+
+## Watermark Removal (v0.2.0)
+
+All 4 implementations (Python, Go, Node.js, Rust) correctly detect **259 watermark characters**:
+- Core watermarks: 17 characters (ZWSP, ZWNJ, ZWJ, ZWNBSP, invisible operators, bidirectional overrides, etc.)
+- Variation selectors (FE00-FE0F): 16 chars
+- Tag characters (E0020-E007F): 96 chars
+- Private Use Area (E000-E07F): 128 chars
+- Language tag (E0001): 1 char
+- Mongolian separator (180E): 1 char
+
+**Critical fixes in v0.2.0:**
+- Fixed PUA range bug (was E000-E007F, corrected to E000-E07F)
+- Fixed Node.js code point handling (fromCharCode → fromCodePoint)
+- Documented Go flag position requirement (flags before filename)
+
+All implementations now pass comprehensive watermark test (17/17 detected).
+
+

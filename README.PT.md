@@ -194,12 +194,47 @@ Cada relatório contém:
 
 | Linguagem | Tempo de execução |
 |-----------|------------------|
-| Go        | ~0,0001 s        |
-| Rust      | ~0,0003 s        |
-| C++       | ~0,0004 s        |
-| Python    | ~0,0014 s        |
-| Node.js   | ~0,0013 s        |
-| Bun       | ~0,0022 s        |
+| Go        | ~0,00004 s       |
+| Rust      | ~0,00008 s       |
+| C++       | ~0,00040 s       |
+| Node.js   | ~0,00046 s       |
+| Python    | ~0,00056 s       |
+| Bun       | ~0,00220 s       |
+
+---
+
+## Correções Recentes (v0.2.0)
+
+### Melhorias na Remoção de Marcas d'Água
+
+**Corrigidos bugs críticos na detecção de marcas d'água de IA em todas as 4 implementações:**
+
+1. **Bug de Intervalo PUA** — Corrigido intervalo Unicode de `E000-E007F` (573.343 caracteres) para `E000-E07F` (128 caracteres)
+   - Conjunto de caracteres de marca d'água reduzido de 860.305 para 259 caracteres
+   - Corrigido em: Python, Go, Node.js, Rust
+
+2. **Tratamento de Code Point no Node.js** — Alterado `String.fromCharCode()` para `String.fromCodePoint()`
+   - Detectava anteriormente 853 marcas d'água falsas (caracteres ASCII)
+   - Agora detecta corretamente 17 marcas d'água
+
+3. **Posição de Sinalizadores no Go** — Documentado que o Go requer sinalizadores ANTES do nome do arquivo
+   ```bash
+   # Uso correto para Go:
+   cd partxtgo && go run . --remove-watermark input.txt
+   ```
+
+### Resultados de Testes (testdata/comprehensive_watermark_test.txt)
+
+Todas as implementações agora detectam corretamente **17/17 marcas d'água**:
+
+| Linguagem | Tempo (s) | Marcas d'Água Removidas |
+|-----------|----------|------------------------|
+| Python    | 0.000560 | ✅ 17 (todas) |
+| Go        | 0.000039 | ✅ 17 (todas) |
+| Node.js   | 0.000455 | ✅ 17 (todas) |
+| Rust      | 0.000078 | ✅ 17 (todas) |
+
+**Cobertura total de marcas d'água:** ~270+ pontos de código de caracteres
 
 ## Versionamento
 
@@ -207,7 +242,7 @@ Cada relatório contém:
 - Minor (0.x.0): totalmente funcional, atende aos requisitos
 - Major (x.0.0): novas funcionalidades significativas
 
-Versão atual: 0.1.0
+Versão atual: 0.2.0
 
 ## Licença
 
