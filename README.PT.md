@@ -2,6 +2,9 @@
 
 Um conjunto de ferramentas de linha de comando para limpar arquivos de texto substituindo caracteres não permitidos por '?'. Implementado em 6 linguagens para comparação de desempenho. Inclui remoção de marcas d'água de IA e **análise forense estatística** para detecção de textos gerados por IA.
 
+**Disponível em:** [English](README.md) | [Русский](README.RU.md) | [Українська](README.UA.md) | [Português](README.PT.md) | [Français](README.FR.md) | [Deutsch](README.DE.md)
+
+
 ## Funcionalidades
 
 - **Sanitização de texto** — substituição de caracteres não permitidos por '?' em 6 implementações linguísticas

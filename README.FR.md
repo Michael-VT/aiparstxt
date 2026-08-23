@@ -2,6 +2,9 @@
 
 Un ensemble d'outils en ligne de commande pour nettoyer les fichiers texte en remplaçant les caractères non autorisés par '?'. Implémenté dans 6 langages pour comparer les performances. Inclut la suppression des filigranes IA et **l'analyse forensique statistique** pour détecter les textes générés par l'IA.
 
+**Disponible en:** [English](README.md) | [Русский](README.RU.md) | [Українська](README.UA.md) | [Português](README.PT.md) | [Français](README.FR.md) | [Deutsch](README.DE.md)
+
+
 ## Fonctionnalités
 
 - **Nettoyage de texte** — remplacement des caractères non autorisés par '?' dans 6 implémentations linguistiques

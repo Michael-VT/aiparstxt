@@ -2,6 +2,9 @@
 
 Eine Sammlung von Kommandozeilen-Tools zur Textbereinigung durch Ersetzung unzulässiger Zeichen durch '?'. In 6 Sprachen implementiert für Leistungsvergleiche. Enthält AI-Wasserzeichen-Entfernung und **statistische Forensik-Analyse** zur Erkennung KI-generierter Texte.
 
+**Verfügbar in:** [English](README.md) | [Русский](README.RU.md) | [Українська](README.UA.md) | [Português](README.PT.md) | [Français](README.FR.md) | [Deutsch](README.DE.md)
+
+
 ## Funktionen
 
 - **Textbereinigung** — Ersetzung unzulässiger Zeichen durch '?' in 6 Sprachimplementierungen

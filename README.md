@@ -2,6 +2,9 @@
 
 A set of command-line utilities that sanitize text files by replacing disallowed characters with '?'. Implemented in 6 languages for performance comparison. Includes AI watermark removal and **statistical forensic analysis** for detecting AI-generated text.
 
+**Available in:** [English](README.md) | [Русский](README.RU.md) | [Українська](README.UA.md) | [Português](README.PT.md) | [Français](README.FR.md) | [Deutsch](README.DE.md)
+
+
 ## Features
 
 - **Text sanitization** — replace disallowed characters with '?' across 6 language implementations
