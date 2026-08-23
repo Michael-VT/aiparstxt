@@ -232,6 +232,13 @@ For the most comprehensive analysis, the standalone `parscgpt-ext.py` provides 1
 | `quantifier_overuse` | Hedge word frequency | AI overuses qualifiers |
 
 Use `parscgpt-ext.py` when you need the deepest linguistic analysis beyond the integrated sanitizers.
+**Key Differences: Extended vs Standard Versions**
+- Provides **9 additional metrics** for deeper analysis
+- Shows **detailed scoring** instead of single probability
+- Includes **specific interpretation** for each metric  
+- Offers **improved reliability** with text length adaptation
+- Detects **more AI patterns** — 70+ phrases vs 21 in standard version
+
 
 ---
 
@@ -268,6 +275,7 @@ Each report includes:
 - Watermark characters removed (with Unicode code points)
 - Replaced characters (with counts)
 - Word frequency (ascending)
+
 
 **Extended versions** additionally include:
 - AI forensic metrics section
