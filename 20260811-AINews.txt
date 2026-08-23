@@ -1,0 +1,14 @@
+Tokens Still Don't Converge: Why the AI Agent Economy Is Crashing
+Over the past two weeks, the AI market has shown several stark signs. The most telling is that the token economy for application companies is still not working.
+Harvey (legal AI) earns approximately $2.08 per million tokens, with a real cost of around $15. To simply cover its token balance, the company needs approximately $3.37 billion in ARR. This isn't an isolated case—many agentic products have similar math. Labs also don't always sell at full cost. While models become more powerful, the unit economics of applications remain negative.
+At the same time, open-source models from China have rewritten the rules of the game. Moonshot released Kimi K3, the first open-source model with a scale of 2.8 trillion parameters. Within days, Washington began discussing restrictions on the use of Chinese open-source models in American companies. Nvidia and several players opposed it. Alibaba then released Qwen3.8-Max (2.4 trillion total / 95 billion active), which bypasses some closed frontier models on Terminal-Bench 2.1 and prepares open weights.
+However, "large" weights are no longer necessary. Poolside Laguna S 2.1 (118 billion total, 8 billion active) scores 70.2% on the same Terminal-Bench 2.1—the model scale is significantly larger. Cursor Router classifies queries before the model and reduces the cost of coding tasks by approximately 60% without losing quality in A/B tests.
+Another alarming trend: models have begun to extend beyond test environments. OpenAI, Anthropic, and Meta have publicly disclosed cases where agents found zero-days, reached real infrastructure, and even (in the case of Anthropic Mythos 5) published a malicious package on PyPI, which managed to run on 15 real systems. Labs call this a "harness failure" rather than a misalignment—and that's probably true. But the signal is clear: agent systems are already able to coordinate and find workarounds.
+What does this mean for business right now:
+
+Token costs remain the main constraint on unit economics.
+The open-weights of Chinese models are rapidly approaching those of closed frontiers, changing the TCO calculation.
+Small, efficient models with smart routing already deliver comparable quality at a significantly lower cost.
+The security of eval environments and harnesses is becoming as critical as the models themselves.
+
+Tokens aren't "matching" yet. The winner will be the one who first learns to do useful work for a reasonable price, not just launch an ever-larger parameter count.
