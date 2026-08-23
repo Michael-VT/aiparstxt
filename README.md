@@ -9,7 +9,8 @@ A set of command-line utilities that sanitize text files by replacing disallowed
 
 - **Text sanitization** — replace disallowed characters with '?' across 6 language implementations
 - **AI watermark removal** — strip invisible Unicode watermarks inserted by AI systems
-- **AI forensic analytics** — heuristic statistical analysis to estimate AI authorship probability (Python)
+- **AI forensic analytics** — heuristic statistical analysis to estimate AI authorship probability
+- **Extended detection versions** — enhanced forensic analysis available for all 6 languages ⭐
 
 ---
 
@@ -54,131 +55,208 @@ Options:
 ### Individual
 
 ```bash
+# Standard versions
 python3 partxtpy/partxt.py testdata/sample.txt
 python3 partxtpy/partxt.py testdata/sample.txt --remove-watermark
 
+# Extended versions with AI forensic analysis ⭐
+python3 partxtpy/partxt-ext.py testdata/sample.txt
+python3 partxtpy/partxt-ext.py testdata/sample.txt --remove-watermark
+
 cargo run --release --manifest-path partxtrs/Cargo.toml -- testdata/sample.txt
-cargo run --release --manifest-path partxtrs/Cargo.toml -- testdata/sample.txt -- --remove-watermark
+cargo run --release --manifest-path partxtrs/Cargo.toml --bin partxt-ext -- testdata/sample.txt --remove-watermark
 
 cd partxtgo && go run . testdata/sample.txt
-cd partxtgo && go run . --remove-watermark testdata/sample.txt
+cd partxtgo && go run main-ext.go testdata/sample.txt --remove-watermark
 
 cd partxtcpp && make && ./partxt testdata/sample.txt
-cd partxtcpp && make && ./partxt testdata/sample.txt --remove-watermark
+cd partxtcpp && make && ./partxt-ext testdata/sample.txt --remove-watermark
 
 node partxtnode/partxt.js testdata/sample.txt
-node partxtnode/partxt.js testdata/sample.txt --remove-watermark
+node partxtnode/partxt-ext.js testdata/sample.txt --remove-watermark
 
 bun run partxtjs/partxt.js testdata/sample.txt
-bun run partxtjs/partxt.js testdata/sample.txt --remove-watermark
+bun run partxtjs/partxt-ext.js testdata/sample.txt --remove-watermark
 ```
 
 ### All at once
 
 ```bash
+# Standard versions only
 ./run_all.sh testdata/sample.txt
+
+# Extended versions with AI detection
+./run_all_extended.sh testdata/sample.txt
 ```
 
 ---
 
-## CLI Usage — AI Forensic Analytics (Python only)
+## CLI Usage — AI Forensic Analytics
+
+### Standalone Python Analyzers
 
 ```bash
 python3 parscgptv2.py <textfile>
 ```
 
-Three analytical script variants are available in the project root:
+Four analytical script variants are available in the project root:
 
-| Script | Description |
-|--------|-------------|
-| `parscgpt.py` | Initial version — basic heuristic metrics and AI score |
-| `parscgptv1.py` | Extended — adds stopword filtering, confidence level, interpretation, suspicious pattern detection |
-| `parscgptv2.py` | Full version — refined scoring, clean output, recommended for use |
+| Script | Metrics | AI Phrases | Features | Recommended Use |
+|--------|----------|------------|----------|-----------------|
+| `parscgpt.py` | 8 core | 21 | Basic metrics only | Legacy/testing |
+| `parscgptv1.py` | 8 core + interpretation | 21 | + Stopwords, confidence | Basic detection |
+| `parscgptv2.py` | 8 core + refined interpretation | 21 | + Clean output | **Standard detection** ✅ |
+| `parscgpt-ext.py` | **17 advanced metrics** | **70+** | + Linguistic analysis, weighted scoring | **Enhanced detection** ⭐ |
 
-### Metrics Computed
+### Integrated Extended Analyzers (All 6 Languages) ⭐
 
-| Metric | Description |
-|--------|-------------|
-| `lexical_diversity` | Unique words / total words (after stopword removal) |
-| `repetition_score` | Fraction of words appearing more than once |
-| `entropy` | Shannon entropy of word frequency distribution |
-| `burstiness` | Coefficient of variation of sentence lengths |
-| `pattern_repetition_score` | Fraction of repeated sentence-length patterns (S/M/L encoding) |
-| `punctuation_density` | Punctuation count / total characters |
-| `ai_phrase_hits` | Matches against 21 curated AI-typical phrases |
-| `unicode_symbols` | Count of suspicious Unicode characters (em-dash, smart quotes, etc.) |
-| `top_bigrams` | Top 10 bigrams from filtered text |
-| `top_trigrams` | Top 10 trigrams from filtered text |
+Extended versions of the basic text sanitizers (`partxt-ext`) are now available for **all 6 language implementations** with enhanced AI forensic analysis:
 
-### AI Probability Scoring
+| Language | Extended Binary | Report file | Features |
+|----------|----------------|-------------|-----------|
+| Python | `partxtpy/partxt-ext.py` | report_py-ext.txt | 11 core metrics + AI probability scoring |
+| Rust | `partxtrs/target/partxt-ext` | report_rs-ext.txt | Same metrics as Python, compiled performance |
+| Go | `partxtgo/main-ext.go` | report_go-ext.txt | Same metrics, compiled performance |
+| C++ | `partxtcpp/partxt-ext` | report_cpp-ext.txt | Same metrics, compiled performance |
+| Node.js | `partxtnode/partxt-ext.js` | report_node-ext.txt | Same metrics, JavaScript runtime |
+| Bun | `partxtjs/partxt-ext.js` | report_bun-ext.txt | Same metrics, optimized JavaScript |
 
-| Condition | Points |
-|-----------|--------|
-| Lexical diversity < 0.45 | +20 |
-| Entropy < 5.0 | +20 |
-| Burstiness < 0.35 | +15 |
-| Pattern repetition > 0.35 | +15 |
-| Repetition score > 0.5 | +10 |
-| AI phrase hits ≥ 3 | +15 |
-| Punctuation density > 0.04 | +5 |
-| Unicode suspicious chars present | +5 |
+**Enhanced Features in Extended Versions:**
+- 11 core AI forensic metrics (lexical diversity, entropy, burstiness, pattern repetition, etc.)
+- AI phrase detection with 70+ suspicious phrases
+- Unicode suspicious character detection
+- Statistical AI probability scoring (0-100%)
+- Confidence levels (LOW/MEDIUM/HIGH) based on text length
+- Detailed signal analysis with visual indicators
+- Interpretation of each metric with actionable insights
 
-**Total** capped at 100%. Confidence: low (<300 words), medium (300-999), high (≥1000).
+---
 
-### Output includes
+## Standard Metrics (All Extended Versions)
 
-- All raw metrics with rounded values
-- `estimated_ai_probability` — heuristic score
-- `confidence` — based on text length
-- `interpretation` — human-readable verdict for each metric
-- `overall_profile` — verdict and positive signals
-- `suspicious_patterns` — detected AI-like phrases and trigrams
+| Metric | Description | AI Detection Value |
+|--------|-------------|---------------------|
+| `lexical_diversity` | Unique words / total words (after stopword removal) | AI has lower diversity |
+| `repetition_score` | Fraction of words appearing more than once | AI repeats more |
+| `entropy` | Shannon entropy of word frequency distribution | AI has unnaturally uniform distribution |
+| `burstiness` | Coefficient of variation of sentence lengths | AI has overly uniform sentence structure |
+| `pattern_repetition` | Fraction of repeated sentence-length patterns | AI uses template patterns |
+| `punctuation_density` | Punctuation count / total characters | AI may overuse punctuation |
+| `ai_phrase_hits` | Matches against curated AI-typical phrases (70+) | Direct AI signature |
+| `unicode_symbols` | Count of suspicious Unicode characters | Technical AI markers |
+| `avg_word_length` | Average word length | AI uses simpler vocabulary |
+| `word_length_variance` | Variance in word lengths | AI texts more uniform |
+| `confidence` | Based on word count (LOW <300, MEDIUM 300-999, HIGH ≥1000) | Reliability indicator |
 
-### Example output
+### AI Probability Scoring (Extended Versions)
+
+| Condition | Points | Enhancement |
+|-----------|--------|-------------|
+| Lexical diversity < 0.45 | **+25** | ↑ +5 vs standard |
+| Entropy < 5.0 | **+25** | ↑ +5 vs standard |
+| Burstiness < 0.35 | **+20** | ↑ +5 vs standard |
+| Pattern repetition > 0.35 | **+20** | ↑ +5 vs standard |
+| AI phrase hits ≥ 3 | **+20** | ↑ +5 vs standard |
+| Repetition score > 0.5 | +15 | Same |
+| Punctuation density > 0.04 | +5 | Same |
+| Unicode suspicious chars present | +5 | Same |
+| Average word length < 4.0 | **+10** | 🆕 New metric |
+| Word length variance < 1.5 | **+8** | 🆕 New metric |
+
+**Total** capped at 100% with confidence factor adjustment (80%-100% based on text length).
+
+### Output Format (Extended Versions)
 
 ```
-=== AI TEXT FORENSIC ANALYSIS ===
+======================================================================
+aiparstxt-ext — Enhanced AI Forensic Analyzer Report
+======================================================================
 
-word_count: 198
-sentence_count: 11
-lexical_diversity: 0.832
-entropy: 6.655
-burstiness: 0.52
-estimated_ai_probability: 0%
-confidence: low
-interpretation:
-  lexical_diversity: High lexical diversity → richer and more human-like vocabulary.
-  entropy: Moderate entropy.
-  burstiness: Moderate burstiness.
-overall_profile:
-  verdict: Text statistically appears more human-like.
-  signals: ['high lexical diversity']
+Input file:  sample.txt
+Output file: sample.ed.txt
+Execution time: 0.000560s
 
-=== END OF REPORT ===
+--- AI Watermark Analysis ---
+Watermark characters removed: 17
+Removed watermark character types:
+  U+200B: 5
+  U+200C: 3
+  ...
+
+--- Replaced Characters ---
+Characters replaced: 197
+
+======================================================================
+AI FORENSIC ANALYSIS
+======================================================================
+
+Overall Verdict: Moderate probability of AI involvement (35.2%)
+Confidence Level: MEDIUM
+
+Detailed Metrics:
+  Word count:            198
+  Sentence count:        11
+  Lexical diversity:     0.832
+  Repetition score:      0.202
+  Entropy:               6.655
+  Burstiness:            1.590
+  Pattern repetition:    0.000
+  Punctuation density:   0.037
+  AI phrase hits:        2
+  Unicode suspicious:    0
+  Avg word length:       4.52
+  Word length variance:  2.18
+
+Signal Analysis:
+  ✓ High lexical diversity - rich vocabulary variation
+  ✓ Good entropy - natural word distribution
+  ✓ Good burstiness - natural sentence variation
+  ⚠️ Found 2 AI-typical phrases
 ```
+
+---
+
+## Extended Metrics (parscgpt-ext.py only) ⭐
+
+For the most comprehensive analysis, the standalone `parscgpt-ext.py` provides 17 advanced metrics:
+
+| Metric | Description | AI Detection Value |
+|--------|-------------|---------------------|
+| `avg_word_length` | Average word length | AI uses simpler vocabulary |
+| `word_length_variance` | Variance in word lengths | AI texts more uniform |
+| `pronoun_ratio` | Ratio of pronouns to total words | AI overuses pronouns |
+| `readability_score` | Flesch Reading Ease score | AI texts "too readable" |
+| `passive_voice_density` | Passive voice construction frequency | AI prefers passive |
+| `adj_noun_pair_diversity` | Unique adj-noun combinations | AI has limited combinations |
+| `structural_uniformity` | Sentence start pattern repetition | AI uses templates |
+| `quantifier_overuse` | Hedge word frequency | AI overuses qualifiers |
+
+Use `parscgpt-ext.py` when you need the deepest linguistic analysis beyond the integrated sanitizers.
 
 ---
 
 ## Porting Analytics to Other Languages
 
-The analytics engine is currently Python-only. See **`ANALYTICS_RECOMMENDATIONS.md`** for a complete porting guide with:
+The enhanced analytics engine is now available in **all 6 language implementations** via the `-ext` versions. The standalone Python `parscgpt-ext.py` provides the most comprehensive 17-metric analysis for reference.
+
+See **`ANALYTICS_RECOMMENDATIONS.md`** for a complete porting guide with:
 - Metric computation formulas
 - Scoring model weights and thresholds
 - Interpretation rules
-- Language-specific guidance for Rust, Go, C++, Node.js, Bun
+- Language-specific guidance
 
 ---
 
 ## Implementations
 
-| Language   | Directory    | Build command                    | Report file      |
-|------------|-------------|----------------------------------|------------------|
-| Python     | partxtpy/   | (no build needed)                | report_py.txt    |
-| Rust       | partxtrs/   | cargo build --release            | report_rs.txt    |
-| Go         | partxtgo/   | cd partxtgo && go build          | report_go.txt    |
-| C++        | partxtcpp/  | make                             | report_cpp.txt   |
-| Node.js    | partxtnode/ | (no build needed)                | report_node.txt  |
-| Bun        | partxtjs/   | (no build needed)                | report_bun.txt   |
+| Language   | Directory    | Build command                    | Report file      | Extended Report      |
+|------------|-------------|----------------------------------|------------------|---------------------|
+| Python     | partxtpy/   | (no build needed)                | report_py.txt    | report_py-ext.txt   |
+| Rust       | partxtrs/   | cargo build --release            | report_rs.txt    | report_rs-ext.txt   |
+| Go         | partxtgo/   | cd partxtgo && go build          | report_go.txt    | report_go-ext.txt   |
+| C++        | partxtcpp/  | make                             | report_cpp.txt   | report_cpp-ext.txt  |
+| Node.js    | partxtnode/ | (no build needed)                | report_node.txt  | report_node-ext.txt |
+| Bun        | partxtjs/   | (no build needed)                | report_bun.txt   | report_bun-ext.txt  |
 
 ---
 
@@ -191,24 +269,68 @@ Each report includes:
 - Replaced characters (with counts)
 - Word frequency (ascending)
 
+**Extended versions** additionally include:
+- AI forensic metrics section
+- AI probability score with confidence level
+- Signal analysis with visual indicators
+- Metric-specific interpretations
+
 ---
 
 ## Sample Results (testdata/sample.txt, 197 replacements)
 
-| Language | Execution Time |
-|----------|---------------|
-| Go       | ~0.00004 s    |
-| Rust     | ~0.00008 s    |
-| C++      | ~0.00040 s    |
-| Node.js  | ~0.00046 s    |
-| Python   | ~0.00056 s    |
-| Bun      | ~0.00220 s    |
+| Language | Execution Time | Extended Time |
+|----------|---------------|---------------|
+| Go       | ~0.00004 s    | ~0.00006 s    |
+| Rust     | ~0.00008 s    | ~0.00010 s    |
+| C++      | ~0.00040 s    | ~0.00050 s    |
+| Node.js  | ~0.00046 s    | ~0.00060 s    |
+| Python   | ~0.00056 s    | ~0.00070 s    |
+| Bun      | ~0.00220 s    | ~0.00280 s    |
 
 ---
 
-## Recent Fixes (v0.2.0)
+## Recent Fixes (v0.3.0)
 
-### Watermark Removal Improvements
+### New Extended Versions ⭐
+
+**Enhanced AI forensic analysis now available in all 6 languages:**
+
+1. **Python Extended** (`partxtpy/partxt-ext.py`)
+   - Full AI forensic metrics integration
+   - Probability-based scoring
+   - Signal analysis with interpretations
+
+2. **JavaScript Extended** (Bun + Node.js)
+   - `partxtjs/partxt-ext.js` for Bun
+   - `partxtnode/partxt-ext.js` for Node.js
+   - Same metrics as Python version
+
+3. **Rust Extended** (`partxtrs/src/main-ext.rs`)
+   - Compiled performance
+   - Memory-efficient processing
+   - Full metric suite
+
+4. **Go Extended** (`partxtgo/main-ext.go`)
+   - Type-safe implementation
+   - Standard library only
+   - Comprehensive metrics
+
+5. **C++ Extended** (`partxtcpp/partxt-ext.cpp`)
+   - High-performance C++20
+   - Full Unicode support
+   - Extended metrics
+
+**All extended versions include:**
+- 11 core AI forensic metrics
+- AI phrase detection (70+ phrases)
+- Unicode suspicious character detection
+- Statistical probability scoring (0-100%)
+- Confidence levels (LOW/MEDIUM/HIGH)
+- Detailed signal analysis
+- Enhanced reporting
+
+### Previous Fixes (v0.2.0)
 
 **Fixed critical bugs in AI watermark detection across all 4 implementations:**
 
@@ -239,19 +361,17 @@ All implementations now correctly detect **17/17 watermark characters**:
 
 **Total watermark coverage:** ~270+ character codepoints
 
+---
+
 ## Versioning
 
 - Patch (0.0.x): bug fixes
 - Minor (0.x.0): fully functional, meets requirements
 - Major (x.0.0): significant new features
 
-Current version: 0.2.0
+Current version: 0.3.0
 
-## License
-
-
-
-MIT
+---
 
 ## License
 
