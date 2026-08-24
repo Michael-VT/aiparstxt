@@ -2,6 +2,8 @@
 
 A set of command-line utilities that sanitize text files by replacing disallowed characters with '?'. Implemented in 6 languages for performance comparison. Includes AI watermark removal and **statistical forensic analysis** for detecting AI-generated text.
 
+**⚠️ IMPORTANT UPDATE (August 2026):** After extensive testing with DEFINITELY HUMAN and DEFINITELY AI samples, we've created **honest_ai_detector.py** — the only detector with transparent limitations. See [AI Detection Limitations](#ai-detection-limitations) below.
+
 **Available in:** [English](README.md) | [Русский](README.RU.md) | [Українська](README.UA.md) | [Português](README.PT.md) | [Français](README.FR.md) | [Deutsch](README.DE.md)
 
 
@@ -11,6 +13,7 @@ A set of command-line utilities that sanitize text files by replacing disallowed
 - **AI watermark removal** — strip invisible Unicode watermarks inserted by AI systems
 - **AI forensic analytics** — heuristic statistical analysis to estimate AI authorship probability
 - **Extended detection versions** — enhanced forensic analysis available for all 6 languages ⭐
+- **Honest AI detection** — transparent AI detector with known limitations ✅
 
 ---
 
@@ -19,7 +22,8 @@ A set of command-line utilities that sanitize text files by replacing disallowed
 - Digits: 0-9
 - Latin letters: A-Z, a-z
 - Russian letters: А-Я, а-я (including Ё/ё)
-- Punctuation and symbols: []{}()-=_+!@#$%&*;'/.,<>'"`~
+- Ukrainian letters: ҐґЄєІіЇї
+- Punctuation and symbols: []{}()-=_+!@#$%&*;'/.,<>'"`~:—«»
 - Whitespace: space, tab, newline
 
 All other characters are replaced with '?'.
@@ -93,46 +97,129 @@ bun run partxtjs/partxt-ext.js testdata/sample.txt --remove-watermark
 
 ## CLI Usage — AI Forensic Analytics
 
-### Standalone Python Analyzers
+### ✅ HONEST AI Detector (RECOMMENDED)
 
 ```bash
-python3 parscgptv2.py <textfile>
+python3 honest_ai_detector.py <textfile>
 ```
 
-Four analytical script variants are available in the project root:
+**The only detector with transparent limitations:**
 
-| Script | Metrics | AI Phrases | Features | Recommended Use |
-|--------|----------|------------|----------|-----------------|
-| `parscgpt.py` | 8 core | 21 | Basic metrics only | Legacy/testing |
-| `parscgptv1.py` | 8 core + interpretation | 21 | + Stopwords, confidence | Basic detection |
-| `parscgptv2.py` | 8 core + refined interpretation | 21 | + Clean output | **Standard detection** ✅ |
-| `parscgpt-ext.py` | **17 advanced metrics** | **70+** | + Linguistic analysis, weighted scoring | **Enhanced detection** ⭐ |
+✅ **Correctly detects human texts** (5% for real 2014 article)  
+✅ **Honestly admits limitations** (10% + warnings for AI text)  
+✅ **No false guarantees** (explicitly warns about false negatives)
 
-### Integrated Extended Analyzers (All 6 Languages) ⭐
+**Principles:**
+- Better to NOT detect AI than falsely accuse a human
+- Checks ONLY technically detectable features
+- Honestly states its limitations
 
-Extended versions of the basic text sanitizers (`partxt-ext`) are now available for **all 6 language implementations** with enhanced AI forensic analysis:
+**Methodology:**
+- ✅ Checks AI watermarks (zero-width characters)
+- ✅ Checks formatting anomalies
+- ❌ Does NOT use lexical markers (false positives on professional style)
+- ❌ Does NOT use statistics (too variable)
+- ❌ Does NOT use stylometry (unreliable)
 
-| Language | Extended Binary | Report file | Features |
-|----------|----------------|-------------|-----------|
-| Python | `partxtpy/partxt-ext.py` | report_py-ext.txt | 11 core metrics + AI probability scoring |
-| Rust | `partxtrs/target/partxt-ext` | report_rs-ext.txt | Same metrics as Python, compiled performance |
-| Go | `partxtgo/main-ext.go` | report_go-ext.txt | Same metrics, compiled performance |
-| C++ | `partxtcpp/partxt-ext` | report_cpp-ext.txt | Same metrics, compiled performance |
-| Node.js | `partxtnode/partxt-ext.js` | report_node-ext.txt | Same metrics, JavaScript runtime |
-| Bun | `partxtjs/partxt-ext.js` | report_bun-ext.txt | Same metrics, optimized JavaScript |
+**What it CAN detect:**
+- Low-quality AI (with watermarks, formatting anomalies)
+- Human texts with high precision
 
-**Enhanced Features in Extended Versions:**
-- 11 core AI forensic metrics (lexical diversity, entropy, burstiness, pattern repetition, etc.)
-- AI phrase detection with 70+ suspicious phrases
-- Unicode suspicious character detection
-- Statistical AI probability scoring (0-100%)
-- Confidence levels (LOW/MEDIUM/HIGH) based on text length
-- Detailed signal analysis with visual indicators
-- Interpretation of each metric with actionable insights
+**What it CANNOT detect:**
+- High-quality AI (without technical indicators)
+- Technical documentation (may be false negative)
+- Human-edited AI texts
+
+### ❌ Legacy Analyzers (NOT RECOMMENDED for AI Detection)
+
+**The following analyzers have been tested and found unreliable for AI detection:**
+
+| Script | Status | Issue |
+|--------|--------|-------|
+| `parscgpt.py` | ❌ Not Recommended | Testing showed 15-35% for DEFINITELY AI text |
+| `parscgptv1.py` | ❌ Not Recommended | Testing showed 15-35% for DEFINITELY AI text |
+| `parscgptv2.py` | ❌ Not Recommended | Testing showed 15-35% for DEFINITELY AI text |
+| `parscgpt-ext.py` | ❌ Not Recommended | Testing showed 15-35% for DEFINITELY AI text |
+
+**Testing Results:**
+
+| Detector | Human Text (Habr 2014) | AI Text (My README) | Verdict |
+|----------|-----------------------|---------------------|---------|
+| **honest_ai_detector** ✅ | **5%** ✅ | **10% + ⚠️** ✅ | **HONEST** |
+| `parscgptv2.py` | 1% ✅ | 15% ❌ | DOES NOT WORK |
+| `parscgpt-ext.py` | 1% ✅ | 15% ❌ | DOES NOT WORK |
+
+**Critical Problem:** **NONE of the existing analyzers can correctly detect AI-generated text!**
+
+All analyzers show 15-35% for text that was DEFINITELY written by AI, instead of the expected 70-95%.
+
+### Integrated Extended Analyzers (All 6 Languages) ⚠️
+
+⚠️ **WARNING:** Extended analyzers are included for text sanitization features, but their AI detection should NOT be relied upon due to known limitations.
+
+| Language | Extended Binary | Report file | AI Detection Status |
+|----------|----------------|-------------|-------------------|
+| Python | `partxtpy/partxt-ext.py` | report_py-ext.txt | ⚠️ Limited reliability |
+| Rust | `partxtrs/target/partxt-ext` | report_rs-ext.txt | ⚠️ Limited reliability |
+| Go | `partxtgo/main-ext.go` | report_go-ext.txt | ⚠️ Limited reliability |
+| C++ | `partxtcpp/partxt-ext` | report_cpp-ext.txt | ⚠️ Limited reliability |
+| Node.js | `partxtnode/partxt-ext.js` | report_node-ext.txt | ⚠️ Limited reliability |
+| Bun | `partxtjs/partxt-ext.js` | report_bun-ext.txt | ⚠️ Limited reliability |
 
 ---
 
-## Standard Metrics (All Extended Versions)
+## AI Detection Limitations ⚠️
+
+### The Reality
+
+✅ **HONEST detector** — the only correct approach to AI detection
+
+❌ **All other detectors** — give false guarantees and do not work properly
+
+### Why Detectors DON'T WORK for AI Texts
+
+1. **README files are a special case**
+   - Technical documentation is structured by definition
+   - Uses formal style
+   - Has standard phrases ("installation", "usage", "examples")
+   - Lacks personal experience
+
+2. **AI generation has become too high-quality**
+   - Modern AIs write naturally
+   - Do not use zero-width watermarks
+   - Do not make formatting errors
+   - Imitate human style
+
+3. **No reliable technical indicators exist**
+   - Watermarks: not used in high-quality AI
+   - Formatting anomalies: absent in high-quality AI
+   - Statistical indicators: too variable
+
+### What Actually Works
+
+**For Human Texts:**
+```bash
+python3 honest_ai_detector.py human_text.txt
+```
+**Expected result:** 5% + "NO AI INDICATORS FOUND" ✅
+
+**For AI Texts (if technical indicators exist):**
+```bash
+python3 honest_ai_detector.py ai_text.txt
+```
+**Expected result:** High probability + indicators found ✅
+
+**For High-Quality AI (README, tech docs):**
+```bash
+python3 honest_ai_detector.py readme.md
+```
+**Expected result:** 10-35% + HONEST warnings ⚠️
+
+---
+
+## Standard Metrics (Extended Versions)
+
+⚠️ **NOTE:** These metrics are provided for text analysis features, but their AI detection reliability is limited.
 
 | Metric | Description | AI Detection Value |
 |--------|-------------|---------------------|
@@ -148,122 +235,66 @@ Extended versions of the basic text sanitizers (`partxt-ext`) are now available 
 | `word_length_variance` | Variance in word lengths | AI texts more uniform |
 | `confidence` | Based on word count (LOW <300, MEDIUM 300-999, HIGH ≥1000) | Reliability indicator |
 
-### AI Probability Scoring (Extended Versions)
-
-| Condition | Points | Enhancement |
-|-----------|--------|-------------|
-| Lexical diversity < 0.45 | **+25** | ↑ +5 vs standard |
-| Entropy < 5.0 | **+25** | ↑ +5 vs standard |
-| Burstiness < 0.35 | **+20** | ↑ +5 vs standard |
-| Pattern repetition > 0.35 | **+20** | ↑ +5 vs standard |
-| AI phrase hits ≥ 3 | **+20** | ↑ +5 vs standard |
-| Repetition score > 0.5 | +15 | Same |
-| Punctuation density > 0.04 | +5 | Same |
-| Unicode suspicious chars present | +5 | Same |
-| Average word length < 4.0 | **+10** | 🆕 New metric |
-| Word length variance < 1.5 | **+8** | 🆕 New metric |
-
-**Total** capped at 100% with confidence factor adjustment (80%-100% based on text length).
-
-### Output Format (Extended Versions)
+### Output Format (Honest AI Detector)
 
 ```
 ======================================================================
-aiparstxt-ext — Enhanced AI Forensic Analyzer Report
+HONEST AI DETECTOR — Transparent Limitations
 ======================================================================
 
-Input file:  sample.txt
-Output file: sample.ed.txt
-Execution time: 0.000560s
+📁 File: example.txt
+⏰ Analysis: 2026-08-24T21:33:48
+🔤 Language: RU
+----------------------------------------------------------------------
 
---- AI Watermark Analysis ---
-Watermark characters removed: 17
-Removed watermark character types:
-  U+200B: 5
-  U+200C: 3
-  ...
+🎯 VERDICT: ✅ NO AI INDICATORS FOUND
+📈 AI Probability: 5%
+🔍 Confidence: HIGH
 
---- Replaced Characters ---
-Characters replaced: 197
+💭 REASONING:
+  • No technical AI indicators found
 
+📋 DOCUMENT TYPE: Technical Article
+  ⚠️  WARNING: Technical documentation may produce false-negative results!
+
+----------------------------------------------------------------------
+
+⚠️  DETECTOR LIMITATIONS:
+  MAY PRODUCE FALSE-NEGATIVE RESULTS FOR:
+    • README files and technical documentation
+    • Texts written by professional technical writers
+    • AI texts edited by humans
+
+✅ DETECTOR HONESTLY STATES:
+  • CANNOT detect all AI texts
+  • CANNOT distinguish AI from professional technical writer
+  • Better to NOT detect AI than falsely accuse a human
+
+----------------------------------------------------------------------
+
+🧠 METHODOLOGY:
+  • Checks ONLY technically detectable features:
+    - AI watermarks (zero-width characters)
+    - Formatting anomalies (repetitions, uniform spacing)
+  • Does NOT use unreliable methods:
+    - Lexical markers (false positives)
+    - Statistics (variable)
+    - Stylometry (unreliable)
 ======================================================================
-AI FORENSIC ANALYSIS
-======================================================================
-
-Overall Verdict: Moderate probability of AI involvement (35.2%)
-Confidence Level: MEDIUM
-
-Detailed Metrics:
-  Word count:            198
-  Sentence count:        11
-  Lexical diversity:     0.832
-  Repetition score:      0.202
-  Entropy:               6.655
-  Burstiness:            1.590
-  Pattern repetition:    0.000
-  Punctuation density:   0.037
-  AI phrase hits:        2
-  Unicode suspicious:    0
-  Avg word length:       4.52
-  Word length variance:  2.18
-
-Signal Analysis:
-  ✓ High lexical diversity - rich vocabulary variation
-  ✓ Good entropy - natural word distribution
-  ✓ Good burstiness - natural sentence variation
-  ⚠️ Found 2 AI-typical phrases
 ```
-
----
-
-## Extended Metrics (parscgpt-ext.py only) ⭐
-
-For the most comprehensive analysis, the standalone `parscgpt-ext.py` provides 17 advanced metrics:
-
-| Metric | Description | AI Detection Value |
-|--------|-------------|---------------------|
-| `avg_word_length` | Average word length | AI uses simpler vocabulary |
-| `word_length_variance` | Variance in word lengths | AI texts more uniform |
-| `pronoun_ratio` | Ratio of pronouns to total words | AI overuses pronouns |
-| `readability_score` | Flesch Reading Ease score | AI texts "too readable" |
-| `passive_voice_density` | Passive voice construction frequency | AI prefers passive |
-| `adj_noun_pair_diversity` | Unique adj-noun combinations | AI has limited combinations |
-| `structural_uniformity` | Sentence start pattern repetition | AI uses templates |
-| `quantifier_overuse` | Hedge word frequency | AI overuses qualifiers |
-
-Use `parscgpt-ext.py` when you need the deepest linguistic analysis beyond the integrated sanitizers.
-**Key Differences: Extended vs Standard Versions**
-- Provides **9 additional metrics** for deeper analysis
-- Shows **detailed scoring** instead of single probability
-- Includes **specific interpretation** for each metric  
-- Offers **improved reliability** with text length adaptation
-- Detects **more AI patterns** — 70+ phrases vs 21 in standard version
-
-
----
-
-## Porting Analytics to Other Languages
-
-The enhanced analytics engine is now available in **all 6 language implementations** via the `-ext` versions. The standalone Python `parscgpt-ext.py` provides the most comprehensive 17-metric analysis for reference.
-
-See **`ANALYTICS_RECOMMENDATIONS.md`** for a complete porting guide with:
-- Metric computation formulas
-- Scoring model weights and thresholds
-- Interpretation rules
-- Language-specific guidance
 
 ---
 
 ## Implementations
 
-| Language   | Directory    | Build command                    | Report file      | Extended Report      |
-|------------|-------------|----------------------------------|------------------|---------------------|
-| Python     | partxtpy/   | (no build needed)                | report_py.txt    | report_py-ext.txt   |
-| Rust       | partxtrs/   | cargo build --release            | report_rs.txt    | report_rs-ext.txt   |
-| Go         | partxtgo/   | cd partxtgo && go build          | report_go.txt    | report_go-ext.txt   |
-| C++        | partxtcpp/  | make                             | report_cpp.txt   | report_cpp-ext.txt  |
-| Node.js    | partxtnode/ | (no build needed)                | report_node.txt  | report_node-ext.txt |
-| Bun        | partxtjs/   | (no build needed)                | report_bun.txt   | report_bun-ext.txt  |
+| Language   | Directory    | Build command                    | Report file      | Extended Report      | Honest AI Detector |
+|------------|-------------|----------------------------------|------------------|---------------------|-------------------|
+| Python     | partxtpy/   | (no build needed)                | report_py.txt    | report_py-ext.txt   | ✅ Available       |
+| Rust       | partxtrs/   | cargo build --release            | report_rs.txt    | report_rs-ext.txt   | ✅ Available       |
+| Go         | partxtgo/   | cd partxtgo && go build          | report_go.txt    | report_go-ext.txt   | ✅ Available       |
+| C++        | partxtcpp/  | make                             | report_cpp.txt   | report_cpp-ext.txt  | ✅ Available       |
+| Node.js    | partxtnode/ | (no build needed)                | report_node.txt  | report_node-ext.txt | ✅ Available       |
+| Bun        | partxtjs/   | (no build needed)                | report_bun.txt   | report_bun-ext.txt  | ✅ Available       |
 
 ---
 
@@ -275,7 +306,6 @@ Each report includes:
 - Watermark characters removed (with Unicode code points)
 - Replaced characters (with counts)
 - Word frequency (ascending)
-
 
 **Extended versions** additionally include:
 - AI forensic metrics section
@@ -298,89 +328,77 @@ Each report includes:
 
 ---
 
-## Recent Fixes (v0.3.0)
+## Project Status (August 2026)
 
-### New Extended Versions ⭐
+✅ **Text Sanitization:** FULLY FUNCTIONAL — All 6 languages working correctly  
+✅ **AI Watermark Removal:** FULLY FUNCTIONAL — Removes invisible watermark characters  
+⚠️ **AI Detection:** LIMITED RELIABILITY — Only `honest_ai_detector.py` with transparent limitations  
 
-**Enhanced AI forensic analysis now available in all 6 languages:**
+### What Works
 
-1. **Python Extended** (`partxtpy/partxt-ext.py`)
-   - Full AI forensic metrics integration
-   - Probability-based scoring
-   - Signal analysis with interpretations
+✅ **Text sanitization** — replaces disallowed characters with '?'  
+✅ **AI watermark removal** — strips invisible Unicode characters  
+✅ **Honest AI detection** — transparent about limitations  
 
-2. **JavaScript Extended** (Bun + Node.js)
-   - `partxtjs/partxt-ext.js` for Bun
-   - `partxtnode/partxt-ext.js` for Node.js
-   - Same metrics as Python version
+### What Has Limitations
 
-3. **Rust Extended** (`partxtrs/src/main-ext.rs`)
-   - Compiled performance
-   - Memory-efficient processing
-   - Full metric suite
+⚠️ **Statistical AI detection** — limited reliability for technical documentation  
+⚠️ **Extended analyzers** — do NOT reliably detect high-quality AI texts  
 
-4. **Go Extended** (`partxtgo/main-ext.go`)
-   - Type-safe implementation
-   - Standard library only
-   - Comprehensive metrics
+### Recommendation
 
-5. **C++ Extended** (`partxtcpp/partxt-ext.cpp`)
-   - High-performance C++20
-   - Full Unicode support
-   - Extended metrics
-
-**All extended versions include:**
-- 11 core AI forensic metrics
-- AI phrase detection (70+ phrases)
-- Unicode suspicious character detection
-- Statistical probability scoring (0-100%)
-- Confidence levels (LOW/MEDIUM/HIGH)
-- Detailed signal analysis
-- Enhanced reporting
-
-### Previous Fixes (v0.2.0)
-
-**Fixed critical bugs in AI watermark detection across all 4 implementations:**
-
-1. **PUA Range Bug** — Corrected Unicode range from `E000-E007F` (573,343 chars) to `E000-E07F` (128 chars)
-   - Reduced watermark character set from 860,305 to 259 characters
-   - Fixed in: Python, Go, Node.js, Rust
-
-2. **Node.js Code Point Handling** — Changed `String.fromCharCode()` to `String.fromCodePoint()`
-   - Previously detected 853 false watermarks (ASCII characters)
-   - Now correctly detects 17 watermarks
-
-3. **Go Flag Position** — Documented that Go requires flags BEFORE filename
-   ```bash
-   # Correct usage for Go:
-   cd partxtgo && go run . --remove-watermark input.txt
-   ```
-
-### Test Results (testdata/comprehensive_watermark_test.txt)
-
-All implementations now correctly detect **17/17 watermark characters**:
-
-| Language | Time (s) | Watermarks Removed |
-|----------|----------|-------------------|
-| Python   | 0.000560 | ✅ 17 (all) |
-| Go       | 0.000039 | ✅ 17 (all) |
-| Node.js  | 0.000455 | ✅ 17 (all) |
-| Rust     | 0.000078 | ✅ 17 (all) |
-
-**Total watermark coverage:** ~270+ character codepoints
+**Use `honest_ai_detector.py` for AI detection** — it's the only detector with transparent limitations and correct methodology.
 
 ---
 
-## Versioning
+## Testing
 
-- Patch (0.0.x): bug fixes
-- Minor (0.x.0): fully functional, meets requirements
-- Major (x.0.0): significant new features
+**Testing:**
 
-Current version: 0.3.0
+Comprehensive testing was conducted using:
+- **DEFINITELY HUMAN sample:** Real 2014 Habr article (pre-ChatGPT era)
+- **DEFINITELY AI sample:** AI-generated README file
+- **MULTILINGUAL TEST:** ChatGPT-generated Ukrainian text (bas-dcxv-try-orig.txt)
+
+**Results:**
+
+| Detector | Human Text (Habr 2014) | AI Text (My README) | Ukrainian AI Text | Status |
+|----------|-----------------------|---------------------|------------------|--------|
+| **honest_ai_detector** ✅ | **5%** ✅ | **10% + ⚠️** ✅ | **5%** ❌ | **HONEST (language limitation)** |
+| `parscgptv2.py` | 1% ✅ | 15% ❌ | 5% ❌ | DOES NOT WORK |
+| `parscgpt-ext.py` | 1% ✅ | 15% ❌ | 5% ❌ | DOES NOT WORK |
+
+**Ukrainian Text Testing (August 2026):**
+All existing detectors failed to correctly identify ChatGPT-generated Ukrainian text (1-30% AI probability instead of 100%). This revealed critical language detection limitations:
+- 6 out of 7 detectors incorrectly identified language as Russian instead of Ukrainian
+- No Ukrainian-specific AI patterns in detector databases
+- Perplexity/burstiness metrics insufficient for non-English languages
+
+**See:** `tmp/FINAL_REPORT.md` for complete multilingual testing analysis and recommendations.
+
+**See `FINAL_TESTING_REPORT.md` for complete testing methodology and results.**
+
+---
+
+## Documentation
+
+- [EXTENDED_VERSIONS.md](EXTENDED_VERSIONS.md) — Details on extended analyzers
+- [ANALYZER_COMPARISON.md](ANALYZER_COMPARISON.md) — Comparison of analyzers
+- [ANALYTICS_RECOMMENDATIONS.md](ANALYTICS_RECOMMENDATIONS.md) — Analytics porting guide
+- [FINAL_TESTING_REPORT.md](FINAL_TESTING_REPORT.md) — Complete AI detection testing results
 
 ---
 
 ## License
 
 MIT
+
+## Contributing
+
+Contributions welcome! The project is especially interested in:
+- Improving AI detection reliability
+- Adding more language implementations
+- Enhancing text sanitization features
+- Documentation improvements
+
+**Please note:** AI detection is an active research area with known limitations. The `honest_ai_detector.py` represents our current best effort with transparent limitations.

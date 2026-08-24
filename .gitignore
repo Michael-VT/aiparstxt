@@ -30,4 +30,6 @@ articlIPv4seals.txt
 # Local version tracking & project management (not for GitHub)
 .VERSION_TRACKING.md
 .PROJECT_NOTES.md
+# Temporary working directory (not for repository)
+tmp/
 .LOCAL_DOCS/

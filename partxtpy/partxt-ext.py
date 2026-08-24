@@ -23,12 +23,13 @@ import time
 ALLOWED = set()
 ALLOWED.update("0123456789")
 ALLOWED.update("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz")
-ALLOWED.update("АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдеёжзийклмнопрстуфхцчшщъыьэюя")
-ALLOWED.update("[]{}()-=_+!@#$%&*;'/.,<>"
+ALLOWED.update("АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдеёжзийклмнопрстуфхцчшщъыьэюяҐґЄєІіЇї")
+ALLOWED.update("àâçéèêëîïôùûüÿœæÀÂÇÉÈÊËÎÏÔÙÛÜŸŒÆ")  # Français
+ALLOWED.update("äöüßÄÖÜ")  # Deutsch  
+ALLOWED.update("àáâãéêíóôõúçÀÁÂÃÉÊÍÓÔÕÚÇ")  # Português
+ALLOWED.update("[]{}():()-=_+!@#$%&*;'/.,<>"
                "'"
-               '"`~')
-ALLOWED.update(" \t\n\r")
-
+               '"`~|—«»')
 # =========================================================
 # ENHANCED AI WATERMARK CHARACTERS
 # =========================================================
