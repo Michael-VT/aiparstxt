@@ -587,7 +587,7 @@ Examples:
         word_freq = word_frequency(processed_text) if not args.no_words else None
         ai_metrics = calculate_ai_forensic_metrics(processed_text, word_freq or Counter())
         if ai_metrics:
-            ai_probability, ai_confidence = calculate_ai_probability(ai_metrics)
+            ai_probability, scores, ai_confidence = calculate_ai_probability(ai_metrics)
     else:
         word_freq = None
     
