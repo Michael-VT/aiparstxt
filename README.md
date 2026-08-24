@@ -143,7 +143,7 @@ python3 honest_ai_detector.py <textfile>
 
 **Testing Results:**
 
-| Detector | Human Text (Habr 2014) | AI Text (My README) | Verdict |
+| Detector | Human Text (Habr 2014) | AI Text (Sample README) | Verdict |
 |----------|-----------------------|---------------------|---------|
 | **honest_ai_detector** ✅ | **5%** ✅ | **10% + ⚠️** ✅ | **HONEST** |
 | `parscgptv2.py` | 1% ✅ | 15% ❌ | DOES NOT WORK |
@@ -362,7 +362,7 @@ Comprehensive testing was conducted using:
 
 **Results:**
 
-| Detector | Human Text (Habr 2014) | AI Text (My README) | Ukrainian AI Text | Status |
+| Detector | Human Text (Habr 2014) | AI Text (Sample README) | Ukrainian AI Text | Status |
 |----------|-----------------------|---------------------|------------------|--------|
 | **honest_ai_detector** ✅ | **5%** ✅ | **10% + ⚠️** ✅ | **5%** ❌ | **HONEST (language limitation)** |
 | `parscgptv2.py` | 1% ✅ | 15% ❌ | 5% ❌ | DOES NOT WORK |

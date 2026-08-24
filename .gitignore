@@ -32,4 +32,8 @@ articlIPv4seals.txt
 .PROJECT_NOTES.md
 # Temporary working directory (not for repository)
 tmp/
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
 .LOCAL_DOCS/
