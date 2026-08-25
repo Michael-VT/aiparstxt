@@ -173,6 +173,10 @@ und in der Ausgabe von `parscgpt-ext.py`.
   dieses Register liefern sowohl KI als auch menschliche SMM-Texter, daher
   werden keine KI-Punkte vergeben, das Verdikt wird einfach zurückgehalten.
 
+### Online-Demo (GitHub Pages)
+
+Die Browser-Version liegt in [`docs/`](docs/): Text einfügen — Bewertung, Verdikt und Fundstellen; alles läuft lokal im Browser. Veröffentlichung: Settings → Pages → main / `/docs`.
+
 ### Analyse einer Datei mit allen Detektoren
 
 ```bash

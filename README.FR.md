@@ -173,6 +173,10 @@ rapports des nettoyeurs étendus et dans la sortie de `parscgpt-ext.py`.
   « humain » — ce registre est produit à la fois par les IA et par les rédacteurs
   SMM humains, donc aucun point IA n'est attribué, le verdict est simplement retiré.
 
+### Démo en ligne (GitHub Pages)
+
+La version navigateur est dans [`docs/`](docs/) : collez le texte — score, verdict et preuves localisées ; tout s'exécute localement dans le navigateur. Publication : Settings → Pages → main / `/docs`.
+
 ### Analyse d'un fichier avec tous les détecteurs
 
 ```bash

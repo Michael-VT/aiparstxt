@@ -260,6 +260,16 @@ section appears in the extended sanitizer reports and in `parscgpt-ext.py` outpu
   produced by both AI and human SMM writers, so no AI points are awarded,
   the verdict is simply withheld.
 
+### Online demo (GitHub Pages)
+
+A browser-based version lives in [`docs/`](docs/) (`index.html` + `analyzer.js`):
+paste a text, get the score, verdict and the located evidence — everything runs
+locally in the browser, the text never leaves the device. The web analyzer is
+byte-compatible with the console implementations (`tests/test_web_parity.sh`).
+
+To publish on GitHub: repo **Settings → Pages → Source: Deploy from a branch →
+main / `/docs`** — the demo appears at `https://<user>.github.io/aiparstxt/`.
+
 ### One-file analysis with all detectors
 
 ```bash

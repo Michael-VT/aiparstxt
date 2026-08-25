@@ -173,6 +173,10 @@ estendidos e na saída de `parscgpt-ext.py`.
   esse registo é produzido tanto por IA quanto por redatores humanos de SMM,
   portanto nenhum ponto de IA é atribuído, o veredicto simplesmente é retido.
 
+### Demonstração online (GitHub Pages)
+
+A versão de navegador está em [`docs/`](docs/): cole o texto — obtenha pontuação, veredicto e evidências localizadas; tudo corre localmente no navegador. Publicação: Settings → Pages → main / `/docs`.
+
 ### Análise de um ficheiro com todos os detetores
 
 ```bash

@@ -169,6 +169,7 @@ Semantic: patch (0.0.x) = bug fixes, minor (0.x.0) = meets requirements, major (
 - `parscgpt-ext.py` — **Extended AI forensic analytics** (18 metrics, evidence locations, most comprehensive) ⭐
 - `AI_SIGNALS_SPEC.md` — **Canonical spec**: phrase tiers, weights, formula, evidence format, abstention rules
 - `analyze_all.sh` — **Run every analyzer on one file** + summarized report (builds missing binaries)
+- `docs/index.html` + `docs/analyzer.js` — **browser demo** for GitHub Pages (parity-tested)
 - `parscgptv2.py` — **Standard AI forensic analytics** (conservative multilingual version)
 - `partxtpy/partxt-ext.py` — Python extended sanitizer with integrated AI detection
 - `ANALYTICS_RECOMMENDATIONS.md` — Porting guide for analytics to other languages
@@ -261,4 +262,5 @@ Use batch scripts:
 ### For reproducible verification
 ```bash
 ./tests/test_cross_language.sh
+./tests/test_web_parity.sh        # browser demo vs console analyzer
 ```
