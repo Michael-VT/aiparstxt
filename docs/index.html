@@ -22,7 +22,10 @@
   button { font:600 15px/1 system-ui; padding:11px 22px; border:0; border-radius:8px; cursor:pointer; }
   #go { background:var(--acc); color:#fff; }
   #go:hover { filter:brightness(1.08); }
-  #clr, #lang { background:#e9eef3; color:var(--ink); }
+  #clr { background:#e9eef3; color:var(--ink); }
+  .langs { display:flex; gap:4px; }
+  .lang-btn { background:#e9eef3; color:var(--mut); padding:8px 12px; font-size:13px; }
+  .lang-btn.on { background:var(--acc); color:#fff; }
   input[type=file] { font-size:13px; color:var(--mut); }
   .score { display:flex; gap:18px; align-items:center; flex-wrap:wrap; }
   .num { font-size:2.6rem; font-weight:700; line-height:1; }
@@ -63,7 +66,12 @@
       <button id="clr" data-i18n="clear">Очистить</button>
       <input type="file" id="file" accept=".txt,text/plain">
       <span style="flex:1"></span>
-      <button id="lang">EN</button>
+      <span class="langs">
+        <button class="lang-btn" data-lang="ru">RU</button><button
+          class="lang-btn" data-lang="uk">UA</button><button
+          class="lang-btn" data-lang="en">EN</button><button
+          class="lang-btn" data-lang="pt">PT</button>
+      </span>
     </div>
   </div>
 
@@ -99,6 +107,38 @@
 <script src="analyzer.js"></script>
 <script>
 const I18N = {
+  uk: {
+    title: "— перевірка тексту на ознаки ШІ",
+    privacy: "Усе виконується локально у вашому браузері — текст нікуди не надсилається.",
+    placeholder: "Вставте текст сюди…",
+    analyze: "Перевірити", clear: "Очистити",
+    metrics: "Метрики", evidence: "Місця в тексті, на які варто звернути увагу:",
+    noevidence: "Індикаторів не знайдено.",
+    words: "слів", sents: "речень", linewide: "по всьому тексту",
+    m_scv: "CV довжини речень", m_pcv: "CV довжини абзаців", m_phr: "ШІ-фрази (високий/середній/слабкий)",
+    m_conn: "Щільність сполучників", m_div: "Лексичне різноманіття", m_ent: "Ентропія",
+    m_tmpl: "Шаблонні заголовки",
+    bands: ["СИГНАЛІВ НЕМА", "СЛАБКІ СИГНАЛИ", "ЗМІШАНИЙ ПРОФІЛЬ", "ЙМОВІРНО ШІ", "СИЛЬНО ШІ-ПОДІБНО"],
+    legend: "Оцінка — це кількість знайдених ШІ-подібних сигналів, а не ймовірність авторства: <20 — сигналів немає; 20–35 — слабкі; 35–55 — змішаний профіль (перевірте місця вище); 55+ — ймовірно ШІ. Пометки NOTE означають «вердикт відкликано» (короткий текст / жанр поза калібруванням) — вважайте це «немає даних», а не «людина».",
+    about: "Алгоритм ідентичний консольним аналізаторам проєкту (див. AI_SIGNALS_SPEC.md); калібрування та обмеження — у validation/AI_CORPUS_REPORT.md. Не є доказом авторства.",
+    source: "Джерела:",
+  },
+  pt: {
+    title: "— verificação de texto com sinais de IA",
+    privacy: "Tudo corre localmente no seu navegador — o texto não é enviado para lugar nenhum.",
+    placeholder: "Cole o texto aqui…",
+    analyze: "Verificar", clear: "Limpar",
+    metrics: "Métricas", evidence: "Passagens do texto que merecem atenção:",
+    noevidence: "Nenhum indicador encontrado.",
+    words: "palavras", sents: "frases", linewide: "em todo o texto",
+    m_scv: "CV do comprimento das frases", m_pcv: "CV do comprimento dos parágrafos", m_phr: "Frases de IA (alto/médio/baixo)",
+    m_conn: "Densidade de conectivos", m_div: "Diversidade lexical", m_ent: "Entropia",
+    m_tmpl: "Cabeçalhos-modelo",
+    bands: ["SEM SINAIS", "SINAIS FRACOS", "PERFIL MISTO", "PROVÁVEL IA", "FORTEMENTE PARECIDO COM IA"],
+    legend: "A pontuação conta os sinais semelhantes a IA encontrados — não é uma probabilidade de autoria: <20 nenhum; 20–35 fracos; 35–55 perfil misto (revise as passagens acima); 55+ provável IA. Anotações NOTE significam «veredicto retirado» (texto curto / género fora da calibração) — trate como «sem dados», não como «humano».",
+    about: "O algoritmo é idêntico aos analisadores de consola do projeto (ver AI_SIGNALS_SPEC.md); calibração e limitações — validation/AI_CORPUS_REPORT.md. Não é prova de autoria.",
+    source: "Código:",
+  },
   ru: {
     title: "— проверка текста на признаки ИИ",
     privacy: "Всё выполняется локально в вашем браузере — текст никуда не отправляется.",
@@ -150,11 +190,14 @@ function applyI18n() {
   });
   document.getElementById("repo-link").textContent =
     t.source + " github.com/Michael-VT/aiparstxt";
-  document.getElementById("lang").textContent = lang === "ru" ? "EN" : "RU";
+  document.querySelectorAll(".lang-btn").forEach(b => {
+    b.classList.toggle("on", b.dataset.lang === lang);
+  });
+  document.documentElement.lang = lang === "uk" ? "uk" : lang;
 }
 
-document.getElementById("lang").addEventListener("click", () => {
-  lang = lang === "ru" ? "en" : "ru"; applyI18n();
+document.querySelectorAll(".lang-btn").forEach(b => {
+  b.addEventListener("click", () => { lang = b.dataset.lang; applyI18n(); });
 });
 
 document.getElementById("file").addEventListener("change", e => {

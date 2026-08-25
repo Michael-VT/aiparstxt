@@ -2,6 +2,8 @@
 
 Eine Sammlung von Kommandozeilen-Tools zur Textbereinigung durch Ersetzung unzulässiger Zeichen durch '?'. In 6 Sprachen implementiert für Leistungsvergleiche. Enthält AI-Wasserzeichen-Entfernung und **statistische Forensik-Analyse** zur Erkennung KI-generierter Texte.
 
+**🌍 Online ausprobieren (keine Installation, läuft im Browser):** <https://michael-vt.github.io/aiparstxt/> — Text einfügen, Bewertung und die genauen KI-typischen Stellen erhalten (Oberfläche DE-frei: EN/RU/UA/PT).
+
 **Verfügbar in:** [English](README.md) | [Русский](README.RU.md) | [Українська](README.UA.md) | [Português](README.PT.md) | [Français](README.FR.md) | [Deutsch](README.DE.md)
 
 

@@ -2,6 +2,8 @@
 
 Conjunto de utilitários de linha de comando para limpar arquivos de texto substituindo caracteres não permitidos por '?'. Implementado em 6 idiomas para comparação de desempenho. Inclui remoção de marcas d'água de IA e **análise forense estatística** para detecção de texto gerado por IA.
 
+**🌍 Experimente online (sem instalação, corre no navegador):** <https://michael-vt.github.io/aiparstxt/> — cole um texto, obtenha a pontuação e as passagens exatas com aspeto típico de IA (interface PT/EN/RU/UA).
+
 **Disponível em:** [English](README.md) | [Русский](README.RU.md) | [Українська](README.UA.md) | [Português](README.PT.md) | [Français](README.FR.md) | [Deutsch](README.DE.md)
 
 

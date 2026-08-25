@@ -2,6 +2,8 @@
 
 Ensemble d'utilitaires en ligne de commande pour nettoyer des fichiers texte en remplaçant les caractères non autorisés par '?'. Implémenté en 6 langages pour comparaison des performances. Inclut la suppression de filigranes IA et **analyse statistique forensique** pour détecter du texte généré par IA.
 
+**🌍 Essayez en ligne (sans installation, fonctionne dans le navigateur) :** <https://michael-vt.github.io/aiparstxt/> — collez un texte, obtenez le score et les passages exacts d'allure typique d'IA (interface EN/RU/UA/PT).
+
 **Disponible en :** [English](README.md) | [Русский](README.RU.md) | [Українська](README.UA.md) | [Português](README.PT.md) | [Français](README.FR.md) | [Deutsch](README.DE.md)
 
 

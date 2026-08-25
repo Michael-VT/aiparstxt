@@ -4,6 +4,8 @@ A set of command-line utilities that sanitize text files by replacing disallowed
 
 **⚠️ IMPORTANT UPDATE (August 2026):** After extensive testing with DEFINITELY HUMAN and DEFINITELY AI samples, we've created **honest_ai_detector.py** — the only detector with transparent limitations. See [AI Detection Limitations](#ai-detection-limitations) below.
 
+**🌍 Try it online (no install, runs in your browser):** <https://michael-vt.github.io/aiparstxt/> — paste a text, get the score and the exact spots that look AI-typical (EN/RU/UK/PT interface).
+
 **Available in:** [English](README.md) | [Русский](README.RU.md) | [Українська](README.UA.md) | [Português](README.PT.md) | [Français](README.FR.md) | [Deutsch](README.DE.md)
 
 
