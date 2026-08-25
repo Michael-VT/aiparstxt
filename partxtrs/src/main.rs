@@ -4,10 +4,6 @@ use std::fs;
 use std::path::Path;
 use std::time::Instant;
 
-const ALLOWED: &str = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz\
-АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдеёжзийклмнопрстуфхцчшщъыьэюя\
-[]{}()-=_+!@#$%&*;'/.,<>\"`~ \\t\\n\\r";
-
 // AI Watermark Characters (невидимые маркеры, которые ИИ-системы используют для watermarking)
 fn is_watermark(ch: char) -> bool {
     let cp = ch as u32;

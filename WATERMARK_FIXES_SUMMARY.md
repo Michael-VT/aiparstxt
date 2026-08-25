@@ -1,5 +1,9 @@
-# WATERMARK REMOVAL — FIX SUMMARY
+# WATERMARK REMOVAL — HISTORICAL FIX SUMMARY
 # ==================================
+
+This document records the original four-language fixes. The current six-language
+contract and reproducible verification are maintained in `CHARACTER_SET.md` and
+`TESTING.md`.
 
 ## ✅ All Issues Fixed
 
@@ -174,4 +178,6 @@ All 4 implementations now:
 - ✅ Work consistently across languages
 - ✅ Generate accurate reports
 
-**Only remaining difference**: Go requires flags before filename (documented)
+The former Go flag-order difference has been removed. All six current
+implementations accept the common flags before or after the input filename and
+are checked by `tests/test_cross_language.sh`.

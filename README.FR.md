@@ -139,14 +139,59 @@ Les versions étendues des nettoyeurs de texte de base (`partxt-ext`) sont maint
 | `lexical_diversity` | Mots uniques / total des mots (après suppression des stopwords) | IA a une diversité moindre |
 | `repetition_score` | Fraction de mots apparaissant plus d'une fois | IA répète plus |
 | `entropy` | Entropie de Shannon de la distribution de fréquence des mots | IA a distribution unnaturellement uniforme |
-| `burstiness` | Coefficient de variation des longueurs de phrases | IA a une structure de phrases excessivement uniforme |
+| `burstiness` | Coefficient de variation des longueurs de phrases | IA a une structure de phrases excessivement uniforme (signal principal) |
+| `paragraph_length_cv` | Coefficient de variation du nombre de mots par paragraphe | Les paragraphes IA sont unnaturellement égaux (signal principal) |
+| `joint_uniformity` | CV faibles à la fois pour les phrases et les paragraphes | Plus fort signal structurel IA |
+| `connective_density` | Connecteurs discursifs par phrase (multilingue) | IA surutilise les connecteurs |
 | `pattern_repetition` | Fraction de motifs de longueurs de phrases répétés | IA utilise des motifs de modèle |
 | `punctuation_density` | Nombre de ponctuation / total des caractères | IA peut utiliser la ponctuation excessivement |
-| `ai_phrase_hits` | Correspondances avec 70+ phrases typiques IA sélectionnées | Signature directe IA |
+| `ai_phrase_hits` | ~150 expressions typiques IA sélectionnées en 3 niveaux (EN/RU/UK/PT) | Signature directe IA |
 | `unicode_symbols` | Nombre de caractères Unicode suspects | Marqueurs techniques IA |
 | `avg_word_length` | Longueur moyenne des mots | IA utilise un vocabulaire plus simple |
 | `word_length_variance` | Variance des longueurs de mots | Textes IA plus uniformes |
 | `confidence` | Basé sur le nombre de mots (FAIBLE <300, MOYEN 300-999, HAUT ≥1000) | Indicateur de fiabilité |
+
+### Localisation des indices — AI EVIDENCE (v0.4.0+)
+
+Chaque indicateur déclenché est rapporté avec son emplacement exact dans le texte :
+numéro de ligne, extrait (~110 caractères) où le déclencheur est surligné sous la
+forme `>>>phrase<<<`, et — pour les signaux d'uniformité — les séquences de
+longueurs de phrases/paragraphes. La section `AI EVIDENCE` apparaît dans les
+rapports des nettoyeurs étendus et dans la sortie de `parscgpt-ext.py`.
+
+### Abstention honnête (v0.4.1–v0.4.3)
+
+- Textes courts (< 150 mots ou < 5 phrases) : les signaux structurels sont pondérés
+  par la fiabilité statistique de l'échantillon au lieu d'être silencieusement
+  désactivés, et le verdict est annoté comme non fiable — plus aucun « humain »
+  affirmé sur des textes trop petits pour être analysés.
+- Répétition d'en-têtes modèles (v0.4.2) : lignes d'en-tête courtes répétées à
+  l'identique (« Что верно » ×7, « Итог » ×7) — marqueur fort des réponses LLM
+  structurées ; zéro faux positifs sur le corpus humain.
+- Registre promotionnel/réseaux sociaux (v0.4.3) : les textes saturés d'emojis et
+  de points d'exclamation reçoivent une note de genre au lieu d'un verdict
+  « humain » — ce registre est produit à la fois par les IA et par les rédacteurs
+  SMM humains, donc aucun point IA n'est attribué, le verdict est simplement retiré.
+
+### Analyse d'un fichier avec tous les détecteurs
+
+```bash
+./analyze_all.sh input.txt
+```
+
+Compile les binaires manquants, exécute tous les analyseurs du projet
+(technique, héritage ×2, standard, étendu, basé sur les marqueurs, et les six
+`partxt-ext`), vérifie la parité entre implémentations et imprime un rapport
+résumé : consensus, pire cas (analyseur le plus strict), bande de risque et liste
+des passages à corriger avant publication.
+
+### Validation (v0.4.0+)
+
+Scoring calibré et validé sur 34 réponses IA confirmées (8 services × 4 langues)
+et 20 textes humains sourcés — voir `validation/AI_CORPUS_REPORT.md` et
+`AI_SIGNALS_SPEC.md`. Au seuil de classification 50 : rappel 93,9 %, taux de faux
+positifs 0 %. Les scores sont heuristiques et ne constituent pas une preuve de
+paternité.
 
 ### Scoring de Probabilité IA (Versions Étendues)
 
@@ -340,7 +385,7 @@ Chaque rapport inclut :
 - Mineure (0.x.0) : entièrement fonctionnel, répond aux exigences
 - Majeure (x.0.0) : nouvelles fonctionnalités significatives
 
-Version actuelle : 0.3.0
+Version actuelle : 0.4.3
 
 ## Licence
 

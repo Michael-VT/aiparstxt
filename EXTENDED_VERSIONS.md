@@ -32,47 +32,61 @@ All extended versions support the same options as standard versions:
 --no-report               Do not create report file
 --no-words                Exclude word frequency from report
 --remove-watermark        Remove AI watermark characters
---replacement <char>       Replacement character (default: '?')
---remove                  Remove disallowed chars instead of replacing
 ```
+
+The common cross-language options are `-o/--output`, `-r/--report`,
+`--no-edit`, `--no-report`, `--no-words` and `--remove-watermark`.
 
 ## Key Features
 
-### 11 Core AI Forensic Metrics
+### AI Forensic Metrics (v0.4.0 — 18 metrics, spec: `AI_SIGNALS_SPEC.md`)
 
-1. **Lexical Diversity** — Unique words / total words (after stopword removal)
-2. **Repetition Score** — Fraction of words appearing more than once
-3. **Entropy** — Shannon entropy of word frequency distribution
-4. **Burstiness** — Coefficient of variation of sentence lengths
-5. **Pattern Repetition** — Fraction of repeated sentence-length patterns
-6. **Punctuation Density** — Punctuation count / total characters
-7. **AI Phrase Hits** — Matches against 70+ curated AI-typical phrases
-8. **Unicode Symbols** — Count of suspicious Unicode characters
-9. **Average Word Length** — Mean length of words in text
-10. **Word Length Variance** — Variance in word lengths
-11. **Confidence Level** — LOW/MEDIUM/HIGH based on text length
+**Primary structural signals (corpus-validated):**
+1. **Sentence-length CV** — coefficient of variation of sentence word counts (AI corpus: 0.27–0.44; human corpus: 0.42–1.5)
+2. **Paragraph-length CV** — CV of paragraph word counts (AI: 0.06–0.40; human: 0.45–0.98)
+3. **Joint uniformity** — both CVs low simultaneously (33/34 AI vs 0/10 human)
+4. **Connective density** — discourse connectives per sentence (multilingual list)
+
+**Core metrics:**
+5. **Lexical Diversity** — unique/total words (after stopword removal)
+6. **Repetition Score** — distinct words appearing more than once
+7. **Entropy** — Shannon entropy of word frequency distribution
+8. **Pattern Repetition** — fraction of repeated sentence-length patterns
+9. **Punctuation Density** — punctuation count / total characters
+10. **AI Phrase Hits** — ~150 curated phrases in 3 tiers (HIGH/MEDIUM/WEAK) across EN/RU/UK/PT
+11. **Unicode Symbols** — suspicious Unicode characters
+
+**Extended metrics:** average word length, word length variance, pronoun ratio,
+Flesch readability, passive voice density, adjective-noun pair diversity,
+structural uniformity, quantifier overuse, confidence level.
+
+**AI EVIDENCE** — every indicator is reported with its location: line number,
+excerpt (~110 chars) with the trigger highlighted as `>>>phrase<<<`,
+sentence/paragraph length sequences.
 
 ### AI Probability Scoring
 
 The extended versions calculate a comprehensive AI probability score (0-100%) based on weighted analysis of all metrics:
 
-| Metric | Condition | Points |
-|--------|-----------|--------|
-| Lexical diversity | < 0.45 | +25 |
-| Entropy | < 5.0 | +25 |
-| Burstiness | < 0.35 | +20 |
-| Pattern repetition | > 0.35 | +20 |
-| AI phrase hits | ≥ 3 | +20 |
-| Repetition score | > 0.5 | +15 |
-| Punctuation density | > 0.04 | +5 |
-| Unicode symbols | Present | +5 |
-| Average word length | < 4.0 | +10 |
-| Word length variance | < 1.5 | +8 |
+Canonical weights (see `AI_SIGNALS_SPEC.md`); summary of the primary signals:
 
-**Total is capped at 100%** with confidence factor adjustment:
-- LOW confidence (< 300 words): 80% factor
-- MEDIUM confidence (300-999 words): 90% factor  
-- HIGH confidence (≥ 1000 words): 100% factor
+| Signal | Condition | Points |
+|--------|-----------|--------|
+| Sentence-length CV | < 0.30 / 0.35 / 0.40 / 0.45 / 0.50 | +32 / 26 / 19 / 11 / 5 |
+| Paragraph-length CV | < 0.15 / 0.25 / 0.35 / 0.45 | +28 / 22 / 16 / 7 |
+| Joint uniformity | both CV < 0.40 / < 0.45 | +14 / 10 |
+| HIGH phrases | ≥ 2 / = 1 | +24 / 15 |
+| MEDIUM phrases | ≥ 3 / ≥ 1 | +10 / 5 |
+| Connective density | ≥ 0.12 / ≥ 0.08 | +13 / 7 |
+
+Plus supporting weights for the core/extended metrics (≤ 15 each).
+Guards: sentence CV requires ≥ 15 sentences and ≥ 150 words; paragraph CV
+requires ≥ 4 paragraphs of > 15 words.
+
+**Total**: `min(100, total × (0.9 + 0.1 × min(1, words/1000)))`.
+
+**Validation** (34 confirmed AI answers vs 20 human texts, `validation/AI_CORPUS_REPORT.md`):
+threshold 50 → recall 93.9%, false positives 0%; threshold 70 → recall 60.6%, FP 0%.
 
 ## Interpretation Guide
 
@@ -80,10 +94,12 @@ The extended versions calculate a comprehensive AI probability score (0-100%) ba
 
 | AI Probability | Verdict | Action |
 |---------------|---------|--------|
-| 60-100% | High probability of AI-generated content | Investigate further, verify source |
-| 30-60% | Moderate probability of AI involvement | Review for patterns, check context |
-| 10-30% | Low probability of AI-generated content | Likely human, minor AI influence |
-| 0-10% | Text appears predominantly human-written | Natural human writing detected |
+| > 70% | Strong AI-like statistical profile | Investigate further, verify source |
+| 55-70% | Probable AI-generated text | Review evidence locations, check context |
+| 35-55% | Mixed profile | Review AI EVIDENCE section |
+| < 35% | Statistically more human-like | Natural human writing likely |
+
+Recommended classification thresholds: 50-55 "probable AI", 70 "strong AI".
 
 ### Signal Analysis
 
@@ -166,7 +182,8 @@ Signal Analysis:
 | Python   | ~0.00056 s   | ~0.00070 s    | +25%     |
 | Bun      | ~0.00220 s   | ~0.00280 s    | +27%     |
 
-*Times on 197-character test file with 197 replacements*
+*Illustrative times on the small sample file with 136 replacements; run the
+cross-language test for current measurements.*
 
 ## Use Cases
 
@@ -204,12 +221,13 @@ Signal Analysis:
 |---------|------------------|---------------|-----------------|
 | Integrated with sanitizer | ✅ Yes | ❌ No | ❌ No |
 | Languages | 6 (all) | 1 (Python) | 1 (Python) |
-| Core metrics | 11 | 8 | 17 |
-| AI phrases | 70+ | 21 | 70+ |
-| Probability scoring | ✅ Yes | ✅ Yes | ✅ Yes |
+| Core metrics | 18 | 9 | 18 |
+| AI phrases | ~150 (3 tiers, EN/RU/UK/PT) | HIGH+MEDIUM tiers | ~150 (3 tiers) |
+| Probability scoring | ✅ Yes | ✅ Yes (conservative) | ✅ Yes |
 | Confidence levels | ✅ Yes | ✅ Yes | ✅ Yes |
 | Signal analysis | ✅ Yes | ✅ Yes | ✅ Yes |
-| Advanced metrics | ❌ No | ❌ No | ✅ Yes (6 extra) |
+| Evidence locations | ✅ Yes | ✅ (phrases) | ✅ Yes |
+| Advanced metrics | ✅ Yes | ❌ No | ✅ Yes |
 
 **Recommendation**: Use extended versions for integrated analysis, `parscgpt-ext.py` for the deepest linguistic analysis.
 
@@ -239,6 +257,6 @@ cd partxtcpp && make partxt-ext
 
 ## Version Information
 
-- Current version: 0.3.0
-- Release date: 2025
+- Current version: 0.4.3
+- Release date: 2026
 - Changelog: See main README.md for version history

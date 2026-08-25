@@ -196,10 +196,11 @@ def build_report(input_file, output_file, replaced, watermark_removed, word_freq
     lines.append(f"--- Language Detection ---")
     if language:
         lines.append(f"Specified language: {LANGUAGE_CHARS.get(language, {}).get('name', language)}")
+    elif detected_language:
+        lines.append(f"Language mode: Auto-detected ({LANGUAGE_CHARS.get(detected_language, {}).get('name', detected_language)} character set)")
+        lines.append(f"Detected language: {LANGUAGE_CHARS.get(detected_language, {}).get('name', detected_language)}")
     else:
         lines.append(f"Language mode: Universal (all supported languages)")
-    if detected_language:
-        lines.append(f"Detected language: {LANGUAGE_CHARS.get(detected_language, {}).get('name', detected_language)}")
     lines.append(f"")
 
     # Mode information

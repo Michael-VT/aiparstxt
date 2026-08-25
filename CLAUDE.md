@@ -14,8 +14,9 @@ CLI tools in `partxtpy/`, `partxtrs/`, `partxtgo/`, `partxtcpp/`, `partxtnode/`,
 ### 2. Extended AI Forensic Analytics (All 6 languages) ⭐
 Enhanced sanitizers with integrated AI detection:
 - `partxt-ext` for each language (Python, Rust, Go, C++, Node.js, Bun)
-- **11 core AI forensic metrics** + AI probability scoring
-- **70+ AI phrases** detection (vs 21 in standard versions)
+- **18 forensic metrics** incl. sentence/paragraph-length uniformity (CV)
+- **~150 AI phrases** in 3 tiers across EN/RU/UK/PT
+- **AI EVIDENCE**: line numbers + highlighted excerpts for every indicator
 - Unicode suspicious character detection
 - Statistical AI probability scoring (0-100%)
 - Confidence levels based on text length
@@ -24,16 +25,18 @@ Enhanced sanitizers with integrated AI detection:
 Comprehensive analysis scripts:
 - `parscgpt.py` — basic metrics and AI score (legacy)
 - `parscgptv1.py` — adds stopword filtering, confidence, interpretation (legacy)
-- `parscgptv2.py` — **standard detection** (8 core metrics, 21 phrases)
-- `parscgpt-ext.py` — **extended detection** (17 metrics, 70+ phrases, most comprehensive)
+- `parscgptv2.py` — **standard detection** (conservative: core metrics + multilingual phrase tiers)
+- `parscgpt-ext.py` — **extended detection** (18 metrics, ~150 tiered phrases EN/RU/UK/PT, evidence locations)
 
 ## Build & Run Commands
 
 ### Build all
 ```bash
 make -C partxtcpp
-cargo build --release --manifest-path partxtrs/Cargo.toml
-(cd partxtgo && go build -o partxtgo .)
+cargo build --release --manifest-path partxtrs/Cargo.toml --bin partxt
+cargo build --release --manifest-path partxtrs/Cargo.toml --bin partxt-ext
+(cd partxtgo && go build -o partxtgo main.go)
+(cd partxtgo && go build -o partxt-ext main-ext.go)
 # Python, Node.js, Bun — no build needed
 ```
 
@@ -51,7 +54,7 @@ bun run partxtjs/partxt.js testdata/sample.txt
 ```bash
 python3 partxtpy/partxt-ext.py testdata/sample.txt
 ./partxtrs/target/release/partxt-ext testdata/sample.txt
-./partxtgo/main-ext testdata/sample.txt
+./partxtgo/partxt-ext testdata/sample.txt
 ./partxtcpp/partxt-ext testdata/sample.txt
 node partxtnode/partxt-ext.js testdata/sample.txt
 bun run partxtjs/partxt-ext.js testdata/sample.txt
@@ -59,10 +62,10 @@ bun run partxtjs/partxt-ext.js testdata/sample.txt
 
 ### Run AI analytics
 ```bash
-# Standard version (8 metrics, 21 phrases)
+# Standard version (conservative, multilingual phrases)
 python3 parscgptv2.py testdata/sample.txt
 
-# Extended version (17 metrics, 70+ phrases, most comprehensive)
+# Extended version (18 metrics, tiered multilingual phrases, evidence locations)
 python3 parscgpt-ext.py testdata/sample.txt
 ```
 
@@ -70,6 +73,11 @@ python3 parscgpt-ext.py testdata/sample.txt
 ```bash
 ./run_all.sh testdata/sample.txt
 ./run_all_extended.sh testdata/sample.txt
+```
+
+### Analyze one file with ALL detectors and compare results
+```bash
+./analyze_all.sh input.txt   # parscgpt-ext/v2 + partxt-ext x6, parity check
 ```
 
 ## CLI Interface — Sanitizer (consistent across all implementations)
@@ -96,24 +104,28 @@ No options. Reads file, prints forensic report to stdout.
 
 ## Allowed Characters (Sanitizer)
 
-Digits `0-9`, Latin `A-Za-z`, Russian `А-Яа-я` (incl. Ёё), punctuation `[]{}()-=_+!@#$%&*;'/.,<>'"\`~`, whitespace. Everything else → `?`.
+Digits `0-9`, Latin `A-Za-z`, Russian `А-Яа-я` (incl. Ёё), Ukrainian `ҐґЄєІіЇї`, Portuguese `àáâãéêíóôõúç` (+ uppercase), punctuation `[]{}()-=_+!@#$%&*;'/.,<>:'"\`~—«»`, whitespace. Everything else → `?`. Canonical contract: `CHARACTER_SET.md`. Python additionally supports `-l/--language` modes that narrow the set (auto-detected when no `-l` given); cross-language comparisons use `-l universal`.
 
 ## Analytics Metrics
 
-### Extended Version (parscgpt-ext.py) — 17 metrics ⭐
-**Advanced comprehensive analysis:**
-- Core 8: lexical_diversity, repetition_score, entropy, burstiness, pattern_repetition_score, punctuation_density, ai_phrase_hits (70+ phrases), unicode_symbols
-- Extended 9: avg_word_length, word_length_variance, pronoun_ratio, readability_score, passive_voice_density, adj_noun_pair_diversity, structural_uniformity, quantifier_overuse
+### Extended Version (parscgpt-ext.py) — 18 metrics ⭐
+**Advanced comprehensive analysis (spec: `AI_SIGNALS_SPEC.md`):**
+- Structural (primary): sentence_length_cv, paragraph_length_cv, joint_uniformity, connective_density
+- Core: lexical_diversity, repetition_score, entropy, pattern_repetition_score, punctuation_density, ai_phrase_hits (3 tiers, ~150 phrases EN/RU/UK/PT), unicode_symbols
+- Extended: avg_word_length, word_length_variance, pronoun_ratio, readability_score, passive_voice_density, adj_noun_pair_diversity, structural_uniformity, quantifier_overuse
+- Linguistic: top_bigrams, top_trigrams
+- **Evidence**: located indicators (line numbers + excerpts with `>>>phrase<<<` highlighting)
+
+### Standard Version (parscgptv2.py) — conservative
+- Core metrics: lexical_diversity, repetition_score, entropy, burstiness (CV tiers), paragraph_uniformity, pattern_repetition_score, punctuation_density, ai_phrase_hits (HIGH+MEDIUM tiers), unicode_symbols
+- Evidence: located phrase hits (line numbers)
 - Linguistic: top_bigrams, top_trigrams
 
-### Standard Version (parscgptv2.py) — 8 metrics
-**Basic reliable analysis:**
-- Core metrics: lexical_diversity, repetition_score, entropy, burstiness, pattern_repetition_score, punctuation_density, ai_phrase_hits (21 phrases), unicode_symbols
-- Linguistic: top_bigrams, top_trigrams
-
-### Scoring System
-- **Extended**: Weighted sum with text length adaptation (0-100%, confidence-adjusted)
-- **Standard**: Threshold-based scoring (0-100%)
+### Scoring System (v0.4.0, corpus-validated)
+- **Extended**: weighted sum dominated by structural uniformity (sentence/paragraph CV tiers + joint bonus), tiered phrases and connective density; length adaptation `total * (0.9 + 0.1*min(1, words/1000))`, clamped 0-100
+- **Validation** (34 AI files vs 20 human, threshold 50): recall 93.9%, FP 0%; at threshold 70: recall 60.6%, FP 0% — see `validation/AI_CORPUS_REPORT.md`
+- **Recommended thresholds**: 50-55 "probable AI", 70 conservative "strong AI"
+- **Standard**: conservative subset scoring (0-100%)
 - **Confidence**: low/medium/high based on word count
 
 ## Architecture
@@ -137,9 +149,16 @@ Report filenames include language prefix: `report_py.txt`, `report_py-ext.txt`, 
 
 ## Versioning
 
-Semantic: patch (0.0.x) = bug fixes, minor (0.x.0) = meets requirements, major (x.0.0) = significant new features. **Current: 0.3.0**.
+Semantic: patch (0.0.x) = bug fixes, minor (0.x.0) = meets requirements, major (x.0.0) = significant new features. **Current: 0.4.3**.
 
 ### Version History
+- **v0.4.3**: genre abstention for promotional/social register; readability
+  interpretation fix (was inverted); Rust dead-code cleanup
+- **v0.4.2**: template header repetition signal (structured LLM answers);
+  `analyze_all.sh` — one-file analysis with all detectors + summarized report
+- **v0.4.1**: smooth reliability scaling replaces hard CV guards; honest
+  abstention NOTE on short texts (all 6 languages)
+- **v0.4.0**: Corpus-validated rescoring: sentence/paragraph CV signals, multilingual phrase tiers (EN/RU/UK/PT), connective density, AI EVIDENCE locations; recall 93.9% at FP 0% (threshold 50); all 6 implementations at exact parity
 - **v0.3.0**: Extended AI forensic analytics in all 6 languages, 11/17 metrics, 70+ phrases, weighted scoring
 - **v0.2.0**: Watermark detection bug fixes, cross-language support
 - **v0.1.0**: Initial multi-language implementation
@@ -147,8 +166,10 @@ Semantic: patch (0.0.x) = bug fixes, minor (0.x.0) = meets requirements, major (
 ## Key Files
 
 ### Core Analysis
-- `parscgpt-ext.py` — **Extended AI forensic analytics** (17 metrics, 70+ phrases, most comprehensive) ⭐
-- `parscgptv2.py` — **Standard AI forensic analytics** (8 metrics, 21 phrases, recommended for quick checks)
+- `parscgpt-ext.py` — **Extended AI forensic analytics** (18 metrics, evidence locations, most comprehensive) ⭐
+- `AI_SIGNALS_SPEC.md` — **Canonical spec**: phrase tiers, weights, formula, evidence format, abstention rules
+- `analyze_all.sh` — **Run every analyzer on one file** + summarized report (builds missing binaries)
+- `parscgptv2.py` — **Standard AI forensic analytics** (conservative multilingual version)
 - `partxtpy/partxt-ext.py` — Python extended sanitizer with integrated AI detection
 - `ANALYTICS_RECOMMENDATIONS.md` — Porting guide for analytics to other languages
 
@@ -197,7 +218,7 @@ All implementations pass comprehensive watermark test (259/259 detected).
 
 ## Performance Characteristics
 
-### Language Performance (sample.txt, 197 replacements)
+### Language Performance (sample.txt, 136 replacements)
 | Language | Standard Time | Extended Time |
 |----------|---------------|---------------|
 | Go       | ~0.00004 s    | ~0.00006 s    |
@@ -215,14 +236,15 @@ Use standard versions for fastest performance:
 python3 partxtpy/partxt.py input.txt
 ```
 
-### For AI text detection (basic)
-Use standard Python analyzer for quick checks:
+### For exploratory forensic metrics with evidence locations
+Use the Python analyzers for exploratory metrics:
 ```bash
-python3 parscgptv2.py input.txt
+python3 parscgpt-ext.py input.txt   # shows AI EVIDENCE: line numbers + excerpts
+python3 parscgptv2.py input.txt     # conservative standard version
 ```
 
-### For comprehensive AI analysis (recommended) ⭐
-Use extended versions for most accurate detection:
+### For extended exploratory analysis
+Extended versions provide additional metrics, but are not reliable authorship detectors:
 ```bash
 python3 partxtpy/partxt-ext.py input.txt
 # or for deepest analysis
@@ -234,4 +256,9 @@ Use batch scripts:
 ```bash
 ./run_all.sh input.txt
 ./run_all_extended.sh input.txt
+```
+
+### For reproducible verification
+```bash
+./tests/test_cross_language.sh
 ```

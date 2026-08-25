@@ -139,14 +139,59 @@ Erweiterte Versionen der grundlegenden Textbereiniger (`partxt-ext`) sind nun f�
 | `lexical_diversity` | Einzigartige Wörter / Gesamtzahl der Wörter (nach Stoppwort-Entfernung) | KI hat geringere Vielfalt |
 | `repetition_score` | Anteil der mehrfach vorkommenden Wörter | KI wiederholt mehr |
 | `entropy` | Shannon-Entropie der Worthäufigkeitsverteilung | KI hat unnatürlich gleichmäßige Verteilung |
-| `burstiness` | Variationskoeffizient der Satzlängen | KI hat übermäßig einheitliche Satzstruktur |
+| `burstiness` | Variationskoeffizient der Satzlängen | KI hat übermäßig einheitliche Satzstruktur (Hauptsignal) |
+| `paragraph_length_cv` | Variationskoeffizient der Absatzlängen (Wortanzahl) | KI-Absätze sind unnatürlich gleich lang (Hauptsignal) |
+| `joint_uniformity` | Sowohl Satz- als auch Absatz-CV niedrig | Stärkstes strukturelles KI-Signal |
+| `connective_density` | Diskurs-Konnektive pro Satz (mehrsprachig) | KI verwendet übermäßig Konnektive |
 | `pattern_repetition` | Anteil wiederholter Satzlängenmuster | KI verwendet Vorlagenmuster |
 | `punctuation_density` | Anzahl Satzzeichen / Gesamtzeichen | KI verwendet möglicherweise übermäßig Satzzeichen |
-| `ai_phrase_hits` | Treffer mit 70+ kuratierten KI-typischen Phrasen | Direkte KI-Signatur |
+| `ai_phrase_hits` | ~150 kuratierte KI-typische Phrasen in 3 Stufen (EN/RU/UK/PT) | Direkte KI-Signatur |
 | `unicode_symbols` | Anzahl verdächtiger Unicode-Zeichen | Technische KI-Marker |
 | `avg_word_length` | Durchschnittliche Wortlänge | KI verwendet einfacheren Wortschatz |
 | `word_length_variance` | Varianz der Wortlängen | KI-Texte einheitlicher |
 | `confidence` | Basierend auf Wortanzahl (NIEDRIG <300, MITTEL 300-999, HOCH ≥1000) | Zuverlässigkeitsindikator |
+
+### Fundstellen im Text — AI EVIDENCE (v0.4.0+)
+
+Jeder ausgelöste Indikator wird mit seiner genauen Fundstelle im Text gemeldet:
+Zeilennummer, ein Ausschnitt mit hervorgehobenem Auslöser als `>>>Phrase<<<`
+sowie Sequenzen der Satz-/Absatzlängen bei Gleichförmigkeits-Signalen. Die
+Sektion `AI EVIDENCE` erscheint in den Berichten der erweiterten Bereiniger
+und in der Ausgabe von `parscgpt-ext.py`.
+
+### Ehrliche Enthaltung (v0.4.1–v0.4.3)
+
+- Kurze Texte (< 150 Wörter oder < 5 Sätze): Struktursignale werden nach
+  statistischer Zuverlässigkeit skaliert, statt still abgeschaltet zu werden;
+  das Verdikt erhält den Vermerk „Verdikt unzuverlässig" — keine selbstbewussten
+  „menschlich"-Verdikte mehr bei Texten, die für eine Analyse zu klein sind.
+- Wiederholung von Vorlagen-Überschriften (v0.4.2): wörtlich wiederholte kurze
+  Kopfzeilen („Что верно" ×7, „Итог" ×7) — ein starkes Merkmal strukturierter
+  LLM-Antworten; null Fehlalarme im Human-Korpus.
+- Werbe-/Social-Media-Register (v0.4.3): Texte mit vielen Emojis und
+  Ausrufezeichen erhalten einen Genre-Hinweis statt eines „menschlich"-Verdikts —
+  dieses Register liefern sowohl KI als auch menschliche SMM-Texter, daher
+  werden keine KI-Punkte vergeben, das Verdikt wird einfach zurückgehalten.
+
+### Analyse einer Datei mit allen Detektoren
+
+```bash
+./analyze_all.sh input.txt
+```
+
+Kompiliert fehlende Binaries, führt alle Analysatoren des Projekts aus
+(technisch, Legacy ×2, Standard, erweitert, markerbasiert sowie alle sechs
+`partxt-ext`), prüft die Parität der Implementierungen und druckt einen
+zusammenfassenden Bericht: Konsens, Worst-Case (strengster Analysator),
+Risikobereich und die Liste der Stellen, die vor der Veröffentlichung
+bearbeitet werden sollten.
+
+### Validierung (v0.4.0+)
+
+Kalibriert und validiert an 34 bestätigten KI-Antworten (8 Dienste × 4 Sprachen)
+und 20 quellenbasierten Human-Texten — siehe `validation/AI_CORPUS_REPORT.md`
+und `AI_SIGNALS_SPEC.md`. Bei Klassifikationsschwelle 50: Recall 93,9%,
+Fehlalarmrate 0%. Die Scores sind heuristisch und kein Autorschaftsnachweis.
 
 ### KI-Wahrscheinlichkeitsbewertung (Erweiterte Versionen)
 
@@ -340,7 +385,7 @@ Jeder Bericht enthält:
 - Minor (0.x.0): Voll funktional, entspricht Anforderungen
 - Major (x.0.0): Erhebliche neue Funktionen
 
-Aktuelle Version: 0.3.0
+Aktuelle Version: 0.4.3
 
 ## Lizenz
 

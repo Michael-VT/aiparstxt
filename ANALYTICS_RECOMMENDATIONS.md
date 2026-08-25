@@ -2,6 +2,15 @@
 
 This document describes the statistical analytics engine implemented in `parscgptv2.py` and provides guidance for porting it to other languages (Rust, Go, C++, Node.js, Bun).
 
+> **v0.4.0 update.** The detection scoring was overhauled and validated against
+> the AI/human corpus. The canonical weights, multilingual phrase tiers
+> (EN/RU/UK/PT), structural-uniformity signals (sentence/paragraph CV) and the
+> evidence format are now specified in **[`AI_SIGNALS_SPEC.md`](AI_SIGNALS_SPEC.md)**
+> — port from there (or directly from `parscgpt-ext.py` /
+> `partxtpy/partxt-ext.py`). The scoring tables below describe the legacy v2
+> baseline kept for reference; `parscgptv2.py` itself now also uses the
+> multilingual phrase tiers and sentence-length CV weighting.
+
 ## Overview
 
 The analytics engine performs heuristic forensic analysis of text to estimate the likelihood of AI-generated content. It computes a set of statistical metrics, combines them via a weighted scoring model, and produces an interpreted report with confidence levels.

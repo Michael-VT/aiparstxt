@@ -139,14 +139,59 @@ Versões estendidas dos limpadores de texto básicos (`partxt-ext`) agora estão
 | `lexical_diversity` | Palavras únicas / total de palavras (após remoção de stopwords) | IA tem menor diversidade |
 | `repetition_score` | Fração de palavras que aparecem mais de uma vez | IA repete mais |
 | `entropy` | Entropia de Shannon da distribuição de frequência de palavras | IA tem distribuição unnaturamente uniforme |
-| `burstiness` | Coeficiente de variação dos comprimentos de sentenças | IA tem estrutura de sentenças excessivamente uniforme |
+| `burstiness` | Coeficiente de variação dos comprimentos de sentenças | IA tem estrutura de sentenças excessivamente uniforme (sinal principal) |
+| `paragraph_length_cv` | CV da contagem de palavras por parágrafo | Parágrafos de IA são iguais demais, de forma não natural (sinal principal) |
+| `joint_uniformity` | CV baixo tanto de sentenças quanto de parágrafos | Mais forte sinal estrutural de IA |
+| `connective_density` | Conectivos discursivos por sentença (multilíngue) | IA usa conectivos excessivamente |
 | `pattern_repetition` | Fração de padrões de comprimento de sentenças repetidos | IA usa padrões de modelo |
 | `punctuation_density` | Contagem de pontuação / total de caracteres | IA pode usar pontuação excessivamente |
-| `ai_phrase_hits` | Correspondências com 70+ frases típicas de IA curadas | Assinatura direta de IA |
+| `ai_phrase_hits` | ~150 frases típicas de IA curadas em 3 níveis (EN/RU/UK/PT) | Assinatura direta de IA |
 | `unicode_symbols` | Contagem de caracteres Unicode suspeitos | Marcadores técnicos de IA |
 | `avg_word_length` | Comprimento médio das palavras | IA usa vocabulário mais simples |
 | `word_length_variance` | Variância nos comprimentos das palavras | Textos de IA mais uniformes |
 | `confidence` | Baseado na contagem de palavras (BAIXO <300, MÉDIO 300-999, ALTO ≥1000) | Indicador de confiabilidade |
+
+### Localização das evidências — AI EVIDENCE (v0.4.0+)
+
+Cada indicador disparado é reportado com sua localização exata no texto:
+número da linha, um trecho com o gatilho destacado como `>>>frase<<<`, e
+sequências de comprimentos de sentenças/parágrafos para os sinais de
+uniformidade. A seção `AI EVIDENCE` aparece nos relatórios dos limpadores
+estendidos e na saída de `parscgpt-ext.py`.
+
+### Abstenção honesta (v0.4.1–v0.4.3)
+
+- Textos curtos (< 150 palavras ou < 5 sentenças): os sinais estruturais são
+  escalados pela confiabilidade estatística em vez de silenciosamente
+  desativados, e o veredicto é anotado como não confiável — chega de
+  veredictos confiantes de "humano" em textos pequenos demais para analisar.
+- Repetição de cabeçalhos-modelo (v0.4.2): linhas curtas de cabeçalho
+  repetidas literalmente ("Что верно" ×7, "Итог" ×7) — um marcador forte de
+  respostas estruturadas de LLMs; zero falsos positivos no corpus humano.
+- Registo promocional/redes sociais (v0.4.3): textos carregados de emojis e
+  exclamações recebem uma nota de género em vez de um veredicto de "humano" —
+  esse registo é produzido tanto por IA quanto por redatores humanos de SMM,
+  portanto nenhum ponto de IA é atribuído, o veredicto simplesmente é retido.
+
+### Análise de um ficheiro com todos os detetores
+
+```bash
+./analyze_all.sh input.txt
+```
+
+Compila os binários em falta, executa todos os analisadores do projeto
+(técnico, legado ×2, padrão, estendido, baseado em marcadores e todos os seis
+`partxt-ext`), verifica a paridade entre implementações e imprime um
+relatório resumido: consenso, worst-case (analisador mais rigoroso), faixa de
+risco e a lista de pontos a rever/editar antes de publicar.
+
+### Validação (v0.4.0+)
+
+Calibrado e validado contra 34 respostas confirmadas de IA (8 serviços × 4
+idiomas) e 20 textos humanos com fonte verificada — veja
+`validation/AI_CORPUS_REPORT.md` e `AI_SIGNALS_SPEC.md`. No limiar de
+classificação 50: recall 93.9%, taxa de falsos positivos 0%. As pontuações
+são heurísticas, não prova de autoria.
 
 ### Pontuação de Probabilidade de IA (Versões Estendidas)
 
@@ -340,7 +385,7 @@ Cada relatório inclui:
 - Minor (0.x.0): completamente funcional, atende aos requisitos
 - Major (x.0.0): recursos novos significativos
 
-Versão atual: 0.3.0
+Versão atual: 0.4.3
 
 ## Licença
 

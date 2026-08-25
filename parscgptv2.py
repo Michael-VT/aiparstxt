@@ -12,28 +12,63 @@ from itertools import islice
 # CONFIG
 # =========================================================
 
-AI_PHRASES = [
-    "however",
-    "moreover",
-    "overall",
-    "in conclusion",
-    "it is important to note",
-    "additionally",
-    "that said",
-    "on the other hand",
-    "in general",
-    "furthermore",
-    "therefore",
-    "as a result",
-    "for example",
-    "for instance",
-    "ultimately",
-    "in summary",
-    "notably",
-    "meanwhile",
-    "consequently",
-    "in contrast",
+# Multilingual AI phrase database (v0.4.0) - tiers from AI_SIGNALS_SPEC.md.
+# v2 (standard, conservative) uses only HIGH and MEDIUM tiers.
+AI_PHRASES_HIGH = [
+    # English
+    "it is important to note", "it's worth noting", "it is worth noting",
+    "it should be emphasized", "it is crucial to understand",
+    "it is essential to recognize", "it is noteworthy",
+    "plays a crucial role", "plays an important role",
+    "plays a significant role", "a testament to",
+    "a wide range of", "a variety of",
+    "first and foremost", "last but not least",
+    "in conclusion", "to summarize", "in summary",
+    # Russian
+    "стоит отметить", "следует отметить", "необходимо отметить",
+    "важно отметить", "важно понимать", "играет важную роль",
+    "играет ключевую роль", "играет значительную роль",
+    "играет существенную роль", "является одним из",
+    "одним из важнейших", "одним из основных", "одной из ключевых",
+    "ключевую роль", "существенную роль", "в значительной степени",
+    "в заключение", "подводя итог", "широкий спектр",
+    "по праву считается", "многочисленные исследования",
+    # Ukrainian
+    "варто зазначити", "слід зазначити", "необхідно зазначити",
+    "важливо зазначити", "відіграє важливу роль",
+    "відіграє ключову роль", "є одним із",
+    "однією з найважливіших", "одним із основних",
+    "значною мірою", "у висновку", "підсумовуючи",
+    "широкий спектр", "ключову роль", "істотну роль",
+    # Portuguese
+    "vale ressaltar", "vale destacar", "é importante destacar",
+    "é importante notar", "desempenha um papel",
+    "desempenham um papel", "de grande importância",
+    "em conclusão", "para concluir", "ampla gama",
+    "ampla variedade", "ao longo dos anos",
+    "nos dias de hoje", "cada vez mais",
 ]
+
+AI_PHRASES_MEDIUM = [
+    # English
+    "moreover", "furthermore", "additionally", "consequently",
+    "subsequently", "notably", "ultimately", "in essence",
+    "fundamentally", "essentially", "on the other hand",
+    "for instance", "as a result", "therefore", "overall",
+    # Russian
+    "более того", "с одной стороны", "с другой стороны",
+    "во-первых", "во-вторых", "также как и", "наконец",
+    # Ukrainian
+    "крім того", "більше того", "з одного боку", "з іншого боку",
+    "по-перше", "по-друге", "нарешті",
+    # Portuguese
+    "além disso", "dessa forma", "deste modo", "por um lado",
+    "em primeiro lugar", "em segundo lugar", "de modo geral",
+    "em termos gerais", "não obstante",
+    "um dos mais", "uma das mais",
+]
+
+AI_PHRASES = AI_PHRASES_HIGH + AI_PHRASES_MEDIUM
 
 UNICODE_SUSPICIOUS = [
     "—",
@@ -124,6 +159,32 @@ def ai_phrase_hits(text):
         for p in AI_PHRASES
         if lower.count(p)
     }
+
+
+def ai_phrase_tiers(text):
+    """Tier occurrence counts {high, medium} + located occurrences."""
+    lower = text.lower()
+    tiers = {"high": 0, "medium": 0}
+    occurrences = []
+    for tier_name, phrases in (("high", AI_PHRASES_HIGH), ("medium", AI_PHRASES_MEDIUM)):
+        for p in phrases:
+            found = lower.count(p)
+            if found:
+                tiers[tier_name] += found
+                idx = lower.find(p)
+                for _ in range(min(found, 3)):
+                    occurrences.append((tier_name, p, idx))
+                    idx = lower.find(p, idx + len(p))
+    return tiers, occurrences
+
+
+def paragraph_uniformity(text):
+    """CV of paragraph word counts (>=4 paragraphs of >15 words, else None)."""
+    paragraphs = [p for p in re.split(r'\n\s*\n', text) if len(p.split()) > 15]
+    if len(paragraphs) < 4:
+        return None
+    lengths = [len(p.split()) for p in paragraphs]
+    return burstiness(lengths)
 
 
 def unicode_stats(text):
@@ -273,7 +334,7 @@ def suspicious_patterns(phrase_hits, top_trigrams):
     for phrase in phrase_hits:
         warnings.append(f"AI-like transition phrase detected: '{phrase}'")
 
-    for phrase, count in top_trigrams:
+    for phrase, _count in top_trigrams:
 
         if phrase in suspicious:
             warnings.append(
@@ -308,10 +369,13 @@ def analyze(text):
     punct_density = punctuation_density(text)
 
     phrase_hits = ai_phrase_hits(text)
+    tiers, phrase_occurrences = ai_phrase_tiers(text)
 
     unicode_hits = unicode_stats(text)
 
     pattern_score = pattern_repetition_score(sentences)
+
+    para_cv = paragraph_uniformity(text)
 
     top_bigrams = top_ngrams(clean_words, 2)
 
@@ -320,7 +384,7 @@ def analyze(text):
     ai_score = 0
 
     # =====================================================
-    # HEURISTICS
+    # HEURISTICS (v0.4.0: structural uniformity + tiered phrases)
     # =====================================================
 
     if diversity < 0.45:
@@ -329,8 +393,22 @@ def analyze(text):
     if entropy_score < 5:
         ai_score += 20
 
-    if burst < 0.35:
-        ai_score += 15
+    # Sentence-length uniformity (CV) - primary structural signal
+    if len(words) >= 150 and len(sentences) >= 15:
+        if burst < 0.35:
+            ai_score += 18
+        elif burst < 0.45:
+            ai_score += 10
+
+    # Paragraph-length uniformity
+    if para_cv is not None:
+        if para_cv < 0.35:
+            ai_score += 12
+        elif para_cv < 0.45:
+            ai_score += 6
+
+        if burst < 0.45 and para_cv < 0.45 and len(sentences) >= 15 and len(words) >= 150:
+            ai_score += 8
 
     if pattern_score > 0.35:
         ai_score += 15
@@ -338,8 +416,15 @@ def analyze(text):
     if repetition > 0.5:
         ai_score += 10
 
-    if len(phrase_hits) >= 3:
+    # Tiered phrase scores (multilingual)
+    if tiers["high"] >= 2:
         ai_score += 15
+    elif tiers["high"] == 1:
+        ai_score += 10
+    elif tiers["medium"] >= 3:
+        ai_score += 8
+    elif tiers["medium"] >= 1:
+        ai_score += 4
 
     if punct_density > 0.04:
         ai_score += 5
@@ -348,6 +433,25 @@ def analyze(text):
         ai_score += 5
 
     ai_score = min(ai_score, 100)
+
+    # Evidence: located phrase hits (v0.4.0)
+    evidence = []
+    for tier_name, phrase, idx in sorted(
+            phrase_occurrences,
+            key=lambda o: 0 if o[0] == "high" else 1)[:10]:
+        evidence.append(
+            f"line {text.count(chr(10), 0, idx) + 1}: "
+            f"{tier_name}-risk AI phrase '{phrase}'"
+        )
+    if burst < 0.45 and len(sentences) >= 15 and len(words) >= 150:
+        evidence.append(
+            f"text-wide: sentence lengths uniform (CV={burst:.2f}, "
+            "human prose is typically > 0.50)"
+        )
+    if para_cv is not None and para_cv < 0.45:
+        evidence.append(
+            f"text-wide: paragraph lengths uniform (CV={para_cv:.2f})"
+        )
 
     # =====================================================
     # INTERPRETATION
@@ -392,6 +496,9 @@ def analyze(text):
 
         "burstiness":
             round(burst, 3),
+
+        "paragraph_uniformity":
+            round(para_cv, 3) if para_cv is not None else None,
 
         "pattern_repetition_score":
             round(pattern_score, 3),
@@ -443,6 +550,9 @@ def analyze(text):
 
         "suspicious_patterns":
             warnings,
+
+        "evidence":
+            evidence,
     }
 
 

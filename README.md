@@ -23,6 +23,7 @@ A set of command-line utilities that sanitize text files by replacing disallowed
 - Latin letters: A-Z, a-z
 - Russian letters: А-Я, а-я (including Ё/ё)
 - Ukrainian letters: ҐґЄєІіЇї
+- Portuguese letters: àáâãéêíóôõúç and uppercase equivalents
 - Punctuation and symbols: []{}()-=_+!@#$%&*;'/.,<>'"`~:—«»
 - Whitespace: space, tab, newline
 
@@ -226,14 +227,57 @@ python3 honest_ai_detector.py readme.md
 | `lexical_diversity` | Unique words / total words (after stopword removal) | AI has lower diversity |
 | `repetition_score` | Fraction of words appearing more than once | AI repeats more |
 | `entropy` | Shannon entropy of word frequency distribution | AI has unnaturally uniform distribution |
-| `burstiness` | Coefficient of variation of sentence lengths | AI has overly uniform sentence structure |
+| `burstiness` | Coefficient of variation of sentence lengths | AI has overly uniform sentence structure (primary signal) |
+| `paragraph_length_cv` | CV of paragraph word counts | AI paragraphs are unnaturally equal (primary signal) |
+| `joint_uniformity` | Both sentence and paragraph CV low | Strongest structural AI signal |
+| `connective_density` | Discourse connectives per sentence (multilingual) | AI overuses connectives |
 | `pattern_repetition` | Fraction of repeated sentence-length patterns | AI uses template patterns |
 | `punctuation_density` | Punctuation count / total characters | AI may overuse punctuation |
-| `ai_phrase_hits` | Matches against curated AI-typical phrases (70+) | Direct AI signature |
+| `ai_phrase_hits` | ~150 curated AI-typical phrases in 3 tiers (EN/RU/UK/PT) | Direct AI signature |
 | `unicode_symbols` | Count of suspicious Unicode characters | Technical AI markers |
 | `avg_word_length` | Average word length | AI uses simpler vocabulary |
 | `word_length_variance` | Variance in word lengths | AI texts more uniform |
 | `confidence` | Based on word count (LOW <300, MEDIUM 300-999, HIGH ≥1000) | Reliability indicator |
+
+### AI Evidence Locations (v0.4.0+)
+
+Every triggered indicator is reported with its exact location in the text:
+line number, an excerpt with the trigger highlighted as `>>>phrase<<<`,
+and sentence/paragraph length sequences for uniformity signals. The `AI EVIDENCE`
+section appears in the extended sanitizer reports and in `parscgpt-ext.py` output.
+
+### Honest abstention (v0.4.1–v0.4.3)
+
+- Short texts (< 150 words or < 5 sentences): structural signals are scaled by
+  statistical reliability instead of being silently switched off, and the
+  verdict is annotated as unreliable — no more confident "human" verdicts
+  on texts too small to analyze.
+- Template header repetition (v0.4.2): verbatim-repeated short header lines
+  ("Что верно" ×7, "Итог" ×7) — a strong marker of structured LLM answers;
+  zero false positives on the human corpus.
+- Promotional/social-media register (v0.4.3): emoji- and exclamation-heavy
+  texts get a genre note instead of a "human" verdict — the register is
+  produced by both AI and human SMM writers, so no AI points are awarded,
+  the verdict is simply withheld.
+
+### One-file analysis with all detectors
+
+```bash
+./analyze_all.sh input.txt
+```
+
+Builds missing binaries, runs every analyzer in the project (technical,
+legacy ×2, standard, extended, marker-based, and all six `partxt-ext`),
+verifies cross-implementation parity, and prints a summarized report:
+consensus, worst-case (strictest analyzer), risk band, and the list of
+spots to review/edit before publishing.
+
+### Validation (v0.4.0+)
+
+Calibrated and validated against 34 confirmed AI answers (8 services × 4
+languages) and 20 source-based human texts — see `validation/AI_CORPUS_REPORT.md`
+and `AI_SIGNALS_SPEC.md`. At classification threshold 50: recall 93.9%,
+false-positive rate 0%. Scores are heuristic, not proof of authorship.
 
 ### Output Format (Honest AI Detector)
 
@@ -291,7 +335,7 @@ HONEST AI DETECTOR — Transparent Limitations
 |------------|-------------|----------------------------------|------------------|---------------------|-------------------|
 | Python     | partxtpy/   | (no build needed)                | report_py.txt    | report_py-ext.txt   | ✅ Available       |
 | Rust       | partxtrs/   | cargo build --release            | report_rs.txt    | report_rs-ext.txt   | ✅ Available       |
-| Go         | partxtgo/   | cd partxtgo && go build          | report_go.txt    | report_go-ext.txt   | ✅ Available       |
+| Go         | partxtgo/   | cd partxtgo && go build -o partxtgo main.go | report_go.txt    | report_go-ext.txt   | ✅ Available       |
 | C++        | partxtcpp/  | make                             | report_cpp.txt   | report_cpp-ext.txt  | ✅ Available       |
 | Node.js    | partxtnode/ | (no build needed)                | report_node.txt  | report_node-ext.txt | ✅ Available       |
 | Bun        | partxtjs/   | (no build needed)                | report_bun.txt   | report_bun-ext.txt  | ✅ Available       |
@@ -315,7 +359,7 @@ Each report includes:
 
 ---
 
-## Sample Results (testdata/sample.txt, 197 replacements)
+## Sample Results (testdata/sample.txt, 136 replacements)
 
 | Language | Execution Time | Extended Time |
 |----------|---------------|---------------|
@@ -330,8 +374,8 @@ Each report includes:
 
 ## Project Status (August 2026)
 
-✅ **Text Sanitization:** FULLY FUNCTIONAL — All 6 languages working correctly  
-✅ **AI Watermark Removal:** FULLY FUNCTIONAL — Removes invisible watermark characters  
+✅ **Text Sanitization:** VERIFIED — all 6 implementations produce identical standard output
+✅ **AI Watermark Removal:** VERIFIED — all 6 implementations pass the shared watermark test
 ⚠️ **AI Detection:** LIMITED RELIABILITY — Only `honest_ai_detector.py` with transparent limitations  
 
 ### What Works
@@ -376,7 +420,7 @@ All existing detectors failed to correctly identify ChatGPT-generated Ukrainian 
 
 **See:** `tmp/FINAL_REPORT.md` for complete multilingual testing analysis and recommendations.
 
-**See `FINAL_TESTING_REPORT.md` for complete testing methodology and results.**
+**See `TESTING.md` for the reproducible cross-language verification.**
 
 ---
 
@@ -385,7 +429,8 @@ All existing detectors failed to correctly identify ChatGPT-generated Ukrainian 
 - [EXTENDED_VERSIONS.md](EXTENDED_VERSIONS.md) — Details on extended analyzers
 - [ANALYZER_COMPARISON.md](ANALYZER_COMPARISON.md) — Comparison of analyzers
 - [ANALYTICS_RECOMMENDATIONS.md](ANALYTICS_RECOMMENDATIONS.md) — Analytics porting guide
-- [FINAL_TESTING_REPORT.md](FINAL_TESTING_REPORT.md) — Complete AI detection testing results
+- [CHARACTER_SET.md](CHARACTER_SET.md) — Canonical character contract
+- [TESTING.md](TESTING.md) — Reproducible test procedure
 
 ---
 
