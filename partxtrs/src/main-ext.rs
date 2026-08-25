@@ -11,8 +11,10 @@ const ALLOWED_CHARS: &str = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmno
 АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдеёжзийклмнопрстуфхцчшщъыьэюя\
 []{}()-=_+!@#$%&*;'/.,<>\"`~ \\t\\n\\r";
 
+const CANONICAL_ALLOWED: &str = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyzАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдеёжзийклмнопрстуфхцчшщъыьэюяҐґЄєІіЇїàáâãéêíóôõúçÀÁÂÃÉÊÍÓÔÕÚÇ[]{}():()-=_+!@#$%&*;'/.,<>\"`~—«» \t\n\r";
+
 fn is_allowed(ch: char) -> bool {
-    ALLOWED_CHARS.contains(ch)
+    CANONICAL_ALLOWED.contains(ch)
 }
 
 // =========================================================
@@ -270,7 +272,7 @@ fn calculate_ai_forensic_metrics(text: &str, word_freq: &HashMap<String, usize>)
         else { 'L' }
     }
     
-    let patterns: Vec<char> = sent_lengths.iter().map(|&&len| categorize_length(len)).collect();
+    let patterns: Vec<char> = sent_lengths.iter().map(|&len| categorize_length(len)).collect();
     let mut pattern_counts: HashMap<char, usize> = HashMap::new();
     for &pattern in &patterns {
         *pattern_counts.entry(pattern).or_insert(0) += 1;
@@ -438,7 +440,7 @@ fn calculate_ai_probability(metrics: &AIMetrics) -> AIResult {
     }
 }
 
-fn get_interpretation(metrics: &AIMetrics, ai_probability: f64, confidence: &str) -> (String, Vec<String>) {
+fn get_interpretation(metrics: &AIMetrics, ai_probability: f64) -> (String, Vec<String>) {
     let mut interpretations = Vec::new();
     
     let verdict = if ai_probability > 60.0 {
@@ -512,6 +514,7 @@ fn build_report(
     // Basic info
     lines.push(format!("Input file:  {}", input_file));
     lines.push(format!("Output file: {}", output_file));
+    lines.push(format!("Mode: replace with '?'{}", if remove_watermark { " + watermark removal" } else { "" }));
     lines.push(format!("Execution time: {:.6}s", elapsed.as_secs_f64()));
     lines.push(String::new());
     
@@ -525,7 +528,7 @@ fn build_report(
         let mut sorted: Vec<_> = watermark_removed.iter().collect();
         sorted.sort_by(|a, b| b.1.cmp(a.1));
         for (ch, count) in sorted.iter().take(20) {
-            let codepoint = format!("U+{:04X}", *ch as u32);
+            let codepoint = format!("U+{:04X}", **ch as u32);
             lines.push(format!("  {}: {}", codepoint, count));
         }
         if sorted.len() > 20 {
@@ -546,7 +549,7 @@ fn build_report(
         let mut sorted: Vec<_> = replaced.iter().collect();
         sorted.sort_by(|a, b| b.1.cmp(a.1));
         for (ch, count) in sorted.iter().take(10) {
-            let codepoint = format!("U+{:04X}", *ch as u32);
+            let codepoint = format!("U+{:04X}", **ch as u32);
             lines.push(format!("  {}: {}", codepoint, count));
         }
         if sorted.len() > 10 {
@@ -564,7 +567,7 @@ fn build_report(
         lines.push("=".repeat(70));
         lines.push(String::new());
         
-        let (verdict, interpretations) = get_interpretation(metrics, ai_result.probability, &ai_result.confidence);
+        let (verdict, interpretations) = get_interpretation(metrics, ai_result.probability);
         
         lines.push(format!("Overall Verdict: {}", verdict));
         lines.push(format!("Confidence Level: {}", ai_result.confidence));

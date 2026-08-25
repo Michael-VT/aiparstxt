@@ -48,8 +48,10 @@ fn is_watermark(ch: char) -> bool {
 
 
 
+const CANONICAL_ALLOWED: &str = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyzАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдеёжзийклмнопрстуфхцчшщъыьэюяҐґЄєІіЇїàáâãéêíóôõúçÀÁÂÃÉÊÍÓÔÕÚÇ[]{}():()-=_+!@#$%&*;'/.,<>\"`~—«» \t\n\r";
+
 fn is_allowed(ch: char) -> bool {
-    ALLOWED.contains(ch)
+    CANONICAL_ALLOWED.contains(ch)
 }
 
 fn process(text: &str, remove_watermark: bool) -> (String, HashMap<char, usize>, HashMap<char, usize>) {
@@ -297,5 +299,3 @@ fn main() {
     let wm_total: usize = watermark_removed.values().sum();
     println!("Done in {:.6}s. Replacements: {}, Watermark removed: {}", elapsed.as_secs_f64(), total, wm_total);
 }
-
-

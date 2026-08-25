@@ -14,10 +14,9 @@ var allowed = func() map[rune]bool {
 	m := make(map[rune]bool)
 	for _, ch := range "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz" +
 		"АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдеёжзийклмнопрстуфхцчшщъыьэюя" +
-		"[]{}()-=_+!@#$%&*;'/.,<>'\"`~ \t\n\r" {
+		"ҐґЄєІіЇїàáâãéêíóôõúçÀÁÂÃÉÊÍÓÔÕÚÇ[]{}():()-=_+!@#$%&*;'/.,<>\"`~—«» \t\n\r" {
 		m[ch] = true
 	}
-	return m
 	return m
 }()
 
@@ -219,6 +218,25 @@ func buildReport(inputFile, outputFile string, replaced map[rune]int, watermarkR
 
 
 func main() {
+	// Accept options both before and after the positional input file, matching
+	// the CLI behavior of the other implementations.
+	var options, positional []string
+	for i := 1; i < len(os.Args); i++ {
+		arg := os.Args[i]
+		if arg == "-o" || arg == "--output" || arg == "-r" || arg == "--report" {
+			options = append(options, arg)
+			if i+1 < len(os.Args) {
+				options = append(options, os.Args[i+1])
+				i++
+			}
+		} else if strings.HasPrefix(arg, "-") {
+			options = append(options, arg)
+		} else {
+			positional = append(positional, arg)
+		}
+	}
+	os.Args = append([]string{os.Args[0]}, append(options, positional...)...)
+
 	output := flag.String("o", "", "Output file (default: <input>.ed.txt)")
 	outputLong := flag.String("output", "", "Output file (default: <input>.ed.txt)")
 	report := flag.String("r", "", "Report file (default: report_go.txt)")

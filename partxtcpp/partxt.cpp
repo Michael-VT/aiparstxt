@@ -19,13 +19,29 @@ static const std::u32string ALLOWED = U"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcd
     U"АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдеёжзийклмнопрстуфхцчшщъыьэюя"
     U"[]{}()-=_+!@#$%&*;'/.,<>'\"`~ \t\n\r";
 
+static const std::u32string CANONICAL_ALLOWED = U"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+    U"АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдеёжзийклмнопрстуфхцчшщъыьэюя"
+    U"ҐґЄєІіЇїàáâãéêíóôõúçÀÁÂÃÉÊÍÓÔÕÚÇ[]{}():()-=_+!@#$%&*;'/.,<>'\"`~—«» \t\n\r";
+
 static std::set<char32_t> build_allowed() {
     std::set<char32_t> s;
-    for (char32_t c : ALLOWED) s.insert(c);
+    for (char32_t c : CANONICAL_ALLOWED) s.insert(c);
     return s;
 }
 
 static const std::set<char32_t> ALLOWED_SET = build_allowed();
+
+static bool is_watermark(char32_t ch) {
+    const auto cp = static_cast<uint32_t>(ch);
+    if (cp == 0x200B || cp == 0x200C || cp == 0x200D || cp == 0xFEFF ||
+        cp == 0x00AD || cp == 0x2060 || cp == 0x2061 || cp == 0x2062 ||
+        cp == 0x2063 || cp == 0x2064 || cp == 0x202A || cp == 0x202B ||
+        cp == 0x202C || cp == 0x202D || cp == 0x202E || cp == 0x2028 ||
+        cp == 0x2029 || cp == 0xE0001 || cp == 0x180E) return true;
+    return (cp >= 0xFE00 && cp <= 0xFE0F) ||
+           (cp >= 0xE0020 && cp <= 0xE007F) ||
+           (cp >= 0xE000 && cp <= 0xE07F);
+}
 
 struct Replacement {
     char32_t ch;
@@ -39,6 +55,7 @@ struct Args {
     bool no_edit = false;
     bool no_report = false;
     bool no_words = false;
+    bool remove_watermark = false;
 };
 
 static void print_usage() {
@@ -47,7 +64,8 @@ static void print_usage() {
               << "  -r, --report <file>   Report file\n"
               << "  --no-edit             Do not create .ed.txt\n"
               << "  --no-report           Do not create report\n"
-              << "  -w, --no-words        Exclude word frequency\n";
+              << "  -w, --no-words        Exclude word frequency\n"
+              << "  --remove-watermark    Remove AI watermark characters\n";
 }
 
 static Args parse_args(int argc, char* argv[]) {
@@ -66,6 +84,8 @@ static Args parse_args(int argc, char* argv[]) {
             a.no_report = true;
         } else if (arg == "-w" || arg == "--no-words") {
             a.no_words = true;
+        } else if (arg == "--remove-watermark") {
+            a.remove_watermark = true;
         } else if (arg == "-h" || arg == "--help") {
             print_usage(); exit(0);
         } else {
@@ -122,9 +142,14 @@ int main(int argc, char* argv[]) {
     std::u32string text = to_u32(raw);
 
     std::unordered_map<char32_t, int> replaced;
+    std::unordered_map<char32_t, int> watermark_removed;
     std::u32string cleaned;
     cleaned.reserve(text.size());
     for (char32_t ch : text) {
+        if (args.remove_watermark && is_watermark(ch)) {
+            watermark_removed[ch]++;
+            continue;
+        }
         if (ALLOWED_SET.count(ch)) {
             cleaned.push_back(ch);
         } else {
@@ -168,7 +193,12 @@ int main(int argc, char* argv[]) {
         rpt << "Date: " << std::put_time(std::localtime(&time_t_now), "%Y-%m-%d %H:%M:%S") << "\n";
         rpt << "Input file: " << args.input << "\n";
         rpt << "Output file: " << args.output << "\n";
+        rpt << "Mode: replace with '?'" << (args.remove_watermark ? " + watermark removal" : "") << "\n";
         rpt << std::fixed << std::setprecision(6) << "Execution time: " << elapsed_s << " s\n\n";
+        rpt << "--- Watermark Characters Removed ---\n";
+        int total_watermark = 0;
+        for (const auto& [_, count] : watermark_removed) total_watermark += count;
+        rpt << "Total watermark chars removed: " << total_watermark << "\n\n";
         rpt << "--- Replaced Characters ---\n";
 
         if (replaced.empty()) {
@@ -212,8 +242,11 @@ int main(int argc, char* argv[]) {
 
     int total = 0;
     for (auto& [_, c] : replaced) total += c;
+    int total_watermark = 0;
+    for (auto& [_, c] : watermark_removed) total_watermark += c;
     std::cout << std::fixed << std::setprecision(6)
-              << "Done in " << elapsed_s << "s. Replacements: " << total << "\n";
+              << "Done in " << elapsed_s << "s. Replacements: " << total
+              << ", Watermark removed: " << total_watermark << "\n";
 
     return 0;
 }

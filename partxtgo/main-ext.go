@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
 	"log"
 	"math"
@@ -19,7 +18,7 @@ import (
 
 const allowedChars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz" +
 	"АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдеёжзийклмнопрстуфхцчшщъыьэюя" +
-	"[]{}()-=_+!@#$%&*;'/.,<>\"`~ \t\n\r"
+	"ҐґЄєІіЇїàáâãéêíóôõúçÀÁÂÃÉÊÍÓÔÕÚÇ[]{}():()-=_+!@#$%&*;'/.,<>\"`~—«» \t\n\r"
 
 func isAllowed(ch rune) bool {
 	return strings.ContainsRune(allowedChars, ch)
@@ -348,7 +347,7 @@ func calculateAIForensicMetrics(text string, wordFreq map[string]int) *AIMetrics
 	punctCount := 0
 	for _, ch := range text {
 		switch ch {
-		case ',', '.', '!', '?', ';':, ':', '(', ')', '-', '—', '–':
+		case ',', '.', '!', '?', ';', ':', '(', ')', '-', '—', '–':
 			punctCount++
 		}
 	}

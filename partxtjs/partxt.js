@@ -10,10 +10,28 @@ const ALLOWED = new Set(
     "[]{}()-=_+!@#$%&*;'/.,<>'\"`~ \t\n\r".split("")
 );
 
-function processText(text) {
+for (const ch of "ҐґЄєІіЇїàáâãéêíóôõúçÀÁÂÃÉÊÍÓÔÕÚÇ—«»") ALLOWED.add(ch);
+ALLOWED.add(":");
+ALLOWED.delete("|");
+
+const WATERMARK_CHARS = new Set([
+  "\u200B", "\u200C", "\u200D", "\uFEFF", "\u00AD", "\u2060", "\u2061",
+  "\u2062", "\u2063", "\u2064", "\u202A", "\u202B", "\u202C", "\u202D",
+  "\u202E", "\u2028", "\u2029", "\u180E", "\uE0001"
+]);
+for (let cp = 0xFE00; cp <= 0xFE0F; cp++) WATERMARK_CHARS.add(String.fromCodePoint(cp));
+for (let cp = 0xE0020; cp <= 0xE007F; cp++) WATERMARK_CHARS.add(String.fromCodePoint(cp));
+for (let cp = 0xE000; cp <= 0xE07F; cp++) WATERMARK_CHARS.add(String.fromCodePoint(cp));
+
+function processText(text, removeWatermark = false) {
   const replaced = new Map();
+  const watermarkRemoved = new Map();
   const out = [];
   for (const ch of text) {
+    if (removeWatermark && WATERMARK_CHARS.has(ch)) {
+      watermarkRemoved.set(ch, (watermarkRemoved.get(ch) || 0) + 1);
+      continue;
+    }
     if (ALLOWED.has(ch)) {
       out.push(ch);
     } else {
@@ -21,7 +39,7 @@ function processText(text) {
       out.push("?");
     }
   }
-  return { cleaned: out.join(""), replaced };
+  return { cleaned: out.join(""), replaced, watermarkRemoved };
 }
 
 function wordFrequency(text) {
@@ -51,14 +69,20 @@ function isAlphaNum(ch) {
   );
 }
 
-function buildReport(inputFile, outputFile, replaced, wordFreq, elapsed) {
+function buildReport(inputFile, outputFile, replaced, watermarkRemoved, wordFreq, elapsed, removeWatermark) {
   const lines = [];
   const now = new Date().toISOString().replace("T", " ").slice(0, 19);
   lines.push("=== aiparstxt Report (Bun) ===");
   lines.push(`Date: ${now}`);
   lines.push(`Input file: ${inputFile}`);
   lines.push(`Output file: ${outputFile}`);
+  lines.push(`Mode: replace with '?'${removeWatermark ? " + watermark removal" : ""}`);
   lines.push(`Execution time: ${elapsed.toFixed(6)} s`);
+  lines.push("");
+  lines.push("--- Watermark Characters Removed ---");
+  let watermarkTotal = 0;
+  for (const count of watermarkRemoved.values()) watermarkTotal += count;
+  lines.push(`Total watermark chars removed: ${watermarkTotal}`);
   lines.push("");
   lines.push("--- Replaced Characters ---");
   if (replaced.size === 0) {
@@ -95,7 +119,7 @@ function buildReport(inputFile, outputFile, replaced, wordFreq, elapsed) {
 }
 
 function parseArgs(argv) {
-  const args = { input: null, output: null, report: null, noEdit: false, noReport: false, noWords: false };
+  const args = { input: null, output: null, report: null, noEdit: false, noReport: false, noWords: false, removeWatermark: false };
   let i = 2;
   while (i < argv.length) {
     const a = argv[i];
@@ -109,6 +133,8 @@ function parseArgs(argv) {
       args.noReport = true;
     } else if (a === "-w" || a === "--no-words") {
       args.noWords = true;
+    } else if (a === "--remove-watermark") {
+      args.removeWatermark = true;
     } else if (a === "-h" || a === "--help") {
       console.log("Usage: partxt <input_file> [options]");
       console.log("  -o, --output <file>   Output file");
@@ -116,6 +142,7 @@ function parseArgs(argv) {
       console.log("  --no-edit             Do not create .ed.txt");
       console.log("  --no-report           Do not create report");
       console.log("  -w, --no-words        Exclude word frequency");
+      console.log("  --remove-watermark    Remove AI watermark characters");
       process.exit(0);
     } else if (!args.input) {
       args.input = a;
@@ -143,7 +170,7 @@ function main() {
 
   const start = performance.now();
   const text = fs.readFileSync(inputFile, "utf-8");
-  const { cleaned, replaced } = processText(text);
+  const { cleaned, replaced, watermarkRemoved } = processText(text, args.removeWatermark);
   const wordFreq = args.noWords ? null : wordFrequency(cleaned);
   const elapsed = (performance.now() - start) / 1000;
 
@@ -152,13 +179,15 @@ function main() {
   }
 
   if (!args.noReport) {
-    const report = buildReport(inputFile, outputFile, replaced, wordFreq, elapsed);
+    const report = buildReport(inputFile, outputFile, replaced, watermarkRemoved, wordFreq, elapsed, args.removeWatermark);
     fs.writeFileSync(reportFile, report, "utf-8");
   }
 
   let total = 0;
   for (const c of replaced.values()) total += c;
-  console.log(`Done in ${elapsed.toFixed(6)}s. Replacements: ${total}`);
+  let watermarkTotal = 0;
+  for (const c of watermarkRemoved.values()) watermarkTotal += c;
+  console.log(`Done in ${elapsed.toFixed(6)}s. Replacements: ${total}, Watermark removed: ${watermarkTotal}`);
 }
 
 main();

@@ -10,9 +10,11 @@ import re
 
 # Base character sets (common to all languages)
 BASE_LATIN = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
-BASE_CYRILLIC = "АБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдежзийклмнопрстуфхцчшщъыьэюяҐґЄєІіЇї"
+RUSSIAN_CYRILLIC = "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдеёжзийклмнопрстуфхцчшщъыьэюя"
+UKRAINIAN_CYRILLIC = "ҐґЄєІіЇї"
+PORTUGUESE_LATIN = "àáâãéêíóôõúçÀÁÂÃÉÊÍÓÔÕÚÇ"
 DIGITS = "0123456789"
-PUNCTUATION = "[]{}():()-=_+!@#$%&*;'/.,<>\"'`~|—«»"
+PUNCTUATION = "[]{}():()-=_+!@#$%&*;'/.,<>\"'`~—«»"
 WHITESPACE = " \t\n\r"
 
 # Language-specific character sets
@@ -24,37 +26,34 @@ LANGUAGE_CHARS = {
     },
     'ru': {
         'name': 'Русский',
-        'chars': BASE_LATIN + BASE_CYRILLIC + 'Ёё',
+        'chars': BASE_LATIN + RUSSIAN_CYRILLIC,
         'extra': 'Ёё'
     },
     'uk': {
         'name': 'Українська',
-        'chars': BASE_LATIN + BASE_CYRILLIC,  # Ukrainian letters already in BASE_CYRILLIC
+        'chars': BASE_LATIN + RUSSIAN_CYRILLIC + UKRAINIAN_CYRILLIC,
         'extra': 'ҐґЄєІіЇї'
     },
     'fr': {
         'name': 'Français',
-        'chars': BASE_LATIN + BASE_CYRILLIC + 'àâçéèêëîïôùûüÿœæÀÂÇÉÈÊËÎÏÔÙÛÜŸŒÆ',
+        'chars': BASE_LATIN + RUSSIAN_CYRILLIC + 'àâçéèêëîïôùûüÿœæÀÂÇÉÈÊËÎÏÔÙÛÜŸŒÆ',
         'extra': 'àâçéèêëîïôùûüÿœæÀÂÇÉÈÊËÎÏÔÙÛÜŸŒÆ'
     },
     'de': {
         'name': 'Deutsch',
-        'chars': BASE_LATIN + BASE_CYRILLIC + 'äöüßÄÖÜ',
+        'chars': BASE_LATIN + RUSSIAN_CYRILLIC + 'äöüßÄÖÜ',
         'extra': 'äöüßÄÖÜ'
     },
     'pt': {
         'name': 'Português',
-        'chars': BASE_LATIN + BASE_CYRILLIC + 'àáâãéêíóôõúçÀÁÂÃÉÊÍÓÔÕÚÇ',
+        'chars': BASE_LATIN + RUSSIAN_CYRILLIC + PORTUGUESE_LATIN,
         'extra': 'àáâãéêíóôõúçÀÁÂÃÉÊÍÓÔÕÚÇ'
     }
 }
 
 # Universal character set (all supported languages combined)
 UNIVERSAL_CHARS = (
-    BASE_LATIN + BASE_CYRILLIC + 'Ёё' +
-    'àâçéèêëîïôùûüÿœæÀÂÇÉÈÊËÎÏÔÙÛÜŸŒÆ' +  # French
-    'äöüßÄÖÜ' +  # German
-    'àáâãéêíóôõúçÀÁÂÃÉÊÍÓÔÕÚÇ'  # Portuguese
+    BASE_LATIN + RUSSIAN_CYRILLIC + UKRAINIAN_CYRILLIC + PORTUGUESE_LATIN
 )
 
 # AI Watermark Characters
@@ -74,10 +73,14 @@ WATERMARK_CHARS = set([
     '\u202C',  # Pop Directional Formatting
     '\u202D',  # Left-to-Right Override
     '\u202E',  # Right-to-Left Override
+    '\u2028',  # Line Separator
+    '\u2029',  # Paragraph Separator
     '\u2066',  # Left-to-Right Isolate
     '\u2067',  # Right-to-Left Isolate
     '\u2068',  # First Strong Isolate
     '\u2069',  # Pop Directional Isolate
+    '\u180E',  # Mongolian Separator
+    '\uE0001', # Language Tag
 ])
 # Variation selectors (FE00-FE0F)
 for cp in range(0xFE00, 0xFE10):
@@ -105,7 +108,7 @@ def detect_language(text):
             lang_scores[lang_code] = score
 
     # Check Cyrillic languages
-    cyrillic_count = sum(char_counts.get(c, 0) for c in BASE_CYRILLIC)
+    cyrillic_count = sum(char_counts.get(c, 0) for c in RUSSIAN_CYRILLIC + UKRAINIAN_CYRILLIC)
     if cyrillic_count > 0:
         # Distinguish between Russian and Ukrainian
         uk_specific = sum(char_counts.get(c, 0) for c in 'ҐґІіЇїЄє')

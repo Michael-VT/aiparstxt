@@ -20,16 +20,12 @@ import time
 # EXTENDED ALLOWED CHARACTERS
 # =========================================================
 
-ALLOWED = set()
-ALLOWED.update("0123456789")
-ALLOWED.update("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz")
-ALLOWED.update("АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдеёжзийклмнопрстуфхцчшщъыьэюяҐґЄєІіЇї")
-ALLOWED.update("àâçéèêëîïôùûüÿœæÀÂÇÉÈÊËÎÏÔÙÛÜŸŒÆ")  # Français
-ALLOWED.update("äöüßÄÖÜ")  # Deutsch  
-ALLOWED.update("àáâãéêíóôõúçÀÁÂÃÉÊÍÓÔÕÚÇ")  # Português
-ALLOWED.update("[]{}():()-=_+!@#$%&*;'/.,<>"
-               "'"
-               '"`~|—«»')
+ALLOWED = set(
+    "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+    "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдеёжзийклмнопрстуфхцчшщъыьэюяҐґЄєІіЇї"
+    "àáâãéêíóôõúçÀÁÂÃÉÊÍÓÔÕÚÇ"
+    "[]{}():()-=_+!@#$%&*;'/.,<>\"'`~—«» \t\n\r"
+)
 # =========================================================
 # ENHANCED AI WATERMARK CHARACTERS
 # =========================================================

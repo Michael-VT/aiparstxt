@@ -9,9 +9,11 @@ partxtrs/target/
 
 # Go
 partxtgo/partxtgo
+partxtgo/partxt-ext
 
 # C++
 partxtcpp/partxt
+partxtcpp/partxt-ext
 
 # Node.js
 partxtnode/node_modules/
@@ -37,3 +39,14 @@ __pycache__/
 *.pyc
 *.pyo
 .LOCAL_DOCS/
+
+# Local AI validation workspace (not for GitHub)
+/aitext/
+/validation/
+/scripts/
+/tests/
+/.planning/
+/AI-SPEC.md
+/CHARACTER_SET.md
+/TESTING.md
+/Makefile

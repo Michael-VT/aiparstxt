@@ -10,6 +10,10 @@ const ALLOWED = new Set(
     "[]{}()-=_+!@#$%&*;'/.,<>'\"`~ \t\n\r".split("")
 );
 
+for (const ch of "ҐґЄєІіЇїàáâãéêíóôõúçÀÁÂÃÉÊÍÓÔÕÚÇ—«»") ALLOWED.add(ch);
+ALLOWED.add(":");
+ALLOWED.delete("|");
+
 // AI Watermark Characters (невидимые маркеры, которые ИИ-системы используют для watermarking)
 const WATERMARK_CHARS = new Set([
   "\u200B", // Zero Width Space (ZWSP)

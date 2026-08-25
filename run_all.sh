@@ -1,7 +1,7 @@
 #!/bin/bash
 # run_all.sh — Run all aiparstxt implementations with full flags
 # Usage: ./run_all.sh [test_file]
-set -e
+set -euo pipefail
 
 TESTFILE="${1:-testdata/sample.txt}"
 ROOT="$(cd "$(dirname "$0")" && pwd)"
@@ -14,13 +14,13 @@ echo ""
 # Build binaries
 echo "--- Building ---"
 echo "[C++]"
-make -C partxtcpp --no-print-directory 2>/dev/null || echo "  (C++ build failed, skipping)"
+make -C partxtcpp --no-print-directory partxt
 
 echo "[Rust]"
-cargo build --release --manifest-path partxtrs/Cargo.toml 2>/dev/null | tail -1 || echo "  (Rust build failed, skipping)"
+cargo build --release --manifest-path partxtrs/Cargo.toml --bin partxt
 
 echo "[Go]"
-(cd partxtgo && go build -o partxtgo .) 2>/dev/null || echo "  (Go build failed, skipping)"
+(cd partxtgo && GOCACHE=/tmp/aiparstxt-go-cache go build -o partxtgo main.go)
 echo ""
 
 # Run each implementation
@@ -30,6 +30,7 @@ echo ""
 # 1. Python — full flags
 echo "[1/6] Python"
 python3 partxtpy/partxt.py "$TESTFILE" \
+  -l universal \
   -o "${TESTFILE%.txt}.py.ed.txt" \
   -r report_py.txt
 echo ""
@@ -73,8 +74,11 @@ echo ""
 echo "=== Timing Summary ==="
 for report in report_py.txt report_rs.txt report_go.txt report_cpp.txt report_node.txt report_bun.txt; do
   if [ -f "$report" ]; then
-    lang=$(grep "^=== " "$report" | sed 's/=== aiparstxt Report (\(.*\)) ===/\1/')
-    time=$(grep "Execution time:" "$report" | awk '{print $3, $4}')
+    lang=$(grep -m1 "^=== " "$report" | sed 's/=== aiparstxt Report (\(.*\)) ===/\1/' || true)
+    if [ -z "$lang" ]; then
+      lang=$(grep -m1 "Text Sanitizer Report" "$report" | sed 's/.*Report (\(.*\))/\1/' || true)
+    fi
+    time=$(grep -m1 "Execution time:" "$report" | awk '{print $3, $4}' || true)
     printf "%-10s %s\n" "$lang" "$time"
   fi
 done
@@ -84,7 +88,7 @@ echo "=== Comparison ==="
 echo "Checking that all .ed.txt files have the same number of ? characters:"
 for f in "${TESTFILE%.txt}".*.ed.txt; do
   if [ -f "$f" ]; then
-    cnt=$(grep -o '?' "$f" | wc -l | tr -d ' ')
+    cnt=$(awk -F'?' '{total += NF - 1} END {print total + 0}' "$f")
     echo "  $(basename "$f"): $cnt question marks"
   fi
 done

@@ -24,6 +24,10 @@ const ALLOWED = new Set(
     "[]{}()-=_+!@#$%&*;'/.,<>'\"`~ \t\n\r".split("")
 );
 
+for (const ch of "ҐґЄєІіЇїàáâãéêíóôõúçÀÁÂÃÉÊÍÓÔÕÚÇ—«»") ALLOWED.add(ch);
+ALLOWED.add(":");
+ALLOWED.delete("|");
+
 // =========================================================
 // ENHANCED AI WATERMARK CHARACTERS
 // =========================================================
@@ -634,9 +638,9 @@ function main() {
   // Read input file
   let text;
   try {
-    text = fs.readFileSync(inputFile, "utf8");
+    text = fs.readFileSync(inputPath, "utf8");
   } catch (e) {
-    console.error(`Error reading ${inputFile}: ${e.message}`);
+    console.error(`Error reading ${inputPath}: ${e.message}`);
     process.exit(1);
   }
 

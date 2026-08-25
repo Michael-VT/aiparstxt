@@ -22,14 +22,12 @@ const std::string ALLOWED_CHARS =
     "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдеёжзийклмнопрстуфхцчшщъыьэюя"
     "[]{}()-=_+!@#$%&*;'/.,<>\"`~ \t\n\r";
 
+const std::u32string CANONICAL_ALLOWED = U"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+    U"АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдеёжзийклмнопрстуфхцчшщъыьэюя"
+    U"ҐґЄєІіЇїàáâãéêíóôõúçÀÁÂÃÉÊÍÓÔÕÚÇ[]{}():()-=_+!@#$%&*;'/.,<>'\"`~—«» \t\n\r";
+
 bool isAllowed(char32_t ch) {
-    // Simple implementation for ASCII and basic Cyrillic
-    if (ch >= 0 && ch <= 127) {
-        return ALLOWED_CHARS.find(static_cast<char>(ch)) != std::string::npos;
-    }
-    // For simplicity, allow basic Cyrillic and common symbols
-    // In a real implementation, you'd want proper Unicode handling
-    return true;
+    return CANONICAL_ALLOWED.find(ch) != std::u32string::npos;
 }
 
 // =========================================================
