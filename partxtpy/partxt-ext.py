@@ -61,7 +61,7 @@ WATERMARK_CHARS = set([
     '\uFE08', '\uFE09', '\uFE0A', '\uFE0B', '\uFE0C', '\uFE0D', '\uFE0E', '\uFE0F',
     
     # Language and script tags
-    '\uE0001',  # Language Tag
+    '\U000E0001',  # Language Tag
     '\u180E',   # Mongolian Separator (often abused as watermark)
     
     # Additional Unicode planes suspicious for AI watermarking

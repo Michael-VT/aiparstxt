@@ -17,7 +17,7 @@ ALLOWED.delete("|");
 const WATERMARK_CHARS = new Set([
   "\u200B", "\u200C", "\u200D", "\uFEFF", "\u00AD", "\u2060", "\u2061",
   "\u2062", "\u2063", "\u2064", "\u202A", "\u202B", "\u202C", "\u202D",
-  "\u202E", "\u2028", "\u2029", "\u180E", "\uE0001"
+  "\u202E", "\u2028", "\u2029", "\u180E", "\u{E0001}"
 ]);
 for (let cp = 0xFE00; cp <= 0xFE0F; cp++) WATERMARK_CHARS.add(String.fromCodePoint(cp));
 for (let cp = 0xE0020; cp <= 0xE007F; cp++) WATERMARK_CHARS.add(String.fromCodePoint(cp));

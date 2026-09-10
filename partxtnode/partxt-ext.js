@@ -63,7 +63,7 @@ const WATERMARK_CHARS = new Set([
   "\uFE08", "\uFE09", "\uFE0A", "\uFE0B", "\uFE0C", "\uFE0D", "\uFE0E", "\uFE0F",
 
   // Language and script tags
-  "\uE0001", // Language Tag
+  "\u{E0001}", // Language Tag
   "\u180E",  // Mongolian Separator
 
   // Additional Unicode suspicious characters
@@ -72,11 +72,11 @@ const WATERMARK_CHARS = new Set([
 
 // Tag characters and Private Use Areas
 for (let cp = 0xE0020; cp < 0xE0080; cp++) {
-  WATERMARK_CHARS.add(String.fromCharCode(cp));
+  WATERMARK_CHARS.add(String.fromCodePoint(cp));
 }
 
 for (let cp = 0xE000; cp < 0xE080; cp++) {
-  WATERMARK_CHARS.add(String.fromCharCode(cp));
+  WATERMARK_CHARS.add(String.fromCodePoint(cp));
 }
 
 // =========================================================

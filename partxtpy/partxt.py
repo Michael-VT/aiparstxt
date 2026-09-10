@@ -80,7 +80,7 @@ WATERMARK_CHARS = set([
     '\u2068',  # First Strong Isolate
     '\u2069',  # Pop Directional Isolate
     '\u180E',  # Mongolian Separator
-    '\uE0001', # Language Tag
+    '\U000E0001', # Language Tag
 ])
 # Variation selectors (FE00-FE0F)
 for cp in range(0xFE00, 0xFE10):

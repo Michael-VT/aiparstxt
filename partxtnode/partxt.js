@@ -33,7 +33,7 @@ const WATERMARK_CHARS = new Set([
   "\u202E", // Right-to-Left Override
   "\u2028", // Line Separator
   "\u2029", // Paragraph Separator
-  "\uE0001", // Language Tag
+  "\u{E0001}", // Language Tag
   "\u180E", // Mongolian Separator (often abused as watermark)
 ]);
 // Variation Selectors (FE00-FE0F)
