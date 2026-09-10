@@ -9,24 +9,47 @@
   * { box-sizing:border-box; }
   body { font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; color:var(--ink);
          background:var(--bg); margin:0; padding:24px 16px 60px; }
-  main { max-width:860px; margin:0 auto; }
+  main { max-width:960px; margin:0 auto; }
   h1 { font-size:1.35rem; margin:0 0 4px; }
   h1 small { color:var(--mut); font-weight:400; font-size:.85rem; }
   .sub { color:var(--mut); font-size:.9rem; margin-bottom:18px; }
   .sub b { color:#1a7f37; }
   .card { background:#fff; border:1px solid var(--line); border-radius:10px; padding:16px; margin-bottom:16px; }
-  textarea { width:100%; min-height:200px; font:14px/1.5 ui-monospace,Menlo,Consolas,monospace;
-             border:1px solid var(--line); border-radius:8px; padding:10px; resize:vertical; }
+  .tabs { display:flex; gap:4px; margin-bottom:-1px; }
+  .tab { background:#e9eef3; color:var(--mut); padding:8px 16px; font:600 13px system-ui;
+         border:1px solid var(--line); border-bottom:0; border-radius:8px 8px 0 0; cursor:pointer; }
+  .tab.on { background:#fff; color:var(--ink); }
+  textarea { width:100%; min-height:260px; font:14px/1.55 ui-monospace,Menlo,Consolas,monospace;
+             border:1px solid var(--line); border-radius:0 8px 8px 8px; padding:10px; resize:vertical; }
   textarea:focus { outline:2px solid var(--acc); outline-offset:-1px; }
-  .row { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-top:10px; }
-  button { font:600 15px/1 system-ui; padding:11px 22px; border:0; border-radius:8px; cursor:pointer; }
+  .row { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:10px; }
+  button { font:600 15px/1 system-ui; padding:11px 18px; border:0; border-radius:8px; cursor:pointer; }
   #go { background:var(--acc); color:#fff; }
   #go:hover { filter:brightness(1.08); }
-  #clr { background:#e9eef3; color:var(--ink); }
+  #cleanbtn { background:#1a7f37; color:#fff; }
+  #cleanbtn:hover { filter:brightness(1.08); }
+  .mini { background:#e9eef3; color:var(--ink); padding:11px 14px; font-size:14px; }
   .langs { display:flex; gap:4px; }
   .lang-btn { background:#e9eef3; color:var(--mut); padding:8px 12px; font-size:13px; }
   .lang-btn.on { background:var(--acc); color:#fff; }
-  input[type=file] { font-size:13px; color:var(--mut); }
+  input[type=file] { font-size:13px; color:var(--mut); max-width:220px; }
+  #cleanmsg { font-size:.88rem; margin-top:10px; }
+  #cleanmsg.ok { color:#1a7f37; }
+  #cleanmsg.none { color:var(--mut); }
+  .hllegend { font-size:.82rem; color:var(--mut); margin:2px 0 8px; }
+  .pv { font:13px/1.7 ui-monospace,Menlo,Consolas,monospace; border:1px solid var(--line);
+        border-radius:8px; padding:10px 12px; max-height:420px; overflow:auto; background:#fff; }
+  .prow { display:flex; }
+  .prow:hover { background:#f4f8fc; }
+  .lno { flex:0 0 3.4em; text-align:right; color:#a5b3c1; user-select:none; padding-right:12px; }
+  .lc { white-space:pre-wrap; word-break:break-word; flex:1; }
+  .wm { background:#b42318; color:#fff; border-radius:3px; font:700 .72em system-ui;
+        padding:1px 4px; white-space:nowrap; }
+  .typ { background:#ffe9a8; outline:1px solid #e5c96b; border-radius:3px; }
+  mark { padding:0 1px; border-radius:3px; }
+  mark.ph-high   { background:#ffd4d2; border-bottom:2px solid #b42318; }
+  mark.ph-medium { background:#ffe9a8; border-bottom:2px solid #c9970a; }
+  mark.ph-weak   { background:#fdf3d7; border-bottom:2px dotted #c9970a; }
   .score { display:flex; gap:18px; align-items:center; flex-wrap:wrap; }
   .num { font-size:2.6rem; font-weight:700; line-height:1; }
   .band { padding:6px 12px; border-radius:999px; font-weight:600; font-size:.9rem; }
@@ -38,16 +61,23 @@
   .verdict { margin-top:10px; }
   .note { color:#8a6d00; }
   table { border-collapse:collapse; width:100%; font-size:.92rem; }
-  td { border-bottom:1px solid var(--line); padding:5px 8px; }
+  td { border-bottom:1px solid var(--line); padding:5px 8px; vertical-align:top; }
   td:first-child { color:var(--mut); width:46%; }
+  table.data td:first-child { color:var(--ink); width:auto; }
+  table.data td.num2 { text-align:right; white-space:nowrap; color:var(--mut); }
   .ev { margin:0; padding-left:0; list-style:none; }
   .ev li { border-left:3px solid var(--acc); padding:6px 10px; margin-bottom:8px;
            background:#f4f8fc; border-radius:0 6px 6px 0; font-size:.92rem; }
   .ev .loc { color:var(--mut); font-size:.82rem; }
   .ev .txt { display:block; margin-top:2px; font-family:ui-monospace,Menlo,Consolas,monospace; font-size:.85rem; }
-  mark { background:#ffe9a8; padding:0 2px; border-radius:3px; }
+  .sig { margin:0; padding-left:0; list-style:none; }
+  .sig li { padding:3px 0; font-size:.92rem; }
+  .sect { font-weight:600; margin:12px 0 6px; font-size:.95rem; }
   details { margin-top:8px; }
   summary { cursor:pointer; color:var(--acc); font-weight:600; }
+  #showall { background:#e9eef3; color:var(--acc); font-size:14px; padding:9px 14px; }
+  .chip { background:#b42318; color:#fff; border-radius:3px; font:700 .78em system-ui; padding:1px 4px; }
+  .reparr { color:var(--mut); }
   footer { color:var(--mut); font-size:.82rem; line-height:1.5; }
   footer a { color:var(--acc); }
   .hidden { display:none; }
@@ -60,10 +90,22 @@
     <span id="repo-link"></span></div>
 
   <div class="card">
+    <div class="tabs">
+      <button class="tab on" id="tab-edit" data-i18n="tabEdit">Редактор</button>
+      <button class="tab" id="tab-hl" data-i18n="tabHighlight">Подсветка</button>
+    </div>
     <textarea id="text" data-i18n-ph="placeholder" placeholder="Вставьте текст сюда…"></textarea>
+    <div id="hlwrap" class="hidden">
+      <div class="hllegend" id="hllegend"></div>
+      <div class="pv" id="hlview"></div>
+      <div class="sub" id="hlstats" style="margin:8px 0 0"></div>
+    </div>
     <div class="row">
       <button id="go" data-i18n="analyze">Проверить</button>
-      <button id="clr" data-i18n="clear">Очистить</button>
+      <button id="cleanbtn" data-i18n="clean">Очистить и нормализовать</button>
+      <button id="copybtn" class="mini" data-i18n="copy">Копировать</button>
+      <button id="dlbtn" class="mini" data-i18n="download">Скачать .txt</button>
+      <button id="clr" class="mini" data-i18n="clear">Очистить</button>
       <input type="file" id="file" accept=".txt,text/plain">
       <span style="flex:1"></span>
       <span class="langs">
@@ -73,6 +115,7 @@
           class="lang-btn" data-lang="pt">PT</button>
       </span>
     </div>
+    <div id="cleanmsg" class="hidden"></div>
   </div>
 
   <div id="out" class="hidden">
@@ -89,11 +132,27 @@
         <summary data-i18n="metrics">Метрики</summary>
         <table id="mtable"></table>
       </details>
+      <details>
+        <summary data-i18n="signals">Детальный разбор сигналов</summary>
+        <div class="sect" data-i18n="signalsList">Сигналы</div>
+        <ul class="sig" id="siglist"></ul>
+        <div class="sect" data-i18n="scoresList">Вклад сигналов в оценку</div>
+        <table class="data" id="scoretable"></table>
+      </details>
+    </div>
+
+    <div class="card">
+      <div style="font-weight:600;margin-bottom:10px" data-i18n="wmTitle">Скрытые символы (водяные знаки)</div>
+      <table class="data" id="wmtable"></table>
+      <div style="font-weight:600;margin:14px 0 6px" data-i18n="typTitle">Типографика, заменяемая на ASCII</div>
+      <table class="data" id="typtable"></table>
+      <div class="sub" id="wmnone" style="display:none;margin:0"></div>
     </div>
 
     <div class="card">
       <div style="font-weight:600;margin-bottom:10px" data-i18n="evidence">Места в тексте, на которые стоит обратить внимание:</div>
       <ul class="ev" id="evlist"></ul>
+      <button id="showall" class="hidden" data-i18n="showAll">Показать все найденные места</button>
       <div class="sub" data-i18n="noevidence" style="display:none">Индикаторов не найдено.</div>
     </div>
   </div>
@@ -112,12 +171,42 @@ const I18N = {
     privacy: "Усе виконується локально у вашому браузері — текст нікуди не надсилається.",
     placeholder: "Вставте текст сюди…",
     analyze: "Перевірити", clear: "Очистити",
+    clean: "Очистити та нормалізувати",
+    copy: "Копіювати", download: "Завантажити .txt",
+    tabEdit: "Редактор", tabHighlight: "Підсвітка",
     metrics: "Метрики", evidence: "Місця в тексті, на які варто звернути увагу:",
     noevidence: "Індикаторів не знайдено.",
+    showAll: "Показати всі знайдені місця",
+    signals: "Детальний розбір сигналів",
+    signalsList: "Сигнали", scoresList: "Внесок сигналів в оцінку",
+    wmTitle: "Приховані символи (водяні знаки)",
+    typTitle: "Типографіка, що замінюється на ASCII",
+    wmNone: "Не знайдено — текст чистий.",
+    colChar: "Символ", colCount: "К-ть", colLine: "Рядок", colRep: "Заміна",
+    cleanSummary: "Видалено прихованих символів: {w} · замінено типографіки: {t}",
+    cleanNone: "Прихованих символів не знайдено; типографіка вже в ASCII.",
+    copied: "Скопійовано в буфер обміну",
+    hlLegend: "Червона мітка — прихований символ (наведіть, щоб побачити код); світло-жовтий фон — типографіка, типова для ШІ; підкреслене — ШІ-фраза (насиченість = рівень).",
+    hlEmpty: "Немає тексту для підсвітки.",
+    hlTooBig: "Текст дуже великий — підсвітку показано для перших {n} тисяч символів.",
+    hlStats: "Прихованих символів: {w} · типографіки: {t} · ШІ-фраз: {p}",
+    tier_high: "ШІ-фраза високого рівня", tier_medium: "типова ШІ-фраза", tier_weak: "слабка ШІ-фраза",
     words: "слів", sents: "речень", linewide: "по всьому тексту",
     m_scv: "CV довжини речень", m_pcv: "CV довжини абзаців", m_phr: "ШІ-фрази (високий/середній/слабкий)",
     m_conn: "Щільність сполучників", m_div: "Лексичне різноманіття", m_ent: "Ентропія",
     m_tmpl: "Шаблонні заголовки",
+    scoreNames: {
+      sentence_cv: "CV довжини речень", paragraph_cv: "CV довжини абзаців",
+      joint_uniformity: "Спільна однорідність", ai_phrases: "ШІ-фрази",
+      connectives: "Щільність сполучників", template_headers: "Шаблонні заголовки",
+      lexical_diversity: "Низьке лексичне різноманіття", entropy: "Низька ентропія",
+      pattern_repetition: "Повтор шаблонів", repetition: "Повтор слів",
+      punctuation: "Щільність пунктуації", unicode: "Підозрілі Unicode-символи",
+      avg_word_length: "Середня довжина слова", word_length_variance: "Розкид довжини слів",
+      pronoun_ratio: "Частка займенників", readability: "Висока читабельність",
+      passive_voice: "Пасивний стан", adj_noun_diversity: "Різноманіття пар прикметник+іменник",
+      structural_uniformity: "Однотипні зачини речень", quantifier_overuse: "Надлишок кванторів",
+    },
     bands: ["СИГНАЛІВ НЕМА", "СЛАБКІ СИГНАЛИ", "ЗМІШАНИЙ ПРОФІЛЬ", "ЙМОВІРНО ШІ", "СИЛЬНО ШІ-ПОДІБНО"],
     legend: "Оцінка — це кількість знайдених ШІ-подібних сигналів, а не ймовірність авторства: <20 — сигналів немає; 20–35 — слабкі; 35–55 — змішаний профіль (перевірте місця вище); 55+ — ймовірно ШІ. Пометки NOTE означають «вердикт відкликано» (короткий текст / жанр поза калібруванням) — вважайте це «немає даних», а не «людина».",
     about: "Алгоритм ідентичний консольним аналізаторам проєкту (див. AI_SIGNALS_SPEC.md); калібрування та обмеження — у validation/AI_CORPUS_REPORT.md. Не є доказом авторства.",
@@ -128,12 +217,42 @@ const I18N = {
     privacy: "Tudo corre localmente no seu navegador — o texto não é enviado para lugar nenhum.",
     placeholder: "Cole o texto aqui…",
     analyze: "Verificar", clear: "Limpar",
+    clean: "Limpar e normalizar",
+    copy: "Copiar", download: "Descarregar .txt",
+    tabEdit: "Editor", tabHighlight: "Realce",
     metrics: "Métricas", evidence: "Passagens do texto que merecem atenção:",
     noevidence: "Nenhum indicador encontrado.",
+    showAll: "Mostrar todas as ocorrências",
+    signals: "Análise detalhada dos sinais",
+    signalsList: "Sinais", scoresList: "Contribuição dos sinais para a pontuação",
+    wmTitle: "Caracteres ocultos (marcas d'água)",
+    typTitle: "Tipografia substituída por ASCII",
+    wmNone: "Nada encontrado — texto limpo.",
+    colChar: "Caractere", colCount: "Qtd", colLine: "Linha", colRep: "Substituto",
+    cleanSummary: "Caracteres ocultos removidos: {w} · substituições tipográficas: {t}",
+    cleanNone: "Nenhum caractere oculto encontrado; a tipografia já está em ASCII.",
+    copied: "Copiado para a área de transferência",
+    hlLegend: "Marcador vermelho — caractere oculto (passe o rato para ver o código); fundo amarelo-claro — tipografia típica de IA; sublinhado — frase de IA (intensidade = nível).",
+    hlEmpty: "Não há texto para realçar.",
+    hlTooBig: "Texto muito longo — realce mostrado para os primeiros {n} mil caracteres.",
+    hlStats: "Caracteres ocultos: {w} · tipografia: {t} · frases de IA: {p}",
+    tier_high: "frase de IA de alto risco", tier_medium: "frase típica de IA", tier_weak: "frase fraca de IA",
     words: "palavras", sents: "frases", linewide: "em todo o texto",
     m_scv: "CV do comprimento das frases", m_pcv: "CV do comprimento dos parágrafos", m_phr: "Frases de IA (alto/médio/baixo)",
     m_conn: "Densidade de conectivos", m_div: "Diversidade lexical", m_ent: "Entropia",
     m_tmpl: "Cabeçalhos-modelo",
+    scoreNames: {
+      sentence_cv: "CV do comprimento das frases", paragraph_cv: "CV do comprimento dos parágrafos",
+      joint_uniformity: "Uniformidade conjunta", ai_phrases: "Frases de IA",
+      connectives: "Densidade de conectivos", template_headers: "Cabeçalhos-modelo",
+      lexical_diversity: "Baixa diversidade lexical", entropy: "Baixa entropia",
+      pattern_repetition: "Repetição de padrões", repetition: "Repetição de palavras",
+      punctuation: "Densidade de pontuação", unicode: "Unicode suspeito",
+      avg_word_length: "Comprimento médio das palavras", word_length_variance: "Dispersão do comprimento",
+      pronoun_ratio: "Proporção de pronomes", readability: "Legibilidade alta",
+      passive_voice: "Voz passiva", adj_noun_diversity: "Diversidade adjetivo+substantivo",
+      structural_uniformity: "Inícios de frase repetidos", quantifier_overuse: "Excesso de quantificadores",
+    },
     bands: ["SEM SINAIS", "SINAIS FRACOS", "PERFIL MISTO", "PROVÁVEL IA", "FORTEMENTE PARECIDO COM IA"],
     legend: "A pontuação conta os sinais semelhantes a IA encontrados — não é uma probabilidade de autoria: <20 nenhum; 20–35 fracos; 35–55 perfil misto (revise as passagens acima); 55+ provável IA. Anotações NOTE significam «veredicto retirado» (texto curto / género fora da calibração) — trate como «sem dados», não como «humano».",
     about: "O algoritmo é idêntico aos analisadores de consola do projeto (ver AI_SIGNALS_SPEC.md); calibração e limitações — validation/AI_CORPUS_REPORT.md. Não é prova de autoria.",
@@ -144,12 +263,42 @@ const I18N = {
     privacy: "Всё выполняется локально в вашем браузере — текст никуда не отправляется.",
     placeholder: "Вставьте текст сюда…",
     analyze: "Проверить", clear: "Очистить",
+    clean: "Очистить и нормализовать",
+    copy: "Копировать", download: "Скачать .txt",
+    tabEdit: "Редактор", tabHighlight: "Подсветка",
     metrics: "Метрики", evidence: "Места в тексте, на которые стоит обратить внимание:",
     noevidence: "Индикаторов не найдено.",
+    showAll: "Показать все найденные места",
+    signals: "Детальный разбор сигналов",
+    signalsList: "Сигналы", scoresList: "Вклад сигналов в оценку",
+    wmTitle: "Скрытые символы (водяные знаки)",
+    typTitle: "Типографика, заменяемая на ASCII",
+    wmNone: "Ничего не найдено — текст чист.",
+    colChar: "Символ", colCount: "Кол-во", colLine: "Строка", colRep: "Замена",
+    cleanSummary: "Удалено скрытых символов: {w} · заменено типографских символов: {t}",
+    cleanNone: "Скрытых символов не найдено; типографика уже в ASCII.",
+    copied: "Скопировано в буфер обмена",
+    hlLegend: "Красная метка — скрытый символ (наведите курсор, чтобы увидеть код); светло-жёлтый фон — типографика, типичная для ИИ; подчёркнутое — ИИ-фраза (насыщенность = уровень).",
+    hlEmpty: "Нет текста для подсветки.",
+    hlTooBig: "Текст очень большой — подсветка показана для первых {n} тысяч символов.",
+    hlStats: "Скрытых символов: {w} · типографики: {t} · ИИ-фраз: {p}",
+    tier_high: "ИИ-фраза высокого уровня", tier_medium: "типичная ИИ-фраза", tier_weak: "слабая ИИ-фраза",
     words: "слов", sents: "предложений", linewide: "по всему тексту",
     m_scv: "CV длины предложений", m_pcv: "CV длины абзацев", m_phr: "ИИ-фразы (высокий/средний/слабый)",
     m_conn: "Плотность связок", m_div: "Лексическое разнообразие", m_ent: "Энтропия",
     m_tmpl: "Шаблонные заголовки",
+    scoreNames: {
+      sentence_cv: "CV длины предложений", paragraph_cv: "CV длины абзацев",
+      joint_uniformity: "Совместная однородность", ai_phrases: "ИИ-фразы",
+      connectives: "Плотность связок", template_headers: "Шаблонные заголовки",
+      lexical_diversity: "Низкое лексическое разнообразие", entropy: "Низкая энтропия",
+      pattern_repetition: "Повтор шаблонов", repetition: "Повтор слов",
+      punctuation: "Плотность пунктуации", unicode: "Подозрительные Unicode-символы",
+      avg_word_length: "Средняя длина слова", word_length_variance: "Разброс длины слов",
+      pronoun_ratio: "Доля местоимений", readability: "Высокая читаемость",
+      passive_voice: "Пассивный залог", adj_noun_diversity: "Разнообразие пар «прилагательное+существительное»",
+      structural_uniformity: "Однотипные зачины предложений", quantifier_overuse: "Избыток кванторов",
+    },
     bands: ["СИГНАЛОВ НЕТ", "СЛАБЫЕ СИГНАЛЫ", "СМЕШАННЫЙ ПРОФИЛЬ", "ВЕРОЯТНО ИИ", "СИЛЬНО AI-ПОДОБНО"],
     legend: "Оценка — это количество найденных ИИ-подобных сигналов, а не вероятность авторства: <20 — сигналов нет; 20–35 — слабые; 35–55 — смешанный профиль (проверьте места выше); 55+ — вероятно ИИ. Пометки NOTE означают «вердикт отозван» (короткий текст / жанр вне калибровки) — считайте это «нет данных», а не «человек».",
     about: "Алгоритм идентичен консольным анализаторам проекта (см. AI_SIGNALS_SPEC.md); калибровка и ограничения — в validation/AI_CORPUS_REPORT.md. Не является доказательством авторства.",
@@ -160,25 +309,70 @@ const I18N = {
     privacy: "Everything runs locally in your browser — the text never leaves your device.",
     placeholder: "Paste your text here…",
     analyze: "Analyze", clear: "Clear",
+    clean: "Clean & normalize",
+    copy: "Copy", download: "Download .txt",
+    tabEdit: "Editor", tabHighlight: "Highlight",
     metrics: "Metrics", evidence: "Spots in the text worth reviewing:",
     noevidence: "No indicators found.",
+    showAll: "Show all occurrences",
+    signals: "Detailed signal breakdown",
+    signalsList: "Signals", scoresList: "Signal contribution to the score",
+    wmTitle: "Hidden characters (watermarks)",
+    typTitle: "Typography replaced with ASCII",
+    wmNone: "Nothing found — the text is clean.",
+    colChar: "Character", colCount: "Count", colLine: "Line", colRep: "Replacement",
+    cleanSummary: "Hidden characters removed: {w} · typography replaced: {t}",
+    cleanNone: "No hidden characters found; typography is already ASCII.",
+    copied: "Copied to clipboard",
+    hlLegend: "Red chip — hidden character (hover to see the code); light-yellow background — AI-typical typography; underlined — AI phrase (saturation = tier).",
+    hlEmpty: "No text to highlight.",
+    hlTooBig: "Text is very long — highlight shown for the first {n} thousand characters.",
+    hlStats: "Hidden characters: {w} · typography: {t} · AI phrases: {p}",
+    tier_high: "high-risk AI phrase", tier_medium: "typical AI phrase", tier_weak: "weak AI phrase",
     words: "words", sents: "sentences", linewide: "text-wide",
     m_scv: "Sentence length CV", m_pcv: "Paragraph length CV", m_phr: "AI phrases (high/medium/weak)",
     m_conn: "Connective density", m_div: "Lexical diversity", m_ent: "Entropy",
     m_tmpl: "Template headers",
+    scoreNames: {
+      sentence_cv: "Sentence length CV", paragraph_cv: "Paragraph length CV",
+      joint_uniformity: "Joint uniformity", ai_phrases: "AI phrases",
+      connectives: "Connective density", template_headers: "Template headers",
+      lexical_diversity: "Low lexical diversity", entropy: "Low entropy",
+      pattern_repetition: "Pattern repetition", repetition: "Word repetition",
+      punctuation: "Punctuation density", unicode: "Suspicious Unicode",
+      avg_word_length: "Average word length", word_length_variance: "Word length spread",
+      pronoun_ratio: "Pronoun ratio", readability: "High readability",
+      passive_voice: "Passive voice", adj_noun_diversity: "Adjective+noun pair diversity",
+      structural_uniformity: "Repeated sentence starts", quantifier_overuse: "Quantifier overuse",
+    },
     bands: ["NO SIGNALS", "WEAK SIGNALS", "MIXED PROFILE", "PROBABLE AI", "STRONG AI-LIKE"],
     legend: "The score counts AI-like signals found — it is not a probability of authorship: <20 none; 20–35 weak; 35–55 mixed (review the spots above); 55+ probable AI. NOTE annotations mean the verdict is withheld (short text / out-of-calibration genre) — treat them as 'no data', not 'human'.",
     about: "The algorithm is identical to the project's console analyzers (see AI_SIGNALS_SPEC.md); calibration and limitations — validation/AI_CORPUS_REPORT.md. Not proof of authorship.",
     source: "Sources:",
   }
 };
+const SCORE_NAMES_EN = I18N.en.scoreNames;
+const HL_CHAR_LIMIT = 300000;
 let lang = "ru";
+let lastEvidence = [];
+let evidenceShown = 25;
 
+const $ = id => document.getElementById(id);
 function esc(s) {
-  return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+  return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
+          .replace(/"/g,"&quot;").replace(/'/g,"&#39;");
 }
 function fmtExcerpt(s) {
   return esc(s).replace(/&gt;&gt;&gt;(.+?)&lt;&lt;&lt;/g, "<mark>$1</mark>");
+}
+function tr(key, vars) {
+  const t = I18N[lang];
+  let s = t[key] !== undefined ? t[key] : I18N.en[key];
+  if (vars) for (const k in vars) s = s.split("{" + k + "}").join(String(vars[k]));
+  return s;
+}
+function scoreName(key) {
+  return (I18N[lang].scoreNames || {})[key] || SCORE_NAMES_EN[key] || key;
 }
 function applyI18n() {
   const t = I18N[lang];
@@ -190,31 +384,204 @@ function applyI18n() {
   });
   document.getElementById("repo-link").textContent =
     t.source + " github.com/Michael-VT/aiparstxt";
+  document.getElementById("hllegend").textContent = t.hlLegend;
   document.querySelectorAll(".lang-btn").forEach(b => {
     b.classList.toggle("on", b.dataset.lang === lang);
   });
   document.documentElement.lang = lang === "uk" ? "uk" : lang;
+  if (!$("hlwrap").classList.contains("hidden")) renderHighlight();
 }
+
+// ---------- tabs ----------
+
+const textEl = document.getElementById("text");
+const hlwrap = document.getElementById("hlwrap");
+
+document.getElementById("tab-edit").addEventListener("click", () => switchTab(true));
+document.getElementById("tab-hl").addEventListener("click", () => switchTab(false));
 
 document.querySelectorAll(".lang-btn").forEach(b => {
   b.addEventListener("click", () => { lang = b.dataset.lang; applyI18n(); });
 });
+function switchTab(edit) {
+  document.getElementById("tab-edit").classList.toggle("on", edit);
+  document.getElementById("tab-hl").classList.toggle("on", !edit);
+  textEl.classList.toggle("hidden", !edit);
+  hlwrap.classList.toggle("hidden", edit);
+  if (!edit) renderHighlight();
+}
+
+// ---------- highlight view ----------
+
+function wmChip(ch) {
+  return '<span class="chip">[' + esc(charDisplayName(ch)) + "]</span>";
+}
+
+function renderHighlight() {
+  const t = I18N[lang];
+  const view = document.getElementById("hlview");
+  const text = textEl.value;
+  if (!text) {
+    view.textContent = t.hlEmpty;
+    document.getElementById("hlstats").textContent = "";
+    return;
+  }
+  let truncated = false;
+  let src = text;
+  if (src.length > HL_CHAR_LIMIT) {
+    src = src.slice(0, HL_CHAR_LIMIT);
+    truncated = true;
+  }
+  const marks = collectMarks(src);
+  let html = "";
+  let pos = 0;
+  let nWm = 0, nTyp = 0, nPh = 0;
+  for (const m of marks) {
+    html += esc(src.slice(pos, m.start));
+    const frag = src.slice(m.start, m.end);
+    if (m.type === "wm") {
+      nWm++;
+      html += '<span class="wm" title="' + esc(charHexLabel(m.ch) + " " + charDisplayName(m.ch)) +
+        '">[' + esc(charDisplayName(m.ch)) + "]</span>";
+    } else if (m.type === "typ") {
+      nTyp++;
+      const shown = /\s/.test(frag) ? "␣" : frag;
+      const rep = TYPOGRAPHY_MAP.get(m.ch);
+      html += '<span class="typ" title="' + esc(charHexLabel(m.ch) + " " + charDisplayName(m.ch) +
+        " → " + JSON.stringify(rep).slice(1, -1)) + '">' + esc(shown) + "</span>";
+    } else {
+      nPh++;
+      html += '<mark class="ph-' + m.tier + '" title="' + esc(t["tier_" + m.tier]) + '">' +
+        esc(frag) + "</mark>";
+    }
+    pos = m.end;
+  }
+  html += esc(src.slice(pos));
+  view.innerHTML = html.split("\n").map((l, i) =>
+    '<div class="prow"><span class="lno">' + (i + 1) + '</span><span class="lc">' +
+    (l || "&nbsp;") + "</span></div>"
+  ).join("");
+  document.getElementById("hlstats").textContent =
+    tr("hlStats", { w: nWm, t: nTyp, p: nPh }) +
+    (truncated ? " · " + tr("hlTooBig", { n: HL_CHAR_LIMIT / 1000 }) : "");
+}
+
+// ---------- watermark / typography tables ----------
+
+function fillCharTables() {
+  const text = textEl.value;
+  const wm = findWatermarks(text);
+  const typ = findTypography(text);
+  const wmTable = document.getElementById("wmtable");
+  const typTable = document.getElementById("typtable");
+  const t = I18N[lang];
+
+  wmTable.innerHTML = wm.map(o =>
+    "<tr><td>" + wmChip(o.ch) + " <span style='color:var(--mut)'>" + esc(o.cp) + " · " +
+    esc(o.name) + "</span></td><td class='num2'>" + o.count + "</td><td class='num2'>" +
+    t.colLine + " " + o.firstLine + "</td></tr>"
+  ).join("");
+  typTable.innerHTML = typ.map(o =>
+    "<tr><td>" + (/\s/.test(o.ch) ? "␣" : esc(o.ch)) +
+    " <span style='color:var(--mut)'>" + esc(o.name) + "</span></td>" +
+    "<td class='num2'>→ " + esc(JSON.stringify(o.rep).slice(1, -1)) + "</td>" +
+    "<td class='num2'>" + o.count + "</td><td class='num2'>" + t.colLine + " " + o.firstLine + "</td></tr>"
+  ).join("");
+  const none = !wm.length && !typ.length;
+  document.getElementById("wmnone").style.display = none ? "block" : "none";
+  document.getElementById("wmnone").textContent = tr("wmNone");
+}
+
+// ---------- clean / copy / download ----------
+
+document.getElementById("cleanbtn").addEventListener("click", () => {
+  const text = textEl.value;
+  if (!text) return;
+  const { cleaned, wmRemoved, typReplaced } = cleanTextAdvanced(text);
+  const msg = document.getElementById("cleanmsg");
+  msg.classList.remove("hidden");
+  const wmCount = [...wmRemoved.values()].reduce((a, b) => a + b, 0);
+  const typCount = [...typReplaced.values()].reduce((a, b) => a + b, 0);
+  if (cleaned === text) {
+    msg.className = "none";
+    msg.textContent = tr("cleanNone");
+    return;
+  }
+  msg.className = "ok";
+  msg.textContent = tr("cleanSummary", { w: wmCount, t: typCount });
+  textEl.value = cleaned;
+  renderHighlight();
+  if (!$("out").classList.contains("hidden")) doAnalyze();
+});
+
+document.getElementById("copybtn").addEventListener("click", () => {
+  const done = () => {
+    const b = document.getElementById("copybtn");
+    const old = b.textContent;
+    b.textContent = "✓ " + tr("copied");
+    setTimeout(() => { b.textContent = old; }, 1500);
+  };
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(textEl.value).then(done);
+  } else {
+    textEl.select();
+    document.execCommand("copy");
+    window.getSelection().removeAllRanges();
+    done();
+  }
+});
+
+document.getElementById("dlbtn").addEventListener("click", () => {
+  const blob = new Blob([textEl.value], { type: "text/plain;charset=utf-8" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "cleaned.txt";
+  a.click();
+  URL.revokeObjectURL(a.href);
+});
+
+// ---------- analyze ----------
 
 document.getElementById("file").addEventListener("change", e => {
   const f = e.target.files[0];
   if (!f) return;
   const r = new FileReader();
-  r.onload = () => { document.getElementById("text").value = r.result; };
+  r.onload = () => { textEl.value = r.result; switchTab(true); };
   r.readAsText(f, "utf-8");
 });
 
 document.getElementById("clr").addEventListener("click", () => {
-  document.getElementById("text").value = "";
+  textEl.value = "";
   document.getElementById("out").classList.add("hidden");
+  document.getElementById("cleanmsg").classList.add("hidden");
+  switchTab(true);
 });
 
-document.getElementById("go").addEventListener("click", () => {
-  const text = document.getElementById("text").value;
+document.getElementById("go").addEventListener("click", doAnalyze);
+
+document.getElementById("showall").addEventListener("click", () => {
+  evidenceShown = lastEvidence.length || evidenceShown;
+  renderEvidence();
+  document.getElementById("showall").classList.add("hidden");
+});
+
+function renderEvidence() {
+  const ul = document.getElementById("evlist");
+  const t = I18N[lang];
+  ul.innerHTML = "";
+  lastEvidence.slice(0, evidenceShown).forEach(ev => {
+    const li = document.createElement("li");
+    const loc = ev.line ? ("line " + ev.line) : t.linewide;
+    li.innerHTML = '<span class="loc">' + esc(loc) + ":</span> " + esc(ev.detail) +
+      (ev.excerpt ? '<span class="txt">“' + fmtExcerpt(ev.excerpt) + "”</span>" : "");
+    ul.appendChild(li);
+  });
+  document.getElementById("showall").classList.toggle(
+    "hidden", lastEvidence.length <= evidenceShown);
+}
+
+function doAnalyze() {
+  const text = textEl.value;
   const t = I18N[lang];
   if (!text.trim()) return;
 
@@ -254,20 +621,31 @@ document.getElementById("go").addEventListener("click", () => {
   document.getElementById("mtable").innerHTML =
     rows.map(r => "<tr><td>" + esc(r[0]) + "</td><td>" + esc(String(r[1])) + "</td></tr>").join("");
 
-  const ul = document.getElementById("evlist");
-  ul.innerHTML = "";
-  evidence.slice(0, 15).forEach(ev => {
-    const li = document.createElement("li");
-    const loc = ev.line ? ("line " + ev.line) : t.linewide;
-    li.innerHTML = '<span class="loc">' + esc(loc) + ":</span> " + esc(ev.detail) +
-      (ev.excerpt ? '<span class="txt">“' + fmtExcerpt(ev.excerpt) + "”</span>" : "");
-    ul.appendChild(li);
-  });
+  // Detailed signal breakdown: per-metric verdicts + score contributions
+  const sig = document.getElementById("siglist");
+  sig.innerHTML = (interp.interpretations || [])
+    .map(s => "<li>" + esc(s) + "</li>").join("") ||
+    "<li style='color:var(--mut)'>—</li>";
+  const st = document.getElementById("scoretable");
+  st.innerHTML = Object.entries(result.scores)
+    .sort((a, b) => b[1] - a[1])
+    .map(([k, p]) => "<tr><td>" + esc(scoreName(k)) + "</td><td class='num2'>+" + p + "</td></tr>")
+    .join("") || "<tr><td style='color:var(--mut)'>0</td><td class='num2'>0</td></tr>";
+
+  // Watermark / typography inventory
+  fillCharTables();
+
+  // Evidence locations (expandable)
+  lastEvidence = evidence;
+  evidenceShown = 25;
+  renderEvidence();
   document.querySelector("[data-i18n=noevidence]").style.display =
     evidence.length ? "none" : "block";
 
   document.getElementById("out").classList.remove("hidden");
-});
+  if (!hlwrap.classList.contains("hidden")) renderHighlight();
+  document.getElementById("out").scrollIntoView({ behavior: "smooth", block: "nearest" });
+}
 
 applyI18n();
 </script>

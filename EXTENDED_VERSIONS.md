@@ -255,8 +255,30 @@ cd partxtcpp && make partxt-ext
 - Go: Requires Go 1.18+
 - C++: Requires C++20 compliant compiler
 
+## Web Analyzer (docs/) — v0.4.4
+
+The browser demo mirrors the extended analyzer (parity via
+`tests/test_web_parity.sh`) and adds cleaning tools the console versions
+do not have:
+
+- **Highlight tab**: in-place highlighting of watermark characters (red
+  chips with code point + name on hover), AI-typical typography (amber,
+  ASCII replacement on hover) and tiered AI phrases (underlined, saturation
+  = tier), with line numbers and a per-category counter.
+- **Clean & normalize**: removes watermark characters and rewrites "smart"
+  typography to plain ASCII (`— – « » “ ” ‘ ’ …` → `- " ' ...`, NBSP/thin
+  spaces → space, bullets → `-`); shows a per-character inventory (code
+  point, name, count, first line) and offers copy/download of the result.
+- **Detailed signal breakdown**: per-metric verdicts plus a table of each
+  signal's contribution to the score; evidence list raised to 25 items with
+  a "show all" button.
+- UI languages: RU / UA / EN / PT.
+
+The ASCII replacement map lives in `docs/analyzer.js` (`TYPOGRAPHY_MAP`);
+it is a cleaning feature only — it does not affect metrics or scoring.
+
 ## Version Information
 
-- Current version: 0.4.3
+- Current version: 0.4.4
 - Release date: 2026
 - Changelog: See main README.md for version history

@@ -4,7 +4,7 @@ A set of command-line utilities that sanitize text files by replacing disallowed
 
 **⚠️ IMPORTANT UPDATE (August 2026):** After extensive testing with DEFINITELY HUMAN and DEFINITELY AI samples, we've created **honest_ai_detector.py** — the only detector with transparent limitations. See [AI Detection Limitations](#ai-detection-limitations) below.
 
-**🌍 Try it online (no install, runs in your browser):** <https://michael-vt.github.io/aiparstxt/> — paste a text, get the score and the exact spots that look AI-typical (EN/RU/UK/PT interface).
+**🌍 Try it online (no install, runs in your browser):** <https://michael-vt.github.io/aiparstxt/> — paste a text, get the score and the exact spots that look AI-typical (EN/RU/UK/PT interface). The demo also **cleans** text: it removes hidden watermarks and converts "smart" quotes/dashes/apostrophes to plain ASCII.
 
 **Available in:** [English](README.md) | [Русский](README.RU.md) | [Українська](README.UA.md) | [Português](README.PT.md) | [Français](README.FR.md) | [Deutsch](README.DE.md)
 
@@ -268,6 +268,13 @@ A browser-based version lives in [`docs/`](docs/) (`index.html` + `analyzer.js`)
 paste a text, get the score, verdict and the located evidence — everything runs
 locally in the browser, the text never leaves the device. The web analyzer is
 byte-compatible with the console implementations (`tests/test_web_parity.sh`).
+
+The demo also works as a cleaning tool: a **Highlight** tab renders the text
+with hidden watermark characters (ZWSP, tag chars, …) marked with red chips,
+AI-typical typography and AI phrases highlighted in place, and a
+**Clean & normalize** button removes watermark characters and rewrites
+"smart" quotes/dashes/apostrophes/spaces to plain ASCII (with a per-character
+inventory and copy/download of the result).
 
 To publish on GitHub: repo **Settings → Pages → Source: Deploy from a branch →
 main / `/docs`** — the demo appears at `https://<user>.github.io/aiparstxt/`.

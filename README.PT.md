@@ -2,7 +2,7 @@
 
 Conjunto de utilitários de linha de comando para limpar arquivos de texto substituindo caracteres não permitidos por '?'. Implementado em 6 idiomas para comparação de desempenho. Inclui remoção de marcas d'água de IA e **análise forense estatística** para detecção de texto gerado por IA.
 
-**🌍 Experimente online (sem instalação, corre no navegador):** <https://michael-vt.github.io/aiparstxt/> — cole um texto, obtenha a pontuação e as passagens exatas com aspeto típico de IA (interface PT/EN/RU/UA).
+**🌍 Experimente online (sem instalação, corre no navegador):** <https://michael-vt.github.io/aiparstxt/> — cole um texto, obtenha a pontuação e as passagens exatas com aspeto típico de IA (interface PT/EN/RU/UA). A demo também **limpa** o texto: remove marcas d'água ocultas e converte a tipografia «inteligente» (aspas, travessões, apóstrofos) em ASCII.
 
 **Disponível em:** [English](README.md) | [Русский](README.RU.md) | [Українська](README.UA.md) | [Português](README.PT.md) | [Français](README.FR.md) | [Deutsch](README.DE.md)
 
@@ -178,6 +178,8 @@ estendidos e na saída de `parscgpt-ext.py`.
 ### Demonstração online (GitHub Pages)
 
 A versão de navegador está em [`docs/`](docs/): cole o texto — obtenha pontuação, veredicto e evidências localizadas; tudo corre localmente no navegador. Publicação: Settings → Pages → main / `/docs`.
+
+A demo também é uma ferramenta de limpeza: o separador **«Highlight»** marca as marcas d'água ocultas (etiquetas vermelhas com o ponto de código), a tipografia típica de IA e as frases de IA diretamente no texto; o botão **«Clean & normalize»** remove as marcas d'água e reescreve a tipografia «inteligente» em ASCII simples (com inventário de substituições e descarregamento).
 
 ### Análise de um ficheiro com todos os detetores
 
@@ -391,7 +393,7 @@ Cada relatório inclui:
 - Minor (0.x.0): completamente funcional, atende aos requisitos
 - Major (x.0.0): recursos novos significativos
 
-Versão atual: 0.4.3
+Versão atual: 0.4.4
 
 ## Licença
 

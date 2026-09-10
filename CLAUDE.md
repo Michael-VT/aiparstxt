@@ -149,9 +149,18 @@ Report filenames include language prefix: `report_py.txt`, `report_py-ext.txt`, 
 
 ## Versioning
 
-Semantic: patch (0.0.x) = bug fixes, minor (0.x.0) = meets requirements, major (x.0.0) = significant new features. **Current: 0.4.3**.
+Semantic: patch (0.0.x) = bug fixes, minor (0.x.0) = meets requirements, major (x.0.0) = significant new features. **Current: 0.4.4**.
 
 ### Version History
+- **v0.4.4**: web demo becomes a cleaning workstation — watermark/typography/
+  AI-phrase in-text highlighting (tabs Editor/Highlight), "Clean & normalize"
+  (watermark removal + smart typography → ASCII with per-character inventory,
+  copy/download), detailed signal breakdown (per-metric verdicts + score
+  contributions), evidence raised to 25 with "show all"; fixed watermark
+  detection bugs: `"\uE0001"` (4-digit escape) never matched LANG-TAG in
+  JS/Python implementations, and `String.fromCharCode` truncation in
+  partxt-ext (Node/Bun) made `--remove-watermark` strip the whole ASCII range
+  0x20–0x7F; verified byte-identical removal across all 7 tools
 - **v0.4.3**: genre abstention for promotional/social register; readability
   interpretation fix (was inverted); Rust dead-code cleanup
 - **v0.4.2**: template header repetition signal (structured LLM answers);
@@ -169,7 +178,7 @@ Semantic: patch (0.0.x) = bug fixes, minor (0.x.0) = meets requirements, major (
 - `parscgpt-ext.py` — **Extended AI forensic analytics** (18 metrics, evidence locations, most comprehensive) ⭐
 - `AI_SIGNALS_SPEC.md` — **Canonical spec**: phrase tiers, weights, formula, evidence format, abstention rules
 - `analyze_all.sh` — **Run every analyzer on one file** + summarized report (builds missing binaries)
-- `docs/index.html` + `docs/analyzer.js` — **browser demo** for GitHub Pages (parity-tested)
+- `docs/index.html` + `docs/analyzer.js` — **browser demo** for GitHub Pages (parity-tested): analysis + watermark/typography highlighting + clean-to-ASCII
 - `parscgptv2.py` — **Standard AI forensic analytics** (conservative multilingual version)
 - `partxtpy/partxt-ext.py` — Python extended sanitizer with integrated AI detection
 - `ANALYTICS_RECOMMENDATIONS.md` — Porting guide for analytics to other languages

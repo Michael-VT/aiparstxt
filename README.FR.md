@@ -2,7 +2,7 @@
 
 Ensemble d'utilitaires en ligne de commande pour nettoyer des fichiers texte en remplaçant les caractères non autorisés par '?'. Implémenté en 6 langages pour comparaison des performances. Inclut la suppression de filigranes IA et **analyse statistique forensique** pour détecter du texte généré par IA.
 
-**🌍 Essayez en ligne (sans installation, fonctionne dans le navigateur) :** <https://michael-vt.github.io/aiparstxt/> — collez un texte, obtenez le score et les passages exacts d'allure typique d'IA (interface EN/RU/UA/PT).
+**🌍 Essayez en ligne (sans installation, fonctionne dans le navigateur) :** <https://michael-vt.github.io/aiparstxt/> — collez un texte, obtenez le score et les passages exacts d'allure typique d'IA (interface EN/RU/UA/PT). La démo **nettoie** aussi le texte : elle supprime les filigranes cachés et convertit la typographie « intelligente » (guillemets, tirets, apostrophes) en ASCII.
 
 **Disponible en :** [English](README.md) | [Русский](README.RU.md) | [Українська](README.UA.md) | [Português](README.PT.md) | [Français](README.FR.md) | [Deutsch](README.DE.md)
 
@@ -178,6 +178,8 @@ rapports des nettoyeurs étendus et dans la sortie de `parscgpt-ext.py`.
 ### Démo en ligne (GitHub Pages)
 
 La version navigateur est dans [`docs/`](docs/) : collez le texte — score, verdict et preuves localisées ; tout s'exécute localement dans le navigateur. Publication : Settings → Pages → main / `/docs`.
+
+La démo sert aussi d'outil de nettoyage : l'onglet **« Highlight »** marque les filigranes cachés (étiquettes rouges avec le point de code), la typographie typique de l'IA et les phrases de IA directement dans le texte ; le bouton **« Clean & normalize »** supprime les filigranes et convertit la typographie « intelligente » en ASCII simple (avec inventaire des remplacements et téléchargement).
 
 ### Analyse d'un fichier avec tous les détecteurs
 
@@ -391,7 +393,7 @@ Chaque rapport inclut :
 - Mineure (0.x.0) : entièrement fonctionnel, répond aux exigences
 - Majeure (x.0.0) : nouvelles fonctionnalités significatives
 
-Version actuelle : 0.4.3
+Version actuelle : 0.4.4
 
 ## Licence
 

@@ -48,20 +48,211 @@ const WATERMARK_CHARS = new Set([
   "\uFE08", "\uFE09", "\uFE0A", "\uFE0B", "\uFE0C", "\uFE0D", "\uFE0E", "\uFE0F",
 
   // Language and script tags
-  "\uE0001", // Language Tag
+  "\u{E0001}", // Language Tag
   "\u180E",  // Mongolian Separator
 
   // Additional Unicode suspicious characters
   "\uFFF9", "\uFFFA", "\uFFFB", "\uFFFC", "\uFFFD", // Interlinear annotation
 ]);
 
-// Tag characters and Private Use Areas
+// Tag characters (astral plane: U+E0020..U+E007F) and BMP Private Use Area.
+// fromCodePoint is required here: fromCharCode truncates to 16 bits and
+// would silently add the ASCII range 0x20..0x7F instead.
 for (let cp = 0xE0020; cp < 0xE0080; cp++) {
-  WATERMARK_CHARS.add(String.fromCharCode(cp));
+  WATERMARK_CHARS.add(String.fromCodePoint(cp));
 }
 
 for (let cp = 0xE000; cp < 0xE080; cp++) {
   WATERMARK_CHARS.add(String.fromCharCode(cp));
+}
+
+// Short human-readable names for the most common watermark code points
+const WATERMARK_NAMES = {
+  "\u200B": "ZWSP", "\u200C": "ZWNJ", "\u200D": "ZWJ", "\uFEFF": "BOM",
+  "\u00AD": "SHY", "\u2060": "WJ", "\u2061": "FA", "\u2062": "IT",
+  "\u2063": "IS", "\u2064": "IP",
+  "\u202A": "LRE", "\u202B": "RLE", "\u202C": "PDF", "\u202D": "LRO",
+  "\u202E": "RLO", "\u2028": "LS", "\u2029": "PS",
+  "\u{E0001}": "LANG-TAG", "\u180E": "MVS",
+};
+
+// "Smart" typography -> plain ASCII equivalents. These are the UTF-8
+// characters that quietly replace quotes / dashes / apostrophes / spaces
+// and double as AI-typography signals (see UNICODE_SUSPICIOUS).
+const TYPOGRAPHY_MAP = new Map([
+  // Single quotes
+  ["\u2018", "'"], ["\u2019", "'"], ["\u201A", "'"], ["\u201B", "'"],
+  ["\u2032", "'"], ["\u00B4", "'"], ["\u2035", "'"], ["\uFF07", "'"],
+  ["\u2039", "'"], ["\u203A", "'"],
+  // Double quotes
+  ["\u201C", '"'], ["\u201D", '"'], ["\u201E", '"'], ["\u201F", '"'],
+  ["\u00AB", '"'], ["\u00BB", '"'], ["\u2033", '"'], ["\u2036", '"'],
+  ["\u301D", '"'], ["\u301E", '"'], ["\uFF02", '"'],
+  // Dashes and minus signs
+  ["\u2013", "-"], ["\u2014", "-"], ["\u2015", "-"], ["\u2010", "-"],
+  ["\u2011", "-"], ["\u2012", "-"], ["\u2212", "-"], ["\uFE58", "-"],
+  ["\uFE63", "-"], ["\uFF0D", "-"],
+  // Ellipsis
+  ["\u2026", "..."],
+  // Fancy spaces
+  ["\u00A0", " "], ["\u2002", " "], ["\u2003", " "], ["\u2004", " "],
+  ["\u2005", " "], ["\u2006", " "], ["\u2007", " "], ["\u2008", " "],
+  ["\u2009", " "], ["\u200A", " "], ["\u202F", " "], ["\u205F", " "],
+  ["\u3000", " "],
+  // List bullets
+  ["\u2022", "-"], ["\u25AA", "-"], ["\u25CF", "-"], ["\u2043", "-"],
+  ["\u2219", "-"],
+]);
+
+const TYPOGRAPHY_NAMES = {
+  "\u2018": "left single quote", "\u2019": "right single quote",
+  "\u201A": "single low quote", "\u201B": "single high quote",
+  "\u2032": "prime", "\u00B4": "acute accent", "\u2035": "reversed prime",
+  "\uFF07": "fullwidth apostrophe", "\u2039": "single left guillemet",
+  "\u203A": "single right guillemet",
+  "\u201C": "left double quote", "\u201D": "right double quote",
+  "\u201E": "double low quote", "\u201F": "double high quote",
+  "\u00AB": "left guillemet", "\u00BB": "right guillemet",
+  "\u2033": "double prime", "\u2036": "reversed double prime",
+  "\u301D": "quoted prime", "\u301E": "quoted double prime",
+  "\uFF02": "fullwidth quote",
+  "\u2013": "en dash", "\u2014": "em dash", "\u2015": "horizontal bar",
+  "\u2010": "hyphen", "\u2011": "non-breaking hyphen",
+  "\u2012": "figure dash", "\u2212": "minus sign",
+  "\uFE58": "small em dash", "\uFE63": "small hyphen",
+  "\uFF0D": "fullwidth hyphen",
+  "\u2026": "ellipsis",
+  "\u00A0": "no-break space", "\u2002": "en space", "\u2003": "em space",
+  "\u2004": "three-per-em space", "\u2005": "four-per-em space",
+  "\u2006": "six-per-em space", "\u2007": "figure space",
+  "\u2008": "punctuation space", "\u2009": "thin space",
+  "\u200A": "hair space", "\u202F": "narrow no-break space",
+  "\u205F": "medium math space", "\u3000": "ideographic space",
+  "\u2022": "bullet", "\u25AA": "black small square",
+  "\u25CF": "black circle", "\u2043": "hyphen bullet",
+  "\u2219": "bullet operator",
+};
+
+function charHexLabel(ch) {
+  return "U+" + ch.codePointAt(0).toString(16).toUpperCase().padStart(4, "0");
+}
+
+function charDisplayName(ch) {
+  return WATERMARK_NAMES[ch] || TYPOGRAPHY_NAMES[ch] || charHexLabel(ch);
+}
+
+// Scan text for watermark characters. Returns [{ch, cp, name, count, firstLine}]
+function findWatermarks(text) {
+  const counts = new Map();
+  const firstLine = new Map();
+  let i = 0;
+  let line = 1;
+  for (const ch of text) {
+    if (WATERMARK_CHARS.has(ch)) {
+      counts.set(ch, (counts.get(ch) || 0) + 1);
+      if (!firstLine.has(ch)) firstLine.set(ch, line);
+    }
+    if (ch === "\n") line++;
+    i += ch.length;
+  }
+  const found = [];
+  for (const [ch, count] of counts) {
+    found.push({
+      ch,
+      cp: charHexLabel(ch),
+      name: charDisplayName(ch),
+      count,
+      firstLine: firstLine.get(ch),
+    });
+  }
+  found.sort((a, b) => b.count - a.count);
+  return found;
+}
+
+// Scan text for replaceable "smart" typography. Returns [{ch, rep, name, count, firstLine}]
+function findTypography(text) {
+  const counts = new Map();
+  const firstLine = new Map();
+  let line = 1;
+  for (const ch of text) {
+    if (TYPOGRAPHY_MAP.has(ch)) {
+      counts.set(ch, (counts.get(ch) || 0) + 1);
+      if (!firstLine.has(ch)) firstLine.set(ch, line);
+    }
+    if (ch === "\n") line++;
+  }
+  const found = [];
+  for (const [ch, count] of counts) {
+    found.push({
+      ch,
+      rep: TYPOGRAPHY_MAP.get(ch),
+      name: charDisplayName(ch),
+      count,
+      firstLine: firstLine.get(ch),
+    });
+  }
+  found.sort((a, b) => b.count - a.count);
+  return found;
+}
+
+// Remove watermark characters and normalize "smart" typography to ASCII.
+function cleanTextAdvanced(text) {
+  const wmRemoved = new Map();
+  const typReplaced = new Map();
+  const out = [];
+  for (const ch of text) {
+    if (WATERMARK_CHARS.has(ch)) {
+      wmRemoved.set(ch, (wmRemoved.get(ch) || 0) + 1);
+      continue;
+    }
+    if (TYPOGRAPHY_MAP.has(ch)) {
+      const rep = TYPOGRAPHY_MAP.get(ch);
+      typReplaced.set(ch, (typReplaced.get(ch) || 0) + 1);
+      out.push(rep);
+      continue;
+    }
+    out.push(ch);
+  }
+  return { cleaned: out.join(""), wmRemoved, typReplaced };
+}
+
+// Collect character-index marks for the interactive highlight view:
+//   {start, end, type: "wm"|"typ"|"phrase", ...}
+// Overlapping marks are resolved by priority wm > typ > phrase.
+function collectMarks(text, maxPhraseMarks = 400) {
+  const marks = [];
+  let i = 0;
+  for (const ch of text) {
+    if (WATERMARK_CHARS.has(ch)) {
+      marks.push({ start: i, end: i + ch.length, type: "wm", ch });
+    } else if (TYPOGRAPHY_MAP.has(ch)) {
+      marks.push({ start: i, end: i + ch.length, type: "typ", ch });
+    }
+    i += ch.length;
+  }
+  const textLower = text.toLowerCase();
+  let phraseCount = 0;
+  outer: for (const tier of ["high", "medium", "weak"]) {
+    for (const phrase of AI_PHRASES[tier]) {
+      let idx = textLower.indexOf(phrase);
+      while (idx !== -1) {
+        marks.push({ start: idx, end: idx + phrase.length, type: "phrase", tier });
+        if (++phraseCount >= maxPhraseMarks) break outer;
+        idx = textLower.indexOf(phrase, idx + phrase.length);
+      }
+    }
+  }
+  const prio = { wm: 0, typ: 1, phrase: 2 };
+  marks.sort((a, b) => a.start - b.start || prio[a.type] - prio[b.type]);
+  const resolved = [];
+  let lastEnd = -1;
+  for (const m of marks) {
+    if (m.start >= lastEnd) {
+      resolved.push(m);
+      lastEnd = m.end;
+    }
+  }
+  return resolved;
 }
 
 // =========================================================
@@ -1090,6 +1281,10 @@ if (typeof module !== "undefined" && module.exports) {
     buildEvidence,
     getInterpretation,
     processText,
+    findWatermarks,
+    findTypography,
+    cleanTextAdvanced,
+    collectMarks,
     AI_PHRASES,
     CONNECTIVES,
   };

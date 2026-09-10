@@ -2,7 +2,7 @@
 
 Eine Sammlung von Kommandozeilen-Tools zur Textbereinigung durch Ersetzung unzulässiger Zeichen durch '?'. In 6 Sprachen implementiert für Leistungsvergleiche. Enthält AI-Wasserzeichen-Entfernung und **statistische Forensik-Analyse** zur Erkennung KI-generierter Texte.
 
-**🌍 Online ausprobieren (keine Installation, läuft im Browser):** <https://michael-vt.github.io/aiparstxt/> — Text einfügen, Bewertung und die genauen KI-typischen Stellen erhalten (Oberfläche DE-frei: EN/RU/UA/PT).
+**🌍 Online ausprobieren (keine Installation, läuft im Browser):** <https://michael-vt.github.io/aiparstxt/> — Text einfügen, Bewertung und die genauen KI-typischen Stellen erhalten (Oberfläche DE-frei: EN/RU/UA/PT). Das Demo **bereinigt** auch Text: es entfernt versteckte Wasserzeichen und wandelt „typografische“ Anführungszeichen/Striche/Apostrophe in ASCII um.
 
 **Verfügbar in:** [English](README.md) | [Русский](README.RU.md) | [Українська](README.UA.md) | [Português](README.PT.md) | [Français](README.FR.md) | [Deutsch](README.DE.md)
 
@@ -178,6 +178,8 @@ und in der Ausgabe von `parscgpt-ext.py`.
 ### Online-Demo (GitHub Pages)
 
 Die Browser-Version liegt in [`docs/`](docs/): Text einfügen — Bewertung, Verdikt und Fundstellen; alles läuft lokal im Browser. Veröffentlichung: Settings → Pages → main / `/docs`.
+
+Das Demo ist auch ein Reinigungswerkzeug: Der Tab **„Highlight“** zeigt versteckte Wasserzeichen (rote Markierungen mit Codepunkt), KI-typische Typografie und KI-Phrasen direkt im Text; die Schaltfläche **„Clean & normalize“** entfernt Wasserzeichen und übersetzt „smarte“ Typografie in einfaches ASCII (mit Ersatzliste und Download).
 
 ### Analyse einer Datei mit allen Detektoren
 
@@ -391,7 +393,7 @@ Jeder Bericht enthält:
 - Minor (0.x.0): Voll funktional, entspricht Anforderungen
 - Major (x.0.0): Erhebliche neue Funktionen
 
-Aktuelle Version: 0.4.3
+Aktuelle Version: 0.4.4
 
 ## Lizenz
 
