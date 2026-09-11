@@ -19,8 +19,13 @@
   .tab { background:#e9eef3; color:var(--mut); padding:8px 16px; font:600 13px system-ui;
          border:1px solid var(--line); border-bottom:0; border-radius:8px 8px 0 0; cursor:pointer; }
   .tab.on { background:#fff; color:var(--ink); }
-  textarea { width:100%; min-height:260px; font:14px/1.55 ui-monospace,Menlo,Consolas,monospace;
-             border:1px solid var(--line); border-radius:0 8px 8px 8px; padding:10px; resize:vertical; }
+  .edwrap { display:flex; align-items:stretch; }
+  #lngut { flex:0 0 auto; min-width:3em; overflow:hidden; white-space:pre; text-align:right;
+           font:14px/1.55 ui-monospace,Menlo,Consolas,monospace; color:#a5b3c1;
+           background:#eef2f6; border:1px solid var(--line); border-right:0;
+           border-radius:0; padding:10px 6px 10px 2px; user-select:none; }
+  textarea { flex:1; width:auto; min-height:260px; font:14px/1.55 ui-monospace,Menlo,Consolas,monospace;
+             border:1px solid var(--line); border-radius:0 8px 8px 0; padding:10px; resize:vertical; }
   textarea:focus { outline:2px solid var(--acc); outline-offset:-1px; }
   .row { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:10px; }
   button { font:600 15px/1 system-ui; padding:11px 18px; border:0; border-radius:8px; cursor:pointer; }
@@ -68,7 +73,11 @@
   .ev { margin:0; padding-left:0; list-style:none; }
   .ev li { border-left:3px solid var(--acc); padding:6px 10px; margin-bottom:8px;
            background:#f4f8fc; border-radius:0 6px 6px 0; font-size:.92rem; }
+  .ev li.canjump { cursor:pointer; }
+  .ev li.canjump:hover { background:#e6effa; }
   .ev .loc { color:var(--mut); font-size:.82rem; }
+  .ev li.canjump .loc { color:var(--acc); font-weight:600; text-decoration:underline dotted; }
+  .ev .why { display:block; color:var(--mut); font-size:.85rem; margin-top:4px; line-height:1.45; }
   .ev .txt { display:block; margin-top:2px; font-family:ui-monospace,Menlo,Consolas,monospace; font-size:.85rem; }
   .sig { margin:0; padding-left:0; list-style:none; }
   .sig li { padding:3px 0; font-size:.92rem; }
@@ -94,7 +103,10 @@
       <button class="tab on" id="tab-edit" data-i18n="tabEdit">Редактор</button>
       <button class="tab" id="tab-hl" data-i18n="tabHighlight">Подсветка</button>
     </div>
-    <textarea id="text" data-i18n-ph="placeholder" placeholder="Вставьте текст сюда…"></textarea>
+    <div class="edwrap">
+      <div id="lngut" aria-hidden="true"></div>
+      <textarea id="text" data-i18n-ph="placeholder" placeholder="Вставьте текст сюда…"></textarea>
+    </div>
     <div id="hlwrap" class="hidden">
       <div class="hllegend" id="hllegend"></div>
       <div class="pv" id="hlview"></div>
@@ -142,6 +154,11 @@
     </div>
 
     <div class="card">
+      <div style="font-weight:600;margin-bottom:10px" data-i18n="stTitle">Статистика текста</div>
+      <table class="data" id="statstable"></table>
+    </div>
+
+    <div class="card">
       <div style="font-weight:600;margin-bottom:10px" data-i18n="wmTitle">Скрытые символы (водяные знаки)</div>
       <table class="data" id="wmtable"></table>
       <div style="font-weight:600;margin:14px 0 6px" data-i18n="typTitle">Типографика, заменяемая на ASCII</div>
@@ -163,7 +180,7 @@
   </footer>
 </main>
 
-<script src="analyzer.js?v=0.4.4"></script>
+<script src="analyzer.js?v=0.4.5"></script>
 <script>
 const I18N = {
   uk: {
@@ -191,6 +208,21 @@ const I18N = {
     hlTooBig: "Текст дуже великий — підсвітку показано для перших {n} тисяч символів.",
     hlStats: "Прихованих символів: {w} · типографіки: {t} · ШІ-фраз: {p}",
     tier_high: "ШІ-фраза високого рівня", tier_medium: "типова ШІ-фраза", tier_weak: "слабка ШІ-фраза",
+    jumpHint: "Натисніть, щоб перейти до рядка в редакторі",
+    stTitle: "Статистика тексту",
+    stBytes: "Розмір (байтів, UTF-8)", stChars: "Символів (з пробілами)",
+    stCharsNs: "Символів без пробілів", stWords: "Усього слів",
+    stUnique: "Унікальних слів", stSents: "Речень", stParas: "Абзаців",
+    stLines: "Рядків", stAvgSent: "Середня довжина речення (слів)",
+    stRead: "Час читання (~200 слів/хв)", stMin: "хв",
+    why_high: "Справа не в граматиці й не в окремих словах: фраза сама по собі безпечна, але це шаблонний зворот, яким мовні моделі «склеюють» текст. У корпусі людських текстів такі фрази не трапилися жодного разу.",
+    why_medium: "Типовий ШІ-зворот. Один такий — ще не показник, але в сумі з іншими сигналами підвищує підсумкову оцінку.",
+    why_weak: "Слабкий маркер: такі слова трапляються й у людей. Звертайте увагу, лише якщо їх багато.",
+    why_template: "Той самий короткий рядок-заголовок повторюється знову і знову — так виглядають структуровані відповіді LLM. Люди так майже не пишуть.",
+    why_uni_sent: "Зміст тут ні до чого — важлива статистика: довжини речень по всьому тексту майже однакові, а людський текст зазвичай «рваний». Це найсильніший структурний сигнал.",
+    why_uni_para: "Абзаци майже однакової довжини, ніби текст зібрано за трафаретом; у людей розкид помітно більший.",
+    why_connective: "В одному реченні одразу кілька службових сполучників («однак», «крім того», «таким чином»…). Моделі люблять явно скріплювати думки, люди частіше обходяться без них.",
+    why_sentence: "Слова самі по собі нормальні — підозріла їх концентрація: в одному реченні одразу кілька типових ШІ-зворотів і сполучників.",
     words: "слів", sents: "речень", linewide: "по всьому тексту",
     m_scv: "CV довжини речень", m_pcv: "CV довжини абзаців", m_phr: "ШІ-фрази (високий/середній/слабкий)",
     m_conn: "Щільність сполучників", m_div: "Лексичне різноманіття", m_ent: "Ентропія",
@@ -237,6 +269,21 @@ const I18N = {
     hlTooBig: "Texto muito longo — realce mostrado para os primeiros {n} mil caracteres.",
     hlStats: "Caracteres ocultos: {w} · tipografia: {t} · frases de IA: {p}",
     tier_high: "frase de IA de alto risco", tier_medium: "frase típica de IA", tier_weak: "frase fraca de IA",
+    jumpHint: "Clique para saltar para esta linha no editor",
+    stTitle: "Estatísticas do texto",
+    stBytes: "Tamanho (bytes, UTF-8)", stChars: "Caracteres (com espaços)",
+    stCharsNs: "Caracteres sem espaços", stWords: "Total de palavras",
+    stUnique: "Palavras únicas", stSents: "Frases", stParas: "Parágrafos",
+    stLines: "Linhas", stAvgSent: "Comprimento médio da frase (palavras)",
+    stRead: "Tempo de leitura (~200 palavras/min)", stMin: "min",
+    why_high: "A questão não é a gramática nem as palavras isoladas: a frase é inofensiva em si, mas é uma fórmula de que os modelos de linguagem se servem para encadear o texto. Não ocorreu nenhuma vez no corpus humano de validação.",
+    why_medium: "Expressão típica de IA. Uma ocorrência não prova nada, mas em conjunto com outros sinais eleva a pontuação.",
+    why_weak: "Marcador fraco: essas palavras também ocorrem em textos humanos. Só merece atenção quando há muitas.",
+    why_template: "A mesma linha-cabeçalho curta repete-se vezes sem conta — típico de respostas estruturadas de LLM. Humanos quase nunca escrevem assim.",
+    why_uni_sent: "O conteúdo não é o que importa aqui — são as estatísticas: os comprimentos das frases são quase iguais em todo o texto, ao passo que a escrita humana costuma ser desigual. É o sinal estrutural mais forte.",
+    why_uni_para: "Parágrafos quase do mesmo comprimento, como se o texto tivesse sido montado num molde; em humanos a variação é bem maior.",
+    why_connective: "Uma única frase contém vários conectivos («no entanto», «além disso», «dessa forma»…). Os modelos gostam de ligar as ideias explicitamente; as pessoas normalmente não o fazem.",
+    why_sentence: "As palavras em si são normais — o suspeito é a concentração: várias expressões típicas de IA e conectivos na mesma frase.",
     words: "palavras", sents: "frases", linewide: "em todo o texto",
     m_scv: "CV do comprimento das frases", m_pcv: "CV do comprimento dos parágrafos", m_phr: "Frases de IA (alto/médio/baixo)",
     m_conn: "Densidade de conectivos", m_div: "Diversidade lexical", m_ent: "Entropia",
@@ -283,6 +330,21 @@ const I18N = {
     hlTooBig: "Текст очень большой — подсветка показана для первых {n} тысяч символов.",
     hlStats: "Скрытых символов: {w} · типографики: {t} · ИИ-фраз: {p}",
     tier_high: "ИИ-фраза высокого уровня", tier_medium: "типичная ИИ-фраза", tier_weak: "слабая ИИ-фраза",
+    jumpHint: "Нажмите, чтобы перейти к строке в редакторе",
+    stTitle: "Статистика текста",
+    stBytes: "Размер (байт, UTF-8)", stChars: "Символов (с пробелами)",
+    stCharsNs: "Символов без пробелов", stWords: "Всего слов",
+    stUnique: "Уникальных слов", stSents: "Предложений", stParas: "Абзацев",
+    stLines: "Строк", stAvgSent: "Средняя длина предложения (слов)",
+    stRead: "Время чтения (~200 слов/мин)", stMin: "мин",
+    why_high: "Дело не в грамматике и не в отдельных словах: фраза безобидна сама по себе, но это шаблонный оборот, которым языковые модели «склеивают» текст. В корпусе человеческих текстов такие фразы не встретились ни разу.",
+    why_medium: "Типичный ИИ-оборот. Один такой — ещё не показатель, но в сумме с другими сигналами повышает итоговую оценку.",
+    why_weak: "Слабый маркер: такие слова встречаются и у людей. Обращайте внимание, только если их много.",
+    why_template: "Одна и та же короткая строка-заголовок повторяется снова и снова — так выглядят структурированные ответы LLM. Человек так почти никогда не пишет.",
+    why_uni_sent: "Содержание здесь ни при чём — важна статистика: длины предложений по всему тексту почти одинаковы, а человеческий текст обычно «рваный». Это самый сильный структурный сигнал.",
+    why_uni_para: "Абзацы почти одинаковой длины, как будто текст собран по трафарету; у людей разброс заметно больше.",
+    why_connective: "В одном предложении сразу несколько служебных связок («однако», «кроме того», «таким образом»…). Модели любят явно склеивать мысли, люди чаще обходятся без них.",
+    why_sentence: "Слова сами по себе нормальные — подозрительна их концентрация: в одном предложении сразу несколько типичных ИИ-оборотов и связок.",
     words: "слов", sents: "предложений", linewide: "по всему тексту",
     m_scv: "CV длины предложений", m_pcv: "CV длины абзацев", m_phr: "ИИ-фразы (высокий/средний/слабый)",
     m_conn: "Плотность связок", m_div: "Лексическое разнообразие", m_ent: "Энтропия",
@@ -329,6 +391,21 @@ const I18N = {
     hlTooBig: "Text is very long — highlight shown for the first {n} thousand characters.",
     hlStats: "Hidden characters: {w} · typography: {t} · AI phrases: {p}",
     tier_high: "high-risk AI phrase", tier_medium: "typical AI phrase", tier_weak: "weak AI phrase",
+    jumpHint: "Click to jump to this line in the editor",
+    stTitle: "Text statistics",
+    stBytes: "Size (bytes, UTF-8)", stChars: "Characters (with spaces)",
+    stCharsNs: "Characters without spaces", stWords: "Total words",
+    stUnique: "Unique words", stSents: "Sentences", stParas: "Paragraphs",
+    stLines: "Lines", stAvgSent: "Average sentence length (words)",
+    stRead: "Reading time (~200 wpm)", stMin: "min",
+    why_high: "Grammar is not the issue: the phrase is harmless on its own, but it is a template turn of phrase LLMs use to glue text together. It never occurred in the human validation corpus.",
+    why_medium: "A typical AI turn of phrase. One occurrence is not proof, but together with other signals it raises the score.",
+    why_weak: "Weak marker: these words occur in human writing too. Only pay attention when there are many of them.",
+    why_template: "The same short header line repeats over and over — typical of structured LLM answers. Humans almost never write like that.",
+    why_uni_sent: "Content is not the point here — the statistics are: sentence lengths are nearly identical across the text, while human writing is usually uneven. This is the strongest structural signal.",
+    why_uni_para: "Paragraphs are almost equal in length, as if assembled from a stencil; humans show much more spread.",
+    why_connective: "A single sentence carries several discourse connectives ('however', 'in addition', 'as a result'…). Models like to glue thoughts together explicitly; humans usually do not.",
+    why_sentence: "The words themselves are fine — it is their concentration: several typical AI turns and connectives packed into one sentence.",
     words: "words", sents: "sentences", linewide: "text-wide",
     m_scv: "Sentence length CV", m_pcv: "Paragraph length CV", m_phr: "AI phrases (high/medium/weak)",
     m_conn: "Connective density", m_div: "Lexical diversity", m_ent: "Entropy",
@@ -396,6 +473,36 @@ function applyI18n() {
 
 const textEl = document.getElementById("text");
 const hlwrap = document.getElementById("hlwrap");
+const lngut = document.getElementById("lngut");
+
+// ---------- editor line-number gutter ----------
+
+function syncGutter() {
+  const n = textEl.value.split("\n").length;
+  let s = "";
+  for (let i = 1; i <= n; i++) s += i + "\n";
+  lngut.textContent = s;
+  lngut.scrollTop = textEl.scrollTop;
+}
+textEl.addEventListener("input", syncGutter);
+textEl.addEventListener("scroll", () => { lngut.scrollTop = textEl.scrollTop; });
+syncGutter();
+
+// Switch to the editor tab and jump to a 1-based line (selects it so the
+// position is visible even when the textarea is scrolled to the top).
+function gotoLine(n) {
+  switchTab(true);
+  const lines = textEl.value.split("\n");
+  if (n < 1 || n > lines.length) return;
+  let pos = 0;
+  for (let i = 0; i < n - 1; i++) pos += lines[i].length + 1;
+  const end = pos + lines[n - 1].length;
+  textEl.focus();
+  textEl.setSelectionRange(pos, end);
+  const lh = parseFloat(getComputedStyle(textEl).lineHeight) || 22;
+  textEl.scrollTop = Math.max(0, (n - 1) * lh - lh * 4);
+  lngut.scrollTop = textEl.scrollTop;
+}
 
 document.getElementById("tab-edit").addEventListener("click", () => switchTab(true));
 document.getElementById("tab-hl").addEventListener("click", () => switchTab(false));
@@ -407,6 +514,7 @@ function switchTab(edit) {
   document.getElementById("tab-edit").classList.toggle("on", edit);
   document.getElementById("tab-hl").classList.toggle("on", !edit);
   textEl.classList.toggle("hidden", !edit);
+  lngut.classList.toggle("hidden", !edit);
   hlwrap.classList.toggle("hidden", edit);
   if (!edit) renderHighlight();
 }
@@ -492,6 +600,40 @@ function fillCharTables() {
   document.getElementById("wmnone").textContent = tr("wmNone");
 }
 
+// ---------- text statistics ----------
+
+function fillTextStats(text, metrics) {
+  const t = I18N[lang];
+  const cps = Array.from(text);
+  const bytes = new TextEncoder().encode(text).length;
+  const charsNs = cps.reduce((a, ch) => a + (/\s/.test(ch) ? 0 : 1), 0);
+  const toks = text.toLowerCase().match(/[\p{L}\p{N}_]+/gu) || [];
+  const paras = text.split(/\n\s*\n/).filter(p => p.trim()).length;
+  const lines = text.split("\n").length;
+  const avgSent = metrics.sentence_count ?
+    metrics.word_count / metrics.sentence_count : 0;
+  const mins = Math.max(1, Math.round(metrics.word_count / 200));
+  const cells = [
+    [t.stBytes, bytes.toLocaleString(lang)],
+    [t.stChars, cps.length.toLocaleString(lang)],
+    [t.stCharsNs, charsNs.toLocaleString(lang)],
+    [t.stWords, metrics.word_count.toLocaleString(lang)],
+    [t.stUnique, new Set(toks).size.toLocaleString(lang)],
+    [t.stSents, metrics.sentence_count.toLocaleString(lang)],
+    [t.stParas, paras.toLocaleString(lang)],
+    [t.stLines, lines.toLocaleString(lang)],
+    [t.stAvgSent, avgSent.toFixed(1)],
+    [t.stRead, "~" + mins + " " + t.stMin],
+  ];
+  const rows = [];
+  for (let i = 0; i < cells.length; i += 2) {
+    const b = cells[i + 1] || ["", ""];
+    rows.push("<tr><td>" + esc(cells[i][0]) + "</td><td class='num2'>" + esc(String(cells[i][1])) +
+      "</td><td>" + esc(b[0]) + "</td><td class='num2'>" + esc(String(b[1])) + "</td></tr>");
+  }
+  document.getElementById("statstable").innerHTML = rows.join("");
+}
+
 // ---------- clean / copy / download ----------
 
 document.getElementById("cleanbtn").addEventListener("click", () => {
@@ -510,6 +652,7 @@ document.getElementById("cleanbtn").addEventListener("click", () => {
   msg.className = "ok";
   msg.textContent = tr("cleanSummary", { w: wmCount, t: typCount });
   textEl.value = cleaned;
+  syncGutter();
   renderHighlight();
   if (!$("out").classList.contains("hidden")) doAnalyze();
 });
@@ -546,12 +689,13 @@ document.getElementById("file").addEventListener("change", e => {
   const f = e.target.files[0];
   if (!f) return;
   const r = new FileReader();
-  r.onload = () => { textEl.value = r.result; switchTab(true); };
+  r.onload = () => { textEl.value = r.result; switchTab(true); syncGutter(); };
   r.readAsText(f, "utf-8");
 });
 
 document.getElementById("clr").addEventListener("click", () => {
   textEl.value = "";
+  syncGutter();
   document.getElementById("out").classList.add("hidden");
   document.getElementById("cleanmsg").classList.add("hidden");
   switchTab(true);
@@ -565,15 +709,39 @@ document.getElementById("showall").addEventListener("click", () => {
   document.getElementById("showall").classList.add("hidden");
 });
 
+// Plain-language explanation of why an indicator deserves attention.
+// Keyed by evidence type; phrase tier is recovered from the English detail.
+function evidenceWhy(ev) {
+  const d = ev.detail || "";
+  if (ev.type === "phrase") {
+    if (d.startsWith("HIGH-risk")) return tr("why_high");
+    if (d.startsWith("typical")) return tr("why_medium");
+    return tr("why_weak");
+  }
+  if (ev.type === "template") return tr("why_template");
+  if (ev.type === "uniformity")
+    return d.startsWith("sentence") ? tr("why_uni_sent") : tr("why_uni_para");
+  if (ev.type === "connective") return tr("why_connective");
+  if (ev.type === "sentence") return tr("why_sentence");
+  return "";
+}
+
 function renderEvidence() {
   const ul = document.getElementById("evlist");
   const t = I18N[lang];
   ul.innerHTML = "";
   lastEvidence.slice(0, evidenceShown).forEach(ev => {
     const li = document.createElement("li");
-    const loc = ev.line ? ("line " + ev.line) : t.linewide;
+    const why = evidenceWhy(ev);
+    if (ev.line) {
+      li.classList.add("canjump");
+      li.title = tr("jumpHint");
+      li.addEventListener("click", () => gotoLine(ev.line));
+    }
+    const loc = ev.line ? (t.colLine + " " + ev.line) : t.linewide;
     li.innerHTML = '<span class="loc">' + esc(loc) + ":</span> " + esc(ev.detail) +
-      (ev.excerpt ? '<span class="txt">“' + fmtExcerpt(ev.excerpt) + "”</span>" : "");
+      (ev.excerpt ? '<span class="txt">“' + fmtExcerpt(ev.excerpt) + "”</span>" : "") +
+      (why ? '<span class="why">' + esc(why) + "</span>" : "");
     ul.appendChild(li);
   });
   document.getElementById("showall").classList.toggle(
@@ -634,6 +802,9 @@ function doAnalyze() {
 
   // Watermark / typography inventory
   fillCharTables();
+
+  // Plain text statistics (bytes, words, sentences, ...)
+  fillTextStats(text, metrics);
 
   // Evidence locations (expandable)
   lastEvidence = evidence;

@@ -149,9 +149,15 @@ Report filenames include language prefix: `report_py.txt`, `report_py-ext.txt`, 
 
 ## Versioning
 
-Semantic: patch (0.0.x) = bug fixes, minor (0.x.0) = meets requirements, major (x.0.0) = significant new features. **Current: 0.4.4**.
+Semantic: patch (0.0.x) = bug fixes, minor (0.x.0) = meets requirements, major (x.0.0) = significant new features. **Current: 0.4.5**.
 
 ### Version History
+- **v0.4.5**: web demo navigation & clarity: editor line-number gutter (scroll-synced),
+  click an evidence item to jump to its line in the editor, "why it matters"
+  explanation on every evidence item (RU/UK/EN/PT), text statistics card
+  (UTF-8 bytes, chars with/without spaces, words, unique words, sentences,
+  paragraphs, lines, avg sentence length, reading time); connective evidence
+  now carries line numbers; scoring math untouched — web parity PASS
 - **v0.4.4**: web demo becomes a cleaning workstation — watermark/typography/
   AI-phrase in-text highlighting (tabs Editor/Highlight), "Clean & normalize"
   (watermark removal + smart typography → ASCII with per-character inventory,

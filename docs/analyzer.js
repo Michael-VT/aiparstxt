@@ -1105,6 +1105,7 @@ function buildEvidence(text, metrics) {
   const evidence = [];
   const sentences = metrics.sentences || [];
   const occurrences = metrics.ai_phrase_occurrences || [];
+  const textLower = text.toLowerCase();
 
   const excerptFor = (idx, phrase) => {
     const sentStart =
@@ -1225,10 +1226,11 @@ function buildEvidence(text, metrics) {
     }
     ranked.sort((a, b) => b[0] - a[0]);
     for (const [n, sent] of ranked.slice(0, 2)) {
+      const idx = textLower.indexOf(sent.slice(0, 40).toLowerCase());
       evidence.push({
         type: "connective",
         detail: `sentence carries ${n} discourse connectives`,
-        line: null,
+        line: idx !== -1 ? countNewlinesBefore(text, idx) + 1 : null,
         excerpt: truncateMiddle(sent.trim(), 130),
       });
     }
@@ -1251,7 +1253,6 @@ function buildEvidence(text, metrics) {
     sentenceScores.push([markers, sent]);
   }
   sentenceScores.sort((a, b) => b[0] - a[0]);
-  const textLower = text.toLowerCase();
   for (const [markers, sent] of sentenceScores.slice(0, 3)) {
     if (markers >= 2) {
       const idx = textLower.indexOf(sent.slice(0, 40).toLowerCase());
